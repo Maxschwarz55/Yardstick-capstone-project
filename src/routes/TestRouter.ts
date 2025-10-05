@@ -11,3 +11,5 @@ testRouter.get("/db", async (req, res) => {
     const rows = await testQuery()
     res.send(rows)
 })
+
+export default testRouter
