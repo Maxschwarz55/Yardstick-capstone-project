@@ -2,9 +2,10 @@ import pool from "./pool";
 
 async function testQuery() {
     const SQL = `
-        SELECT * FROM test;
+        SELECT *
+        FROM people
+        WHERE name = 'John Smith';
     `
-    //assume table test exists
     const res = await pool.query(SQL)
     return res.rows 
 }
