@@ -1,5 +1,6 @@
-import * as express from "express"
-import testRouter from "./routes/TestRouter"
+import testRouter from "./routes/TestRouter.js"
+import express from 'express';
+
 
 const app = express()
 

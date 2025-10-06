@@ -1,4 +1,4 @@
-import pool from "./pool";
+import pool from "./pool.js";
 
 async function testQuery() {
     const SQL = `
