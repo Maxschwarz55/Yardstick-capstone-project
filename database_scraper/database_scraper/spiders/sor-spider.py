@@ -27,36 +27,15 @@ class SorSpider(sc.Spider):
             # Fill in the last name
             await page.fill("input[name='LastName']", self.last_name)
 
-            # Wait for user to manually solve CAPTCHA and click submit
+            # Keep the browser open - wait for manual interaction
             self.logger.info("=" * 60)
-            self.logger.info("PLEASE SOLVE THE CAPTCHA IN THE BROWSER WINDOW")
-            self.logger.info("Then click the submit button manually")
-            self.logger.info("Waiting for results page...")
+            self.logger.info("LastName field filled with: " + self.last_name)
+            self.logger.info("Please solve CAPTCHA and submit manually")
+            self.logger.info("Waiting up to 5 minutes...")
             self.logger.info("=" * 60)
 
-            try:
-                # Wait for navigation to results page (adjust selector as needed)
-                await page.wait_for_selector("table", timeout=300000)  # 5 minute timeout
-
-                self.logger.info("Results page loaded! Extracting data...")
-
-                # Get the page content after form submission
-                content = await page.content()
-
-                # Create a new response with the results page content
-                from scrapy.http import HtmlResponse
-                new_response = HtmlResponse(
-                    url=page.url,
-                    body=content,
-                    encoding='utf-8'
-                )
-
-                # Parse the results
-                for item in self.parse_results(new_response):
-                    yield item
-            except Exception as e:
-                self.logger.error(f"Error waiting for results: {e}")
-                self.logger.info("Timeout or error occurred. Browser will close.")
+            # Wait for navigation after form submission
+            await page.wait_for_timeout(300000)  # Wait 5 minutes
 
     def parse_results(self, response):
         # Handle the search results page here
