@@ -1,5 +1,3 @@
-from pydoc import pager
-from re import L
 import scrapy as sc
 from database_scraper.items import InputFieldItem, SelectFieldItem
 from scrapy.http import HtmlResponse
