@@ -1,3 +1,6 @@
+# Code adapted from https://github.com/theriley106/WhisperCaptcha/blob/main/main.py. 
+# All credit to the original source.
+
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import time
