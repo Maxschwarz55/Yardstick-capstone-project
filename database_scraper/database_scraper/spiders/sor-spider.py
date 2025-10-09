@@ -1,6 +1,7 @@
 import scrapy as sc
 from database_scraper.items import InputFieldItem, SelectFieldItem
 from scrapy.http import HtmlResponse
+import json
 
 class SorSpider(sc.Spider):
     name = 'sor'
@@ -28,8 +29,10 @@ class SorSpider(sc.Spider):
             self.custody = True
         else:
             self.custody = False
-        
     
+    def clean_data(self, strings: list) -> list:
+        return [s.replace("\xa0", "").replace("\n", "").strip() for s in strings]
+
     def start_requests(self):
         yield sc.Request(self.start_url, meta={
             "playwright": True,
@@ -97,9 +100,10 @@ class SorSpider(sc.Spider):
 
         final_response = HtmlResponse(url=page.url, body=new_content, encoding='utf-8')
 
-
+        labels = await page.locator(".label").all_text_contents()
+        labels = self.clean_data(labels)
+        values = await page.locator(".value").all_text_contents()
+        values = self.clean_data(values)
         
-
-        
-
-            
+        scraped_data = dict(zip(labels, values))
+        print(scraped_data)
