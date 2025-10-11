@@ -1,14 +1,10 @@
-# Code adapted from https://github.com/theriley106/WhisperCaptcha/blob/main/main.py. 
-# All credit to the original source.
+# Adapted from https://github.com/theriley106/WhisperCaptcha/blob/main/main.py. 
 
 from selenium import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import time
-import json
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 import requests
-import os
 import whisper
 import warnings
 warnings.filterwarnings("ignore")
