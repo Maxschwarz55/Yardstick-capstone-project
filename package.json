@@ -1,0 +1,33 @@
+{
+  "name": "yardstick-capstone-project",
+  "version": "1.0.0",
+  "description": "",
+  "type":"module",
+  "homepage": "https://github.com/Maxschwarz55/Yardstick-capstone-project#readme",
+  "bugs": {
+    "url": "https://github.com/Maxschwarz55/Yardstick-capstone-project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Maxschwarz55/Yardstick-capstone-project.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@types/pg": "^8.15.5"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.6.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "pg": "^8.16.3",
+    "typescript": "^5.9.3"
+  }
+}
