@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { WebAppController } from './webapp/webapp.controller';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ScraperModule } from './scrapers/scrapers.module';
+import { JobModule } from './jobs/jobs.module';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), ScraperModule],
+  imports: [ScheduleModule.forRoot(), JobModule],
   controllers: [WebAppController],
   providers: [],
 })
