@@ -2,3 +2,8 @@ node_modules/
 .env
 db_data/
 *.DS_Store
+
+backend/dist
+backend/node_modules
+backend/.env
+backend/src/app.module.js
