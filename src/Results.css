@@ -1,6 +1,0 @@
-.photo-and-summary {
-  display: flex;
-  flex-direction: row; 
-  align-items: flex-start;
-  gap: 30px; /* space between photo and box */
-}
