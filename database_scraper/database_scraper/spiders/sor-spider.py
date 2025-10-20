@@ -1,7 +1,13 @@
+from ast import Dict
+from turtle import setup
 import scrapy as sc
 from database_scraper.items import InputFieldItem, SelectFieldItem
 from scrapy.http import HtmlResponse
 import json
+import os
+from ..key_setup import get_openai_key
+from openai import OpenAI
+import base64
 
 class SorSpider(sc.Spider):
     name = 'sor'
@@ -14,8 +20,10 @@ class SorSpider(sc.Spider):
         self.last_name = last_name
 
         if (not first_name or not last_name):
-            print("Usage: scrapy crawl sor -a first_name=<\"first_name\"> -a last_name=<\"last_name\">")
+            print("Usage: scrapy crawl sor -a output_file=<\"output_file\">"
+                  + "-a first_name=<\"first_name\"> -a last_name=<\"last_name\">\n")
             exit(1)
+
         
         if incarcerated == "True":
             self.incarcerated = True
@@ -32,6 +40,42 @@ class SorSpider(sc.Spider):
     
     def clean_data(self, strings: list) -> list:
         return [s.replace("\xa0", "").replace("\n", "").strip() for s in strings]
+    
+    def encode_image(self, image_path):
+        with open(image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode('utf-8')
+        
+    def solve_captcha(self, image_path, challenge_text):
+        api_key = get_openai_key()
+        client = OpenAI(api_key=api_key)
+        
+        base64_image = self.encode_image(image_path)
+
+        
+        response = client.chat.completions.create(
+            model="gpt-4o", 
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "What is the text in this CAPTCHA image? Provide only the text, no explanations."
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            }
+                        }
+                    ]
+                }
+            ],
+            max_tokens=300
+        )
+        
+        return response.choices[0].message.content
+
 
     def start_requests(self):
         yield sc.Request(self.start_url, meta={
@@ -45,7 +89,6 @@ class SorSpider(sc.Spider):
 
         page = response.meta["playwright_page"]
 
-        # Fill in all provided fields
         if self.last_name and self.first_name:
             await page.fill("input[name='LastName']", self.last_name)
             self.logger.info(f"LastName field filled with: {self.last_name}")
@@ -60,20 +103,39 @@ class SorSpider(sc.Spider):
                 await page.check("input[name='Cust']")
                 self.logger.info("Custody checkbox checked")
 
-            # Keep the browser open - wait for manual interaction
-            self.logger.info("=" * 60)
-            self.logger.info("Please solve CAPTCHA and submit manually")
-            self.logger.info("Waiting up to 5 minutes...")
-            self.logger.info("=" * 60)
+            await page.wait_for_selector('iframe[title="reCAPTCHA"]', timeout=10000)
+            iframe_element = await page.query_selector('iframe[title="reCAPTCHA"]')
+            content_frame = await iframe_element.content_frame()
 
-            # Wait for navigation after form submission
+            await content_frame.wait_for_selector('#recaptcha-anchor', timeout=10000)
+            await content_frame.click('#recaptcha-anchor')
+ 
+            await page.wait_for_selector('iframe[title*="recaptcha challenge"]', timeout=10000)
+
+            challenge_iframe = await page.query_selector('iframe[title*="recaptcha challenge"]')
+            challenge_frame = await challenge_iframe.content_frame()
+    
+            await challenge_frame.wait_for_selector('#rc-imageselect', timeout=10000)
+            self.logger.info('Challenge loaded')
+    
+            instruction_element = challenge_frame.locator('.rc-imageselect-desc-no-canonical strong')
+            challenge_text = await instruction_element.inner_text()
+            self.logger.info(f'Challenge: Find all images with {challenge_text}')
+
+            captcha_container = challenge_frame.locator('#rc-imageselect')
+            await captcha_container.screenshot(path='captcha_challenge.png', timeout=1200000, animations='disabled')
+            self.logger.info("Challenge screenshot saved")
+
+            # self.solve_captcha(image_url, challenge_text)
+            await page.wait_for_timeout(2400000) 
+
             await page.wait_for_url(lambda url: str(url) != current_url, timeout=300000)
             content = await page.content()
             new_response = HtmlResponse(url=page.url, body=content, encoding='utf-8')
             await self.parse_results(new_response, page)
 
 
-    async def parse_results(self, response, page):
+    async def parse_results(self, response, page) -> dict:
 
         search_text = f"{self.last_name.upper()}, {self.first_name.upper()}"
         href_link = None
@@ -86,15 +148,12 @@ class SorSpider(sc.Spider):
             self.logger.info(f"{search_text} not found")
             exit(1)
         
-        # Navigate to the href URL
-        full_url = response.urljoin(href_link)  # Handles relative URLs
+        full_url = response.urljoin(href_link) 
         await page.goto(full_url)
         self.logger.info(f"Navigated to: {full_url}")
 
-        # Wait for page to load
         await page.wait_for_load_state("networkidle")
 
-        # Get the new page content after navigation
         new_content = await page.content()
         self.logger.info(f"Page loaded, URL: {page.url}")
 
@@ -106,4 +165,5 @@ class SorSpider(sc.Spider):
         values = self.clean_data(values)
         
         scraped_data = dict(zip(labels, values))
-        print(scraped_data)
+        return scraped_data
+
