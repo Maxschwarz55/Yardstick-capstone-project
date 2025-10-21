@@ -103,34 +103,34 @@ class SorSpider(sc.Spider):
                 await page.check("input[name='Cust']")
                 self.logger.info("Custody checkbox checked")
 
-            await page.wait_for_selector('iframe[title="reCAPTCHA"]', timeout=10000)
-            iframe_element = await page.query_selector('iframe[title="reCAPTCHA"]')
-            content_frame = await iframe_element.content_frame()
+            # await page.wait_for_selector('iframe[title="reCAPTCHA"]', timeout=10000)
+            # iframe_element = await page.query_selector('iframe[title="reCAPTCHA"]')
+            # content_frame = await iframe_element.content_frame()
 
-            await content_frame.wait_for_selector('#recaptcha-anchor', timeout=10000)
-            await content_frame.click('#recaptcha-anchor')
+            # await content_frame.wait_for_selector('#recaptcha-anchor', timeout=10000)
+            # await content_frame.click('#recaptcha-anchor')
  
-            await page.wait_for_selector('iframe[title*="recaptcha challenge"]', timeout=10000)
+            # await page.wait_for_selector('iframe[title*="recaptcha challenge"]', timeout=10000)
 
-            challenge_iframe = await page.query_selector('iframe[title*="recaptcha challenge"]')
-            challenge_frame = await challenge_iframe.content_frame()
+            # challenge_iframe = await page.query_selector('iframe[title*="recaptcha challenge"]')
+            # challenge_frame = await challenge_iframe.content_frame()
     
-            await challenge_frame.wait_for_selector('#rc-imageselect', timeout=10000)
-            self.logger.info('Challenge loaded')
+            # await challenge_frame.wait_for_selector('#rc-imageselect', timeout=10000)
+            # self.logger.info('Challenge loaded')
     
-            instruction_element = challenge_frame.locator('.rc-imageselect-desc-no-canonical strong')
-            challenge_text = await instruction_element.inner_text()
-            self.logger.info(f'Challenge: Find all images with {challenge_text}')
+            # instruction_element = challenge_frame.locator('.rc-imageselect-desc-no-canonical strong')
+            # challenge_text = await instruction_element.inner_text()
+            # self.logger.info(f'Challenge: Find all images with {challenge_text}')
 
-            screenshot_path = "../captchas/challenge_img.png"
-            self.logger.info(f"Attempting to save screenshot to: {screenshot_path}")
+            # screenshot_path = "../captchas/challenge_img.png"
+            # self.logger.info(f"Attempting to save screenshot to: {screenshot_path}")
 
-            await page.wait_for_timeout(2000)
+            # await page.wait_for_timeout(2000)
 
-            await page.screenshot(path=screenshot_path, full_page=True)
+            # await page.screenshot(path=screenshot_path, full_page=True)
 
-            self.logger.info(self.solve_captcha(screenshot_path, challenge_text))
-            await page.wait_for_timeout(2400000) 
+            # self.logger.info(self.solve_captcha(screenshot_path, challenge_text))
+            # await page.wait_for_timeout(2400000) 
 
             await page.wait_for_url(lambda url: str(url) != current_url, timeout=300000)
             content = await page.content()
