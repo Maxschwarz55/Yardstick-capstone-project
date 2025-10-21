@@ -1,4 +1,3 @@
-from ast import Dict
 from turtle import setup
 import scrapy as sc
 from scrapy.http import HtmlResponse
@@ -173,4 +172,3 @@ class SorSpider(sc.Spider):
         
         scraped_data = dict(zip(labels, values))
         return scraped_data
-

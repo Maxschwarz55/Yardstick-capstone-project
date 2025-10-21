@@ -5,7 +5,7 @@ import re
 
 
 class SorSpider(sc.Spider):
-    name = 'sor'
+    name = 'sor-2'
     start_url = 'https://www.criminaljustice.ny.gov/SomsSUBDirectory/search_index.jsp'
 
     def __init__(self, last_name=None, first_name=None, incarcerated=None,
