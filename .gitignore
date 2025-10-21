@@ -12,3 +12,6 @@ backend/dist
 backend/node_modules
 backend/.env
 backend/src/app.module.js
+!backend/src/jobs/
+!backend/src/jobs/**
+
