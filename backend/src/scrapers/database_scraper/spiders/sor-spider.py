@@ -6,6 +6,7 @@ import os
 from ..key_setup import get_openai_key
 from openai import OpenAI
 import base64
+from PIL import Image
 
 class SorSpider(sc.Spider):
     name = 'sor'
@@ -21,7 +22,6 @@ class SorSpider(sc.Spider):
             print("Usage: scrapy crawl sor -a output_file=<\"output_file\">"
                   + "-a first_name=<\"first_name\"> -a last_name=<\"last_name\">\n")
             exit(1)
-
         
         if incarcerated == "True":
             self.incarcerated = True
@@ -75,7 +75,21 @@ class SorSpider(sc.Spider):
         )
         
         return response.choices[0].message.content
+    
+    def crop_captcha(self, image_path):
 
+        img = Image.open(image_path)
+        width, height = img.size
+        
+        left = int(width)   # ~7.5% from left
+        top = int(height * 0.05)    # ~26.4% from top
+        right = int(width * 0.395)   # ~39.5% from left  
+        bottom = int(height * 0.395) 
+        
+        captcha = img.crop((left, top, right, bottom))
+        new_path = f"{image_path[:-4]}_crop.png"
+        captcha.save(new_path)
+        return new_path
 
     def start_requests(self):
         yield sc.Request(self.start_url, meta={
@@ -103,33 +117,45 @@ class SorSpider(sc.Spider):
                 await page.check("input[name='Cust']")
                 self.logger.info("Custody checkbox checked")
 
-            await page.wait_for_selector('iframe[title="reCAPTCHA"]', timeout=10000)
-            iframe_element = await page.query_selector('iframe[title="reCAPTCHA"]')
-            content_frame = await iframe_element.content_frame()
+            # await page.wait_for_selector('iframe[title="reCAPTCHA"]', timeout=10000)
+            # iframe_element = await page.query_selector('iframe[title="reCAPTCHA"]')
+            # content_frame = await iframe_element.content_frame()
 
-            await content_frame.wait_for_selector('#recaptcha-anchor', timeout=10000)
-            await content_frame.click('#recaptcha-anchor')
+            # await content_frame.wait_for_selector('#recaptcha-anchor', timeout=10000)
+            # await content_frame.click('#recaptcha-anchor')
  
-            await page.wait_for_selector('iframe[title*="recaptcha challenge"]', timeout=10000)
+            # await page.wait_for_selector('iframe[title*="recaptcha challenge"]', timeout=10000)
 
-            challenge_iframe = await page.query_selector('iframe[title*="recaptcha challenge"]')
-            challenge_frame = await challenge_iframe.content_frame()
+            # challenge_iframe = await page.query_selector('iframe[title*="recaptcha challenge"]')
+            # challenge_frame = await challenge_iframe.content_frame()
     
-            await challenge_frame.wait_for_selector('#rc-imageselect', timeout=10000)
-            self.logger.info('Challenge loaded')
+            # await challenge_frame.wait_for_selector('#rc-imageselect', timeout=10000)
+            # self.logger.info('Challenge loaded')
     
-            instruction_element = challenge_frame.locator('.rc-imageselect-desc-no-canonical strong')
-            challenge_text = await instruction_element.inner_text()
-            self.logger.info(f'Challenge: Find all images with {challenge_text}')
+            # instruction_element = challenge_frame.locator('.rc-imageselect-desc-no-canonical strong')
+            # challenge_text = await instruction_element.inner_text()
+            # self.logger.info(f'Challenge: Find all images with {challenge_text}')
 
-            screenshot_path = "../captchas/challenge_img.png"
-            self.logger.info(f"Attempting to save screenshot to: {screenshot_path}")
+            # screenshot_path = "../captchas/challenge_img.png"
+            # self.logger.info(f"Attempting to save screenshot to: {screenshot_path}")
 
-            await page.wait_for_timeout(2000)
+            # await page.wait_for_timeout(2000)
 
-            await page.screenshot(path=screenshot_path, full_page=True)
+            # # Take screenshot with increased timeout and skip waiting for fonts
+            # try:
+            #     await page.screenshot(
+            #         path=screenshot_path,
+            #         full_page=True,
+            #         timeout=60000  # 60 seconds
+            #     )
+            # except Exception as e:
+            #     self.logger.warning(f"Full page screenshot failed: {e}, trying without full_page")
+            #     # Fallback: screenshot without full_page
+            #     await page.screenshot(path=screenshot_path, timeout=60000)
 
-            self.logger.info(self.solve_captcha(screenshot_path, challenge_text))
+            # #cropped_path = self.crop_captcha(screenshot_path)
+            # self.logger.info(self.solve_captcha(screenshot_path, challenge_text))
+
             await page.wait_for_timeout(2400000) 
 
             await page.wait_for_url(lambda url: str(url) != current_url, timeout=300000)
@@ -150,7 +176,7 @@ class SorSpider(sc.Spider):
         if not href_link:
             self.logger.info(f"{search_text} not found")
             exit(1)
-        
+         
         full_url = response.urljoin(href_link) 
         await page.goto(full_url)
         self.logger.info(f"Navigated to: {full_url}")
@@ -167,15 +193,12 @@ class SorSpider(sc.Spider):
         values = await page.locator(".value").all_text_contents()
         values = self.clean_data(values)
 
-        # Get all h4 labels
         h4_labels = await page.locator("h4").all_text_contents()
         h4_labels = self.clean_data(h4_labels)
 
-        # Get all p labels
         p_labels = await page.locator("p").all_text_contents()
         p_labels = self.clean_data(p_labels)
 
-        # Filter out unwanted h4 labels
         exclude_h4 = [
             "Current Addresses",
             "Current Conviction",
@@ -198,7 +221,6 @@ class SorSpider(sc.Spider):
         ]
         p_labels_filtered = [p for p in p_labels if p not in exclude_p]
 
-        # Extend the labels and values lists with h4/p data
         labels.extend(h4_labels_filtered)
         values.extend(p_labels_filtered)
 
