@@ -1,8 +1,6 @@
-from turtle import setup
+
 import scrapy as sc
 from scrapy.http import HtmlResponse
-import json
-import os
 from ..key_setup import get_openai_key
 from openai import OpenAI
 import base64
@@ -16,9 +14,10 @@ class SorSpider(sc.Spider):
         super(SorSpider, self).__init__(*args, **kwargs)
         self.first_name = first_name
         self.last_name = last_name
+        self.result = None  
 
         if (not first_name or not last_name):
-            print("Usage: scrapy crawl sor -a output_file=<\"output_file\">"
+            print("Usage: scrapy crawl sor"
                   + "-a first_name=<\"first_name\"> -a last_name=<\"last_name\">\n")
             exit(1)
 
@@ -135,7 +134,7 @@ class SorSpider(sc.Spider):
             await page.wait_for_url(lambda url: str(url) != current_url, timeout=300000)
             content = await page.content()
             new_response = HtmlResponse(url=page.url, body=content, encoding='utf-8')
-            await self.parse_results(new_response, page)
+            result = await self.parse_results(new_response, page)
 
 
     async def parse_results(self, response, page) -> dict:
@@ -204,6 +203,5 @@ class SorSpider(sc.Spider):
 
         scraped_data = dict(zip(labels, values))
         self.logger.info(scraped_data)
-        
-        return scraped_data
-    
+
+        self.result = scraped_data
