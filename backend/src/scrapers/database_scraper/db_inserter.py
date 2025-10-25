@@ -119,8 +119,6 @@ def insert_scraped_data(first_name, last_name, incarcerated=None, ice_custody=No
     
     conn.commit()
     
-
-
     conn.close()
     print(f"Data for {first_name} {last_name} inserted successfully!")
 
