@@ -8,7 +8,7 @@ import * as Joi from 'joi';
 @Module({
   imports: [ScheduleModule.forRoot(), JobModule, ConfigModule.forRoot({
     validationSchema: {
-      DB_PORT
+      DB_PORT: Joi.number().integer().min(1),
     }
   })],
   controllers: [WebAppController],
