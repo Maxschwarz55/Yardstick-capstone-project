@@ -3,11 +3,12 @@ import os
 import sys
 from dotenv import load_dotenv
 from scrapy.crawler import CrawlerProcess
-from scrapers.database_scraper.spiders.sor_spider import SorSpider 
+from scrapers.database_scraper.spiders.sor_spider import SorSpider
 from scrapy import signals
 from scrapy.signalmanager import dispatcher
 
-load_dotenv()
+#Relative path for env file. This will need to change likely
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 DB_CONFIG = {
     "user": os.getenv("DB_USER"),
@@ -17,6 +18,12 @@ DB_CONFIG = {
     "port": int(os.getenv("DB_PORT"))
 }
 
+def convert_to_bool(string: str):
+    if string == 'YES':
+        return True
+    else:
+        return False
+    
 def run_spider(first_name, last_name, incarcerated=None, ice_custody=None, custody=None):
     spider_instance = None
 
@@ -68,16 +75,18 @@ def insert_scraped_data(first_name, last_name, incarcerated=None, ice_custody=No
         return val if val is not None else "None Reported"
 
     # Insert personal info
-    person = scraped_data.get("personal_info", {})
+    person = scraped_data
+    person['Corr. Lens'] = convert_to_bool(person['Corr. Lens'])
     insert_person = """
         INSERT INTO person (
-            offender_id, first_name, middle_name, last_name, dob, sex, race, ethnicity,
-            height, weight, hair, eyes, corrective_lens, risk_level, designation, photo_date
+            offender_id, last_name, first_name, middle_name, dob, sex,
+            risk_level, designation, race, ethnicity, height, weight, hair, eyes, corrective_lens,
+            photo_date
         )
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         RETURNING person_id;
     """
-    cursor.execute(insert_person, [person.get(k) for k in person.keys()])
+    cursor.execute(insert_person, [person.get(k) for k in list(person.keys())[:16]])
     person_id = cursor.fetchone()[0]
 
     # Helper to insert list sections
@@ -107,7 +116,9 @@ def insert_scraped_data(first_name, last_name, incarcerated=None, ice_custody=No
     insert_section("alias_name", scraped_data.get("aliases", []), ["first_name", "middle_name", "last_name"])
     insert_section("vehicle", scraped_data.get("vehicles", []),
                          ["plate_number", "state", "year", "make_model", "color"])
-
+    
+    conn.commit()
+    
     conn.close()
     print(f"Data for {first_name} {last_name} inserted successfully!")
 

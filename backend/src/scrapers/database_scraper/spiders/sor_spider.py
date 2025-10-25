@@ -21,7 +21,6 @@ class SorSpider(sc.Spider):
                   + "-a first_name=<\"first_name\"> -a last_name=<\"last_name\">\n")
             exit(1)
 
-        
         if incarcerated == "True":
             self.incarcerated = True
         else:
@@ -156,10 +155,7 @@ class SorSpider(sc.Spider):
 
         await page.wait_for_load_state("networkidle")
 
-        new_content = await page.content()
         self.logger.info(f"Page loaded, URL: {page.url}")
-
-        final_response = HtmlResponse(url=page.url, body=new_content, encoding='utf-8')
 
         labels = await page.locator(".label").all_text_contents()
         labels = self.clean_data(labels)
@@ -203,5 +199,5 @@ class SorSpider(sc.Spider):
 
         scraped_data = dict(zip(labels, values))
         self.logger.info(scraped_data)
-
+        print(scraped_data)
         self.result = scraped_data
