@@ -1,12 +1,12 @@
 import {Injectable} from '@nestjs/common';
 import {Pool} from 'pg';
-import {ScraperService} from '../../scrapers/scraper.service';
+import {ScraperService} from '../scrapers/scraper.service';
 
 @Injectable()
 export class RecordsService{
     private pool = new Pool({connectionString: process.env.DATABASE_URL});
 
-    constructor(private readonly scraperService: ScraperService){}
+    // constructor(){}
 
     async getRecordById(id: string){
         const res = await this.pool.query(
@@ -16,12 +16,6 @@ export class RecordsService{
 
         if (res.rows.length > 0) return res.rows[0];
 
-        //db miss -> launch scraper
-        const scraped = await this.scraperService.runScraper(id);
-        if(scraped){
-            await this.saveToDatabase(scraped);
-            return scraped;
-        }
         return {error: 'No record found'};
     }
 
