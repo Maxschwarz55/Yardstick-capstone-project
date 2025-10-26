@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Person } from './entities/Person';
 
 export const dbProviders: Provider[] = [
   {
@@ -13,9 +14,7 @@ export const dbProviders: Provider[] = [
         port: configService.get<number>('db.port'),
         username: configService.get<string>('db.user'),
         password: configService.get<string>('db.pwd'),
-        entities: [
-          //TODO
-        ]
+        entities: [Person],
       });
       try {
         await source.initialize();
