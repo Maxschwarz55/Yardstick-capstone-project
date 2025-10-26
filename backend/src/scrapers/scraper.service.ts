@@ -14,7 +14,7 @@ export class ScraperService {
       throw new Error('INSERTER_PATH env not set, see README.md for more');
 
     return new Promise((resolve, reject) => {
-      exec(`python3 ${INSERTER_PATH}`, (error, stdout, stderr) => {
+      exec(`bash ${INSERTER_PATH}`, (error, stdout, stderr) => {
         if (error) {
           console.error('Scraper failed:', stderr);
           return reject(error);
