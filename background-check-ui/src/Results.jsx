@@ -19,11 +19,13 @@ export default function Results() {
     return (
     <div className="results-page">
         <h1>Background Check Results for {firstName} {lastName}</h1>
-        <div className = "photo-and-summary">  
-            <img src={blankPhoto} alt="Profile" width="230" height="200" />
-            <div className="summary-box"></div>
-            AI generated summary will appear here (ex. "No criminal history found, would reccommend hiring based on available data")
+        <div className="photo-and-summary">
+        <img src={blankPhoto} alt="Profile" width="230" height="200" />
+        <div className="summary-box">
+            AI generated summary will appear here (ex. "No criminal history found...")
         </div>
+        </div>
+
 
         <h4>Description:</h4>
         <p>Height: 5'10", Weight: 160 lbs, Hair Color: Brown, Eye Color: Blue</p>

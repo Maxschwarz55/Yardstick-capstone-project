@@ -10,8 +10,9 @@ CREATE TABLE person (
     middle_name TEXT,
     last_name TEXT,
     dob DATE,
-    sex TEXT,
-    race TEXT,
+    last_updated DATE,
+    sex VARCHAR(16),
+    race VARCHAR(32),
     ethnicity TEXT,
     height TEXT,
     weight INT,
@@ -31,12 +32,12 @@ DROP TABLE IF EXISTS address CASCADE;
 CREATE TABLE address (
     address_id SERIAL PRIMARY KEY,
     person_id INT REFERENCES person(person_id) ON DELETE CASCADE,
-    type TEXT,
+    type VARCHAR(3),
     street TEXT,
     city TEXT,
-    state TEXT,
-    zip TEXT,
-    county TEXT
+    state CHAR(2),
+    zip CHAR(5),
+    county VARCHAR(64) 
 );
 
 -- =====================================================
@@ -50,8 +51,8 @@ CREATE TABLE conviction (
     title TEXT,
     pl_section TEXT,
     subsection TEXT,
-    class TEXT,
-    category TEXT,
+    class CHAR(2),
+    category CHAR(2),
     counts INT,
     description TEXT,
     date_of_crime DATE,
@@ -156,12 +157,23 @@ DROP TABLE IF EXISTS vehicle CASCADE;
 CREATE TABLE vehicle (
     vehicle_id SERIAL PRIMARY KEY,
     person_id INT REFERENCES person(person_id) ON DELETE CASCADE,
-    plate_number TEXT,
+    plate_number VARCHAR(16),
     state TEXT,
     year TEXT,
-    make_model TEXT,
-    color TEXT
+    make_model VARCHAR(64),
+    color VARCHAR(64) 
 );
+
+CREATE INDEX idx_address_person_id ON address(person_id);
+CREATE INDEX idx_conviction_person_id ON conviction(person_id);
+CREATE INDEX idx_prev_conviction_person_id ON previous_conviction(person_id);
+CREATE INDEX idx_law_enforcement_person_id ON law_enforcement_agency(person_id);
+CREATE INDEX idx_supervising_person_id ON supervising_agency(person_id);
+CREATE INDEX idx_special_conditions_person_id ON special_conditions(person_id);
+CREATE INDEX idx_max_exp_person_id ON max_expiration_date(person_id);
+CREATE INDEX idx_scar_mark_person_id ON scar_mark(person_id);
+CREATE INDEX idx_alias_person_id ON alias_name(person_id);
+CREATE INDEX idx_vehicle_person_id ON vehicle(person_id);
 
 -- -- =====================================================
 -- -- Example Inserts: Adam Jones
