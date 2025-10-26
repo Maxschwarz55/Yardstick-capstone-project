@@ -28,8 +28,11 @@ export class DiagnosticsService{
             zip: row.zip,
             lastCrawled: row.last_crawled,
             nextScheduled: row.next_scheduled ?? row.next_crawl,
+            totalRecords: row.total_records,
             recordsAdded: row.records_added
         }));
+
+        //TODO: correctly calculate next_scheduled based off of registry being scraped
         const lastCrawlRes = await this.pool.query('SELECT MAX(last_crawled) AS last_crawled FROM crawl_log;');
         const nextCrawlRes = await this.pool.query('SELECT MIN(next_scheduled) AS next_scheduled FROM crawl_log;');
         const lastCrawled = lastCrawlRes.rows[0].last_crawled;
