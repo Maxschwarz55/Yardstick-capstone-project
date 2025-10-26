@@ -1,5 +1,6 @@
 annotated-types==0.7.0
 anyio==4.11.0
+asyncpg==0.30.0
 attrs==25.3.0
 Automat==25.4.16
 boto3==1.40.53
@@ -10,6 +11,7 @@ charset-normalizer==3.4.3
 chromedriver==2.24.1
 colorama==0.4.6
 constantly==23.10.4
+crochet==2.1.1
 cryptography==46.0.2
 cssselect==1.3.0
 defusedxml==0.7.1
@@ -44,6 +46,8 @@ parsel==1.10.0
 pillow==12.0.0
 playwright==1.55.0
 Protego==0.5.0
+psycopg2==2.9.11
+psycopg2-binary==2.9.11
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pycparser==2.23
@@ -82,5 +86,6 @@ urllib3==2.5.0
 w3lib==2.3.1
 webdriver-manager==4.0.2
 websocket-client==1.8.0
+wrapt==2.0.0
 wsproto==1.2.0
 zope.interface==8.0.1
