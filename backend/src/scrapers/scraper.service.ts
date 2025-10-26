@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 export class ScraperService {
   constructor(private configService: ConfigService) {}
 
-  async runScraper(): Promise<any> {
+  async runScraper(firstName: string, lastName: string): Promise<any> {
     const INSERTER_PATH: string | undefined =
       this.configService.get<string>('INSERTER_PATH');
 
