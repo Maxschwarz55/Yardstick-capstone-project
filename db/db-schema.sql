@@ -10,6 +10,7 @@ CREATE TABLE person (
     middle_name TEXT,
     last_name TEXT,
     dob DATE,
+    last_updated DATE,
     sex TEXT,
     race TEXT,
     ethnicity TEXT,
