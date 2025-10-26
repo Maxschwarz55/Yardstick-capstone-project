@@ -8,7 +8,6 @@ import { WebAppController } from './webapp/webapp.controller';
 import { RecordsModule } from './records/records.module';
 
 @Module({
-<<<<<<< HEAD
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -22,13 +21,6 @@ import { RecordsModule } from './records/records.module';
     JobModule,
     RecordsModule,
   ],
-=======
-  imports: [ScheduleModule.forRoot(), JobModule, ConfigModule.forRoot({
-    validationSchema: {
-      DB_PORT: Joi.number().integer().min(1),
-    }
-  }), ScraperModule],
->>>>>>> 344ac6d6a9699355c0a32465e6e6f2956e40ad48
   controllers: [WebAppController],
   providers: [],
 })

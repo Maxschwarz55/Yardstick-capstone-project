@@ -6,7 +6,6 @@ const rdsCa = fs.readFileSync('rds-combined-ca-bundle.pem', 'utf8');
 
 @Injectable()
 export class RecordsService {
-<<<<<<< HEAD
   private readonly logger = new Logger(RecordsService.name);
 
 private pool = new Pool({
@@ -224,27 +223,4 @@ private pool = new Pool({
       total: countRes.rows[0]?.total ?? 0,
     };
   }
-=======
-    private pool = new Pool({ connectionString: process.env.DATABASE_URL });
-
-    // constructor(){}
-
-    async getRecordById(id: string) {
-        const res = await this.pool.query(
-            'SELECT * FROM person WHERE offender_id = $1 LIMIT 1;',
-            [id],
-        );
-
-        if (res.rows.length > 0) return res.rows[0];
-
-        return { error: 'No record found' };
-    }
-
-    private async saveToDatabase(data: any) {
-        await this.pool.query(
-            'INSERT INTO person (offender_id, first_name, last_name) VALUES ($1, $2, $3) ON CONFLICT (offender_id) DO NOTHING;',
-            [data.offender_id, data.first_name, data.last_name],
-        );
-    }
->>>>>>> 344ac6d6a9699355c0a32465e6e6f2956e40ad48
 }
