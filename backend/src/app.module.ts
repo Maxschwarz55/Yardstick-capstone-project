@@ -12,7 +12,7 @@ import config from './config';
     JobModule,
     ConfigModule.forRoot({
       load: [config],
-      validationSchema: {
+      validationSchema: Joi.object({
         DB_PORT: Joi.number().port().required().messages({
           'number.port': 'DB_PORT must be a valid port',
         }),
@@ -31,7 +31,7 @@ import config from './config';
           'string.base': 'DB_PWD must be a string',
           'string.empty': 'DB_PWD is required',
         }),
-      },
+      }),
     }),
   ],
   controllers: [WebAppController],

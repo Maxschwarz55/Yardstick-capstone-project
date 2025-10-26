@@ -15,3 +15,5 @@ backend/src/app.module.js
 !backend/src/jobs/
 !backend/src/jobs/**
 
+deploy.bat
+

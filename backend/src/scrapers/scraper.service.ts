@@ -4,30 +4,41 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ScraperService {
-  constructor(private configService: ConfigService) {}
+  private readonly INSERTER_PATH: string | undefined;
+  constructor(private configService: ConfigService) {
+    this.INSERTER_PATH = this.configService.get<string>('INSERTER_PATH');
+  }
 
-  async runScraper(): Promise<any> {
-    const INSERTER_PATH: string | undefined =
-      this.configService.get<string>('INSERTER_PATH');
-
-    if (!INSERTER_PATH)
+  async runScraper(): Promise<void> {
+    if (!this.INSERTER_PATH)
       throw new Error('INSERTER_PATH env not set, see README.md for more');
 
     return new Promise((resolve, reject) => {
-      exec(`python3 ${INSERTER_PATH}`, (error, stdout, stderr) => {
+      exec(`python3 ${this.INSERTER_PATH}`, (error, stdout, stderr) => {
         if (error) {
           console.error('Scraper failed:', stderr);
           return reject(error);
         }
-        try {
-          resolve(JSON.parse(stdout));
-        } catch (e) {
-          if (e instanceof Error) {
-            reject(e);
-          }
-          reject(new Error('Unable to parse scraper output'));
-        }
+        reject(new Error('Scraper failed'));
       });
+    });
+  }
+
+  async runScraperTest(): Promise<void> {
+    if (!this.INSERTER_PATH)
+      throw new Error('INSERTER_PATH env not set, see README.md for more');
+
+    return new Promise((resolve, reject) => {
+      exec(
+        `python3 ${this.INSERTER_PATH} Adam Jones`,
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error('Scraper failed:', stderr);
+            return reject(error);
+          }
+          reject(new Error('Scraper failed'));
+        },
+      );
     });
   }
 }

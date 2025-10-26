@@ -9,6 +9,12 @@ export class JobService {
   //every minute
   @Cron('0 * * * * *')
   getNYData() {
-    this.scraperService.runScraper();
+    //TODO
+    this.scraperService
+      .runScraperTest()
+      .then(() => {
+        console.log('done');
+      })
+      .catch((e) => console.log(e));
   }
 }
