@@ -1,7 +1,7 @@
 
 import scrapy as sc
 from scrapy.http import HtmlResponse
-from ..key_setup import get_openai_key
+from key_setup import get_openai_key
 from openai import OpenAI
 import base64
 
