@@ -1,0 +1,31 @@
+.diag-page{
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.diag-page h1{ margin-bottom: 16px; }
+
+.diag-grid{
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  margin-bottom: 20px;
+}
+
+/* optional: numbers look aligned */
+.card-body p{
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 10px;
+}
+.card-body p::before{
+  content: "";
+}
+
+/* slightly emphasize database names */
+.card-body h3{
+  margin-top: 6px;
+  margin-bottom: 6px;
+  color: #e8eef8;
+}

@@ -69,6 +69,7 @@ export default function Results() {
 
   return (
     <div className="results-page">
+<<<<<<< HEAD
       <h1>Background Check Results for {person.first_name} {person.last_name}</h1>
 
       <div className="photo-and-summary">
@@ -96,6 +97,16 @@ export default function Results() {
         <List data={person.addresses} empty="No addresses" render={(a,i)=>
           <li key={i}><strong>{a.type ?? "ADDR"}</strong>: {lineAddr(a)}</li>} />
       </Section>
+=======
+        <h1>Background Check Results for {firstName} {lastName}</h1>
+        <div className="photo-and-summary">
+        <img src={blankPhoto} alt="Profile" width="230" height="200" />
+        <div className="summary-box">
+            AI generated summary will appear here (ex. "No criminal history found...")
+        </div>
+        </div>
+
+>>>>>>> 344ac6d6a9699355c0a32465e6e6f2956e40ad48
 
       <Section title="Current Convictions">
         <List data={person.convictions} empty="No convictions" render={(c,i)=>

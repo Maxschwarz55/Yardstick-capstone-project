@@ -50,42 +50,35 @@ function Home() {
     navigate("/diagnostics");
   };
   return (
-    <div className="App">
-      <h1> Background Check</h1>
-      
+    <div className="App container">
+  <h1>Background Check</h1>
 
-      <input
+  <div className="form">
+    <input
       type="text"
       placeholder="First Name"
       value={firstName}
       onChange={(e) => setFirstName(e.target.value)}
-      />
+    />
 
-      <input
+    <input
       type="text"
       placeholder="Last Name"
       value={lastName}
       onChange={(e) => setLastName(e.target.value)}
-      />
+    />
 
-      <div style={{ padding: 16 }}>
-      <label>
-        Date of birth <DOBPicker value={dob} onChange={setDob} />
-      </label>
-      </div>
-      
+    <label className="dob">
+      Date of birth <DOBPicker value={dob} onChange={setDob} />
+    </label>
+  </div>
 
-     {/* <p>Name: {firstName}</p> 
-      <p>Name: {lastName}</p>
-      <p>DOB: {dob}</p> */}
+  <button className="btn" onClick={handleClick}>Run Search</button>
+  <button className="btn btn-secondary" onClick={() => navigate("/diagnostics")}>
+    Diagnostics
+  </button>
+</div>
 
-      <button className="btn" onClick={handleClick}>Run Search</button>
-      <button className="btn btn-secondary" onClick={() => navigate("/diagnostics")}>
-      Diagnostics
-      </button>
-
-
-    </div>
 
     
   );
