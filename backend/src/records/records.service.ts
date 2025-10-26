@@ -1,18 +1,21 @@
 // src/records/records.service.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
+import * as fs from 'fs';
+const rdsCa = fs.readFileSync('rds-combined-ca-bundle.pem', 'utf8');
 
 @Injectable()
 export class RecordsService {
   private readonly logger = new Logger(RecordsService.name);
-  private pool = new Pool({
-    connectionString: process.env.DATABASE_URL, // local or AWS RDS
-    max: 10,
-    idleTimeoutMillis: 10_000,
-    connectionTimeoutMillis: 5_000,
-    // For AWS with sslmode=require in the URL, you don't need ssl here.
-    // If you want strict CA pinning, add: ssl: { rejectUnauthorized: true, ca: fs.readFileSync('rds-combined-ca-bundle.pem','utf8') }
-  });
+
+private pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: true, ca: rdsCa },
+  max: 15,
+  idleTimeoutMillis: 10_000,
+  connectionTimeoutMillis: 5_000,
+});
+
 
 
   async getRecordById(offenderId: string) {
