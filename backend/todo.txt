@@ -1,0 +1,7 @@
+sprint 4:
+    migrate to typeorm
+    get scraper working on backend
+    webapp endpoints
+
+sprint 5:
+    migrate to bullmq

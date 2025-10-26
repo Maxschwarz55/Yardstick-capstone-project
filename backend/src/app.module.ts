@@ -4,12 +4,14 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { JobModule } from './jobs/jobs.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import config from './config';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     JobModule,
     ConfigModule.forRoot({
+      load: [config],
       validationSchema: {
         DB_PORT: Joi.number().port().required().messages({
           'number.port': 'DB_PORT must be a valid port',
