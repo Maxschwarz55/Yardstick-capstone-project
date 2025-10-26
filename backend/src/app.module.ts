@@ -6,11 +6,32 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), JobModule, ConfigModule.forRoot({
-    validationSchema: {
-      DB_PORT: Joi.number().integer().min(1),
-    }
-  })],
+  imports: [
+    ScheduleModule.forRoot(),
+    JobModule,
+    ConfigModule.forRoot({
+      validationSchema: {
+        DB_PORT: Joi.number().port().required().messages({
+          'number.port': 'DB_PORT must be a valid port',
+        }),
+        DB_HOST: Joi.string().hostname().required().messages({
+          'string.hostname': 'DB_HOST must be a valid hostname',
+        }),
+        DB_PWD: Joi.string().required().messages({
+          'string.base': 'DB_PWD must be a string',
+          'string.empty': 'DB_PWD is required',
+        }),
+        DB_USER: Joi.string().required().messages({
+          'string.base': 'DB_PWD must be a string',
+          'string.empty': 'DB_PWD is required',
+        }),
+        DB_DB: Joi.string().required().messages({
+          'string.base': 'DB_PWD must be a string',
+          'string.empty': 'DB_PWD is required',
+        }),
+      },
+    }),
+  ],
   controllers: [WebAppController],
   providers: [],
 })
