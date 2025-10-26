@@ -9,3 +9,4 @@ import { ScraperModule } from 'src/scrapers/scraper.module';
   providers: [RecordsService],
 })
 export class RecordsModule {}
+
