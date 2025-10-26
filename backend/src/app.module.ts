@@ -6,6 +6,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { JobModule } from './jobs/jobs.module';
 import { WebAppController } from './webapp/webapp.controller';
 import { RecordsModule } from './records/records.module';
+import { DiagnosticsModule } from './webapp/diagnostics/diagnostics.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RecordsModule } from './records/records.module';
     ScheduleModule.forRoot(),
     JobModule,
     RecordsModule,
+    DiagnosticsModule
   ],
   controllers: [WebAppController],
   providers: [],
