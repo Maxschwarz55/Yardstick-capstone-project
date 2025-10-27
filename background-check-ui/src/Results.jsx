@@ -87,7 +87,7 @@ export default function Results() {
       <Section title="All Addresses">
         <List
           data={person.addresses}
-          empty="No addresses"
+          empty="None Reported"
           render={(a,i)=>(
             <li key={i}><strong>{a.type ?? "ADDR"}</strong>: {lineAddr(a)}</li>
           )}
@@ -129,7 +129,7 @@ export default function Results() {
       <Section title="Previous Convictions">
         <List
           data={person.previous_convictions}
-          empty="None"
+          empty="None Reported"
           render={(pc,i)=> <li key={i}>{pc.title || "—"}</li>}
         />
       </Section>
@@ -137,7 +137,7 @@ export default function Results() {
       <Section title="Law Enforcement Agencies">
         <List
           data={person.law_enforcement_agencies}
-          empty="None"
+          empty="None Reported"
           render={(lea,i)=> <li key={i}>{lea.agency_name || "—"}</li>}
         />
       </Section>
@@ -145,7 +145,7 @@ export default function Results() {
       <Section title="Supervising Agencies">
         <List
           data={person.supervising_agencies}
-          empty="None"
+          empty="None Reported"
           render={(sa,i)=> <li key={i}>{sa.agency_name || "—"}</li>}
         />
       </Section>
@@ -153,7 +153,7 @@ export default function Results() {
       <Section title="Special Conditions">
         <List
           data={person.special_conditions}
-          empty="None"
+          empty="None Reported"
           render={(sc,i)=> <li key={i}>{sc.description || "—"}</li>}
         />
       </Section>
@@ -161,7 +161,7 @@ export default function Results() {
       <Section title="Max Expiration / PRS Dates">
         <List
           data={person.max_expiration_dates}
-          empty="None"
+          empty="None Reported"
           render={(me,i)=> <li key={i}>{me.description || "—"}</li>}
         />
       </Section>
@@ -169,7 +169,7 @@ export default function Results() {
       <Section title="Scars / Marks / Tattoos">
         <List
           data={person.scars_marks}
-          empty="None"
+          empty="None Reported"
           render={(sm,i)=> <li key={i}>{sm.description || "—"}{sm.location ? ` — ${sm.location}` : ""}</li>}
         />
       </Section>
@@ -177,7 +177,7 @@ export default function Results() {
       <Section title="Aliases / Additional Names">
         <List
           data={person.aliases}
-          empty="None"
+          empty="None Reported"
           render={(x,i)=> <li key={i}>{[x.first_name, x.middle_name, x.last_name].filter(Boolean).join(" ")}</li>}
         />
       </Section>
@@ -185,7 +185,7 @@ export default function Results() {
       <Section title="Vehicles">
         <List
           data={person.vehicles}
-          empty="None"
+          empty="None Reported"
           render={(v,i)=> <li key={i}>{v.year || "—"} {v.make_model || ""} — {v.color || "—"} ({v.state || "—"} • {v.plate_number || "—"})</li>}
         />
       </Section>
