@@ -69,7 +69,7 @@ export default function Diagnostics() {
             {zips.length > 0 && (
               <>
                 <h3 style={{marginTop:16}}>Recent ZIP Activity</h3>
-                <table className="diag-table">
+                <table className="zip-table">
                   <thead>
                     <tr>
                       <th>ZIP</th>
