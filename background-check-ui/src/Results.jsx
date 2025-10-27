@@ -68,7 +68,7 @@ export default function Results() {
       <div className="photo-and-summary">
         <img src={photoSrc} onError={(e)=>{e.currentTarget.src = blankPhoto;}} alt="Profile" width="200" height="250" />
         <div className="summary-box">
-          {"Do not hire: candidate has appeared in the following registries, New York Sex Offender Registry"}
+          {"Do not hire: candidate has appeared in the New York Sex Offender Registry and is convicted of 3rd degree rape"}
         </div>
       </div>
 
