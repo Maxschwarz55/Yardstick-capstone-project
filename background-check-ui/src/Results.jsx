@@ -126,7 +126,7 @@ export default function Results() {
         />
       </Section>
 
-      <Section title="Previous Convictions">
+      <Section title="Previous Conviction(s) Requiring Registration">
         <List
           data={person.previous_convictions}
           empty="None Reported"
@@ -134,15 +134,7 @@ export default function Results() {
         />
       </Section>
 
-      <Section title="Law Enforcement Agencies">
-        <List
-          data={person.law_enforcement_agencies}
-          empty="None Reported"
-          render={(lea,i)=> <li key={i}>{lea.agency_name || "—"}</li>}
-        />
-      </Section>
-
-      <Section title="Supervising Agencies">
+      <Section title="Supervising Agency Information">
         <List
           data={person.supervising_agencies}
           empty="None Reported"
@@ -150,7 +142,7 @@ export default function Results() {
         />
       </Section>
 
-      <Section title="Special Conditions">
+      <Section title="Special Conditions of Supervision">
         <List
           data={person.special_conditions}
           empty="None Reported"
@@ -158,7 +150,7 @@ export default function Results() {
         />
       </Section>
 
-      <Section title="Max Expiration / PRS Dates">
+      <Section title="Maximum Expiration Date/Post Release Supervision Date of Sentence">
         <List
           data={person.max_expiration_dates}
           empty="None Reported"
