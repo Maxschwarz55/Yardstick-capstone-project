@@ -7,15 +7,13 @@ from curl_cffi import requests
 import time
 import random
 
-class NsorSpider(sc.Spider):
+class NsorSpider():
     
-    name = 'nsor'
     BASE_URL = "https://nsopw-api.ojp.gov/nsopw/v1/v1.0"
     SEARCH_ENDPOINT = f"{BASE_URL}/search"
     JURISDICTIONS_ENDPOINT = f"{BASE_URL}/jurisdictions/offline"
 
     def __init__(self, zips: list, *args, **kwargs):
-        super(NsorSpider, self).__init__(*args, **kwargs)
         for zip_code in zips:
             if not isinstance(zip_code, str) or len(zip_code) != 5:
                 raise ValueError(f"Invalid zip code. Zips must be 5 digits: {zip_code}")
@@ -68,8 +66,9 @@ class NsorSpider(sc.Spider):
 
             if response.status_code == 200:
                 data = response.json()
+                print(data)
+            
+if __name__ == '__main__':
+    spider = NsorSpider(['55407', '55408'])
+    spider.query_zips()
 
-
-
-def main():
-    pass
