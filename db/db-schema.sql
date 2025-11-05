@@ -21,7 +21,8 @@ CREATE TABLE person (
     corrective_lens BOOLEAN,
     risk_level INT,
     designation TEXT,
-    photo_date DATE
+    photo_date DATE,
+    photo_url TEXT
 );
 
 -- =====================================================

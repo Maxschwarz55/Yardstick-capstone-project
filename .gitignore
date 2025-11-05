@@ -15,3 +15,9 @@ backend/src/app.module.js
 !backend/src/jobs/
 !backend/src/jobs/**
 
+<<<<<<< HEAD
+deploy.bat
+=======
+deploy.bat
+
+>>>>>>> chore/migrate-to-typeorm
