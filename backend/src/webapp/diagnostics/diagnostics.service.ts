@@ -4,7 +4,11 @@ import {Pool} from 'pg';
 
 @Injectable()
 export class DiagnosticsService{
-    private pool = new Pool({connectionString: process.env.DATABASE_URL});
+    private pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }, //need to change later
+  });
+    
 
     async getDiagnostics(){
         const total = await this.pool.query('SELECT COUNT(*)::INT AS count FROM person');

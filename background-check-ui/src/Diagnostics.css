@@ -16,8 +16,8 @@
 /* optional: numbers look aligned */
 .card-body p{
   display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 10px;
+  grid-template-columns: 20px 1fr;
+  gap: 4px;
 }
 .card-body p::before{
   content: "";
@@ -28,4 +28,23 @@
   margin-top: 6px;
   margin-bottom: 6px;
   color: #e8eef8;
+}
+.zip-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.zip-table th, .zip-table td {
+  padding: 10px;
+}
+
+.zip-table th {
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.zip-table tr:nth-child(even) {
+  background: rgba(255,255,255,0.03);
 }

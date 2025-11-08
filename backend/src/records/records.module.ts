@@ -3,16 +3,17 @@ import { RecordsController } from './records.controller';
 import { RecordsService } from './records.service';
 import { ScraperModule } from 'src/scrapers/scraper.module';
 import { DatabaseModule } from 'src/db/database.module';
+import queries from './queries';
 
 @Module({
-<<<<<<< HEAD
-    imports: [ScraperModule],
-    controllers: [RecordsController],
-    providers: [RecordsService],
-=======
   imports: [ScraperModule, DatabaseModule],
   controllers: [RecordsController],
-  providers: [RecordsService],
->>>>>>> chore/migrate-to-typeorm
+  providers: [
+    RecordsService,
+    {
+      provide: 'RECORDS_QUERIES',
+      useValue: queries,
+    },
+  ],
 })
-export class RecordsModule { }
+export class RecordsModule {}

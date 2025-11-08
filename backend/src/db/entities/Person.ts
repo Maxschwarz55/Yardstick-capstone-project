@@ -55,4 +55,7 @@ export class Person {
 
   @Column({ type: 'date', nullable: true, name: 'photo_date' })
   photoDate: string;
+
+  @Column({nullable: true})
+  photo_url: string;
 }
