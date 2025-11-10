@@ -9,20 +9,29 @@ CREATE TABLE person (
     first_name TEXT,
     middle_name TEXT,
     last_name TEXT,
-    dob DATE,
+    dob TEXT,
+    age INT,
     last_updated DATE,
-    sex VARCHAR(16),
-    race VARCHAR(32),
+    sex TEXT,
+    race TEXT,
     ethnicity TEXT,
     height TEXT,
-    weight INT,
+    weight TEXT,
     hair TEXT,
     eyes TEXT,
     corrective_lens BOOLEAN,
     risk_level INT,
     designation TEXT,
-    photo_date DATE,
-    photo_url TEXT
+    photo_date TEXT,
+    photo_url TEXT,
+    photo_type TEXT,
+    offender_url TEXT,
+    skin_tone TEXT,
+    build TEXT,
+    release_date TEXT,
+    supervision_comments TEXT,
+    absconder BOOLEAN,
+    jurisdiction_id TEXT
 );
 
 -- =====================================================
@@ -33,12 +42,12 @@ DROP TABLE IF EXISTS address CASCADE;
 CREATE TABLE address (
     address_id SERIAL PRIMARY KEY,
     person_id INT REFERENCES person(person_id) ON DELETE CASCADE,
-    type VARCHAR(3),
+    type TEXT,
     street TEXT,
     city TEXT,
-    state CHAR(2),
+    state TEXT,
     zip CHAR(5),
-    county VARCHAR(64) 
+    county TEXT
 );
 
 -- =====================================================
@@ -56,18 +65,23 @@ CREATE TABLE conviction (
     category CHAR(2),
     counts INT,
     description TEXT,
-    date_of_crime DATE,
-    date_convicted DATE,
+    date_of_crime TEXT,
+    date_convicted TEXT,
+    date_of_registration TEXT,
     victim_sex_age TEXT,
     arresting_agency TEXT,
     offense_descriptions TEXT,
+    level_three_offender BOOLEAN,
+    offender_substatus TEXT,
     relationship_to_victim TEXT,
     weapon_used TEXT,
     force_used TEXT,
     computer_used BOOLEAN,
     pornography_involved BOOLEAN,
     sentence_term TEXT,
-    sentence_type TEXT
+    sentence_type TEXT,
+    offense_statute TEXT,
+    offense_information TEXT
 );
 
 -- =====================================================
@@ -89,7 +103,8 @@ DROP TABLE IF EXISTS law_enforcement_agency CASCADE;
 CREATE TABLE law_enforcement_agency (
     agency_id SERIAL PRIMARY KEY,
     person_id INT REFERENCES person(person_id) ON DELETE CASCADE,
-    agency_name TEXT
+    agency_name TEXT,
+    phone TEXT
 );
 
 -- =====================================================
@@ -100,7 +115,8 @@ DROP TABLE IF EXISTS supervising_agency CASCADE;
 CREATE TABLE supervising_agency (
     supervising_agency_id SERIAL PRIMARY KEY,
     person_id INT REFERENCES person(person_id) ON DELETE CASCADE,
-    agency_name TEXT
+    agency_name TEXT,
+    phone TEXT
 );
 
 -- =====================================================
@@ -161,7 +177,8 @@ CREATE TABLE vehicle (
     plate_number VARCHAR(16),
     state TEXT,
     year TEXT,
-    make_model VARCHAR(64),
+    make VARCHAR(64),
+    model VARCHAR(64),
     color VARCHAR(64) 
 );
 

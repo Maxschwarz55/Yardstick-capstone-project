@@ -18,13 +18,85 @@ DB_CONFIG = {
     "port": int(os.getenv("DB_PORT"))
 }
 
-def convert_to_bool(string: str):
-    if string == 'YES':
-        return True
-    else:
-        return False
-    
-def run_spider(first_name, last_name, incarcerated=None, ice_custody=None, custody=None):
+
+FIELD_MAPPINGS = {
+    #Person fields - API format
+    'givenName': ('person', 'first_name'),
+    'middleName': ('person', 'middle_name'),
+    'surName': ('person', 'last_name'),
+    'firstName': ('person', 'first_name'),
+    'lastName': ('person', 'last_name'),
+    'offenderUri': ('person', 'offender_url'),
+    'age': ('person', 'age'),
+    'gender': ('person', 'sex'),
+    'dob': ('person', 'dob'),
+    'imageUri': ('person', 'photo_url'),
+    'absconder': ('person', 'absconder'),
+    'jurisdictionId': ('person', 'jurisdiction_id'),
+    'height': ('person', 'height'),
+    'weight': ('person', 'weight'),
+    'ethnicityDescription': ('person', 'ethnicity'),
+    'eyeColorDesc': ('person', 'eyes'),
+    'hairColorDesc': ('person', 'hair'),
+    'raceDescription': ('person', 'race'),
+    'photos': ('person', 'photo_url'),
+    'photographDate': ('person', 'photo_date'),
+    'photographType': ('person', 'photo_type'),
+
+    #Person fields - Scraped text format
+    'Birth Date': ('person', 'dob'),
+    'Race/Ethnicity': ('person', 'race'),
+    'Hair Color': ('person', 'hair'),
+    'Eye Color': ('person', 'eyes'),
+    'Height': ('person', 'height'),
+    'Weight': ('person', 'weight'),
+    'Skin Tone': ('person', 'skin_tone'),
+    'Build': ('person', 'build'),
+    'MNDOC Offender ID': ('person', 'offender_id'),
+    'Supervising Agent': ('supervising_agency', 'agency_name'),
+    'Supervision Comments': ('person', 'supervision_comments'),
+    'Release Date': ('person', 'release_date'),
+
+    #Address fields - API format
+    'type': ('address', 'type'),
+    'streetAddress': ('address', 'street'),
+    'city': ('address', 'city'),
+    'county': ('address', 'county'),
+    'state': ('address', 'state'),
+    'zipCode': ('address', 'zip'),
+    'addressType': ('address', 'type'),
+    'cityTownName': ('address', 'city'),
+    'countyName': ('address', 'county'),
+    'postalCode': ('address', 'zip'),
+    'usState': ('address', 'state'),
+
+    #Address fields - Scraped text format
+    'Address County': ('address', 'county'),
+    'Registered Address': ('address', 'street'),
+
+    #Conviction fields
+    'level3Offender': ('conviction', 'level_three_offender'),
+    'offenderSubStatus': ('conviction', 'offender_substatus'),
+    'startDate': ('conviction', 'date_of_registration'),
+    'Offense Statute(s)': ('conviction', 'offense_statute'),
+    'Offense Information': ('conviction', 'offense_information'),
+
+    #Law enforcement - Scraped text format
+    'Law Enforcement Agency': ('law_enforcement_agency', 'agency_name'),
+
+    #Scar/Mark/Tattoo fields
+    'identifyingMarks': ('scar_mark', 'description'),
+    'description': ('scar_mark', 'description'),
+
+    #Vehicle fields
+    'color': ('vehicle', 'color'),
+    'makeDescription': ('vehicle', 'make'),
+    'modelDescription': ('vehicle', 'model'),
+    'vehicleYear': ('vehicle', 'year')
+}
+
+        
+def run_spider(offender_data: dict):
     spider_instance = None
 
     def capture_spider(spider):
@@ -47,14 +119,6 @@ def run_spider(first_name, last_name, incarcerated=None, ice_custody=None, custo
         'DOWNLOAD_TIMEOUT': 600,
     })
 
-    process.crawl(
-        SorSpider,
-        first_name=first_name,
-        last_name=last_name,
-        incarcerated=incarcerated,
-        ice_custody=ice_custody,
-        custody=custody
-    )
 
     process.start()
 
@@ -62,167 +126,173 @@ def run_spider(first_name, last_name, incarcerated=None, ice_custody=None, custo
         return spider_instance.result
     return None
 
-def insert_scraped_data(first_name, last_name, incarcerated=None, ice_custody=None, custody=None):
-    scraped_data = run_spider(first_name, last_name, incarcerated, ice_custody, custody)
-    if not scraped_data:
-        print("No data scraped. Exiting.")
-        return
-
+def insert_nsor_data(offender_data):
     conn = psycopg2.connect(**DB_CONFIG)
     cursor = conn.cursor()
 
-    def none_reported(val):
-        return val if val is not None else "None Reported"
+    try:
+        tables_data = {}
 
-    # Insert personal info
-    person = scraped_data
-    person['Corr. Lens'] = convert_to_bool(person['Corr. Lens'])
-    insert_person = """
-        INSERT INTO person (
-            offender_id, last_name, first_name, middle_name, dob, sex,
-            risk_level, designation, race, ethnicity, height, weight, hair, eyes, corrective_lens,
-            photo_date
-        )
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        RETURNING person_id;
-    """
-    cursor.execute(insert_person, [person.get(k) for k in list(person.keys())[:16]])
-    person_id = cursor.fetchone()[0]
+        def add_field(table, field, value):
+            if table not in tables_data:
+                tables_data[table] = {}
+            if field not in tables_data[table] and value not in [None, '', []]:
+                tables_data[table][field] = value
 
-    # Insert address
-    insert_address = """
-        INSERT INTO address (person_id, type, street, city, state, zip, county)
-        VALUES (%s, %s, %s, %s, %s, %s, %s);
-    """
-    cursor.execute(insert_address, [
-        person_id,
-        'EMP',                          # type (Primary)
-        '32 SPENCERPORT RD',            # street
-        'ROCHESTER',                    # city
-        'New York',                     # state
-        '14606',                        # zip
-        'Monroe'                        # county
-    ])
+        if 'name' in offender_data and isinstance(offender_data['name'], dict):
+            for nested_key, nested_value in offender_data['name'].items():
+                if nested_key in FIELD_MAPPINGS:
+                    table, field = FIELD_MAPPINGS[nested_key]
+                    add_field(table, field, nested_value)
 
-    # Insert conviction
-    insert_conviction = """
-        INSERT INTO conviction (
-            person_id, title, pl_section, subsection, class, category, counts,
-            description, date_of_crime, date_convicted, victim_sex_age,
-            arresting_agency, offense_descriptions, relationship_to_victim,
-            weapon_used, force_used, computer_used, pornography_involved,
-            sentence_term, sentence_type
-        )
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);
-    """
-    cursor.execute(insert_conviction, [
-        person_id,
-        'PL',                                               # title
-        '130.25',                                           # pl_section
-        '',                                                 # subsection
-        'E',                                                # class
-        'F',                                                # category
-        1,                                                  # counts
-        'Rape 3rd Degree',                                  # description
-        None,                                               # date_of_crime (empty)
-        '1992-06-04',                                       # date_convicted
-        'Female,15 Years',                                  # victim_sex_age
-        'Syracuse City Police Department - Secondary',      # arresting_agency
-        'Actual,Sexual Intercourse',                        # offense_descriptions
-        'None Reported',                                    # relationship_to_victim
-        'None Reported',                                    # weapon_used
-        'Chemical agentCoercion',                           # force_used
-        False,                                              # computer_used
-        False,                                              # pornography_involved
-        '2 Year(s) to 4 Year(s)',                          # sentence_term
-        'State Prison Consecutive'                          # sentence_type
-    ])
+        for key, value in offender_data.items():
+            if key in FIELD_MAPPINGS and not isinstance(value, (dict, list)):
+                table, field = FIELD_MAPPINGS[key]
+                add_field(table, field, value)
 
-    # Insert law enforcement agency
-    insert_agency = """
-        INSERT INTO law_enforcement_agency (person_id, agency_name)
-        VALUES (%s, %s);
-    """
-    cursor.execute(insert_agency, [
-        person_id,
-        'Syracuse City Police Department - Secondary'
-    ])
+        person_data = tables_data.get('person', {})
+        if person_data:
+            columns = ', '.join(person_data.keys())
+            placeholders = ', '.join(['%s'] * len(person_data))
+            query = f"INSERT INTO person ({columns}) VALUES ({placeholders}) RETURNING person_id"
+            cursor.execute(query, list(person_data.values()))
+            person_id = cursor.fetchone()[0]
+        else:
+            raise ValueError("No person data to insert")
 
-    # Insert previous convictions
-    insert_prev = """
-        INSERT INTO previous_conviction (person_id, title)
-        VALUES (%s, %s);
-    """
-    cursor.execute(insert_prev, [person_id, 'None Reported'])
+        if 'locations' in offender_data and isinstance(offender_data['locations'], list):
+            for location in offender_data['locations']:
+                address_data = {'person_id': person_id}
+                for key, value in location.items():
+                    if key in FIELD_MAPPINGS:
+                        table, field = FIELD_MAPPINGS[key]
+                        if table == 'address' and value not in [None, '', 0]:
+                            address_data[field] = value
 
-    # Insert supervising agency
-    insert_super = """
-        INSERT INTO supervising_agency (person_id, agency_name)
-        VALUES (%s, %s);
-    """
-    cursor.execute(insert_super, [person_id, 'None Reported'])
+                if len(address_data) > 1:
+                    columns = ', '.join(address_data.keys())
+                    placeholders = ', '.join(['%s'] * len(address_data))
+                    query = f"INSERT INTO address ({columns}) VALUES ({placeholders})"
+                    cursor.execute(query, list(address_data.values()))
 
-    # Insert special conditions
-    insert_conditions = """
-        INSERT INTO special_conditions (person_id, description)
-        VALUES (%s, %s);
-    """
-    cursor.execute(insert_conditions, [person_id, 'None Reported'])
+        if 'aliases' in offender_data and isinstance(offender_data['aliases'], list):
+            for alias in offender_data['aliases']:
+                alias_data = {'person_id': person_id}
+                for key, value in alias.items():
+                    if key in FIELD_MAPPINGS:
+                        table, field = FIELD_MAPPINGS[key]
+                        if table == 'person' and value:
+                            if field == 'first_name':
+                                alias_data['first_name'] = value
+                            elif field == 'middle_name':
+                                alias_data['middle_name'] = value
+                            elif field == 'last_name':
+                                alias_data['last_name'] = value
 
-    # Insert max expiration date
-    insert_max_exp = """
-        INSERT INTO max_expiration_date (person_id, description)
-        VALUES (%s, %s);
-    """
-    cursor.execute(insert_max_exp, [person_id, 'None Reported'])
+                if len(alias_data) > 1:
+                    columns = ', '.join(alias_data.keys())
+                    placeholders = ', '.join(['%s'] * len(alias_data))
+                    query = f"INSERT INTO alias_name ({columns}) VALUES ({placeholders})"
+                    cursor.execute(query, list(alias_data.values()))
 
-    # Insert scars/marks/tattoos
-    scars = [
-        ('Scar-Eyebrow', 'right/right eye area'),
-        ('Scar-Eyebrow', 'left/left eye area'),
-        ('Scar-Wrist', 'left')
-    ]
-    insert_scar = """
-        INSERT INTO scar_mark (person_id, description, location)
-        VALUES (%s, %s, %s);
-    """
-    for scar_desc, scar_loc in scars:
-        cursor.execute(insert_scar, [person_id, scar_desc, scar_loc])
+        if 'Also Known As Names' in offender_data and offender_data['Also Known As Names']:
+            aka_names = offender_data['Also Known As Names']
+            if aka_names and aka_names.strip():
+                name_parts = [n.strip() for n in aka_names.split(',')]
+                i = 0
+                while i < len(name_parts):
+                    alias_data = {'person_id': person_id}
 
+                    if i + 1 < len(name_parts):
+                        last_name = name_parts[i]
+                        first_middle = name_parts[i + 1].split()
 
+                        alias_data['last_name'] = last_name
+                        if len(first_middle) > 0:
+                            alias_data['first_name'] = first_middle[0]
+                        if len(first_middle) > 1:
+                            alias_data['middle_name'] = ' '.join(first_middle[1:])
 
-    # # Helper to insert list sections
-    # def insert_section(table_name, items, fields):
-    #     if not items:
-    #         items = [{"None Reported": None}]
-    #     for item in items:
-    #         if isinstance(item, dict):
-    #             values = [none_reported(item.get(f)) for f in fields]
-    #         else:
-    #             values = [none_reported(item)]
-    #         placeholders = ', '.join(['%s'] * (len(fields) + 1))
-    #         cursor.execute(f"""
-    #             INSERT INTO {table_name} (person_id, {', '.join(fields)})
-    #             VALUES ({placeholders})
-    #         """, [person_id] + values)
+                        i += 2
+                    else:
+                        i += 1
+                        continue
 
-    # # Insert all sections
-    # insert_section("address", scraped_data.get("addresses", []),
-    #                      ["type", "street", "city", "state", "zip", "county"])
-    # insert_section("conviction", scraped_data.get("current_convictions", []), ["title"])
-    # insert_section("previous_conviction", scraped_data.get("previous_convictions", []), ["title"])
-    # insert_section("supervising_agency", scraped_data.get("supervising_agencies", []), ["agency_name"])
-    # insert_section("special_conditions", scraped_data.get("special_conditions", []), ["description"])
-    # insert_section("max_expiration_date", scraped_data.get("max_expiration_dates", []), ["description"])
-    # insert_section("scar_mark", scraped_data.get("scars_tattoos", []), ["description", "location"])
-    # insert_section("alias_name", scraped_data.get("aliases", []), ["first_name", "middle_name", "last_name"])
-    # insert_section("vehicle", scraped_data.get("vehicles", []),
-    #                      ["plate_number", "state", "year", "make_model", "color"])
-    
-    conn.commit()
-    
-    conn.close()
-    print(f"Data for {first_name} {last_name} inserted successfully!")
+                    if len(alias_data) > 1:
+                        columns = ', '.join(alias_data.keys())
+                        placeholders = ', '.join(['%s'] * len(alias_data))
+                        query = f"INSERT INTO alias_name ({columns}) VALUES ({placeholders})"
+                        cursor.execute(query, list(alias_data.values()))
+
+        if 'conviction' in tables_data:
+            conviction_data = tables_data['conviction']
+            conviction_data['person_id'] = person_id
+            columns = ', '.join(conviction_data.keys())
+            placeholders = ', '.join(['%s'] * len(conviction_data))
+            query = f"INSERT INTO conviction ({columns}) VALUES ({placeholders})"
+            cursor.execute(query, list(conviction_data.values()))
+
+        if 'supervising_agency' in tables_data:
+            agency_data = tables_data['supervising_agency']
+            agency_data['person_id'] = person_id
+            if 'agency_name' in agency_data:
+                import re
+                match = re.search(r'(.*?)\s*\(?\d{3}\)?\s*\d{3}-\d{4}', agency_data['agency_name'])
+                if match:
+                    phone_match = re.search(r'\(?\d{3}\)?\s*\d{3}-\d{4}', agency_data['agency_name'])
+                    if phone_match:
+                        agency_data['phone'] = phone_match.group()
+                        agency_data['agency_name'] = match.group(1).strip()
+
+            columns = ', '.join(agency_data.keys())
+            placeholders = ', '.join(['%s'] * len(agency_data))
+            query = f"INSERT INTO supervising_agency ({columns}) VALUES ({placeholders})"
+            cursor.execute(query, list(agency_data.values()))
+
+        if 'law_enforcement_agency' in tables_data:
+            agency_data = tables_data['law_enforcement_agency']
+            agency_data['person_id'] = person_id
+            if 'agency_name' in agency_data:
+                import re
+                match = re.search(r'(.*?)\s*\d{3}-\d{3}-\d{4}', agency_data['agency_name'])
+                if match:
+                    phone_match = re.search(r'\d{3}-\d{3}-\d{4}', agency_data['agency_name'])
+                    if phone_match:
+                        agency_data['phone'] = phone_match.group()
+                        agency_data['agency_name'] = match.group(1).strip()
+
+            columns = ', '.join(agency_data.keys())
+            placeholders = ', '.join(['%s'] * len(agency_data))
+            query = f"INSERT INTO law_enforcement_agency ({columns}) VALUES ({placeholders})"
+            cursor.execute(query, list(agency_data.values()))
+
+        if 'scar_mark' in tables_data:
+            scar_data = tables_data['scar_mark']
+            scar_data['person_id'] = person_id
+            columns = ', '.join(scar_data.keys())
+            placeholders = ', '.join(['%s'] * len(scar_data))
+            query = f"INSERT INTO scar_mark ({columns}) VALUES ({placeholders})"
+            cursor.execute(query, list(scar_data.values()))
+
+        if 'vehicle' in tables_data:
+            vehicle_data = tables_data['vehicle']
+            vehicle_data['person_id'] = person_id
+            columns = ', '.join(vehicle_data.keys())
+            placeholders = ', '.join(['%s'] * len(vehicle_data))
+            query = f"INSERT INTO vehicle ({columns}) VALUES ({placeholders})"
+            cursor.execute(query, list(vehicle_data.values()))
+
+        conn.commit()
+        print(f"Data for person_id {person_id} inserted successfully!")
+        return person_id
+
+    except Exception as e:
+        conn.rollback()
+        print(f"Error inserting data: {e}")
+        raise
+    finally:
+        cursor.close()
+        conn.close()
 
 
 if __name__ == "__main__":
@@ -233,4 +303,3 @@ if __name__ == "__main__":
     first_name = sys.argv[1]
     last_name = sys.argv[2]
     
-    insert_scraped_data(first_name, last_name)
