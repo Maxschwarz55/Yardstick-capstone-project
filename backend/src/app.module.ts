@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ScraperModule } from './scrapers/scraper.module';
+// import { ScraperModule } from './scrapers/scraper.module';
 import * as Joi from 'joi';
 import { ScheduleModule } from '@nestjs/schedule';
 import { JobModule } from './jobs/jobs.module';
