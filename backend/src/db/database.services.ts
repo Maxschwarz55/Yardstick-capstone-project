@@ -1,7 +1,4 @@
 //eslint complaining for no rzn so these diabled
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { DataSource } from 'typeorm';
 import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

@@ -19,7 +19,6 @@ import config from './config';
         CORS_ORIGIN: Joi.string().default('http://localhost:3000'),
       }),
     }),
-    /*
     ConfigModule.forRoot({
       load: [config],
       validationSchema: Joi.object({
@@ -43,14 +42,12 @@ import config from './config';
         }),
       }),
     }),
-    */
     ScheduleModule.forRoot(),
     JobModule,
     RecordsModule,
-    DiagnosticsModule
+    DiagnosticsModule,
   ],
   controllers: [WebAppController],
   providers: [],
 })
-
 export class AppModule {}
