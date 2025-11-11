@@ -10,11 +10,11 @@ class Error {
   error: string;
 }
 
-class DataRow {
+interface DataRow {
   person: object;
 }
 
-class CountRow {
+interface CountRow {
   total: number;
 }
 
