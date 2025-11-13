@@ -1,78 +1,102 @@
-.App {
-  text-align: center;
+:root{
+  --bg: #0b1220;         /* page background */
+  --panel: #0f172a;      /* card / panels */
+  --text: #e5e7eb;       /* body text */
+  --muted: #9ca3af;      /* secondary text */
+  --brand: #61dafb;      /* accent (you already use) */
+  --border: #1f2937;     /* subtle borders */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.container{
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+h1 {
+  text-align: center;      /* centers the text horizontally */
+  margin-top: 40px;        /* optional: adds spacing from top */
+  font-size: 2.5rem;       /* optional: makes it stand out */
+  color: #61dafb;          /* optional: accent color */
 }
 
-.App-link {
-  color: #61dafb;
+h2{ font-size: 22px; margin: 0; }
+h3{ font-size: 16px; margin: 16px 0 6px; color: var(--text); }
+h4{ margin: 24px 0 8px; color: var(--text); }
+
+/* form */
+.form{
+  display: grid;
+  gap: 12px;
+  margin: 16px auto 12px;
+  max-width: 480px;
 }
 
-/* Base button */
-.btn {
-  display: block;           /* makes each button take its own line */
-  width: 220px;             /* set a width you like */
-  padding: 12px 16px;
-  margin: 8px auto;            /* vertical spacing between buttons */
-  border: 1px solid transparent;
+input[type="text"],
+input[type="date"]{
+  width: 100%;
+  padding: 12px 14px;
   border-radius: 10px;
-  background: #61dafb;
+  border: 1px solid var(--border);
+  background: #344060;
+  color: var(--text);
+  outline: none;
+}
+input::placeholder{ color: #6b7280; }
+input:focus{ border-color: #203b5c; box-shadow: 0 0 0 3px rgba(97,218,251,.15); }
+
+.dob{ display: flex; gap: 10px; align-items: center; color: var(--muted); }
+
+/* buttons (yours, slightly refined) */
+.btn{
+  display: block;
+  width: 220px;
+  padding: 12px 16px;
+  margin: 10px auto;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--brand);
   color: #0b2239;
-  align-items: center; 
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: .2px;
   cursor: pointer;
-  transition: transform .04s ease, box-shadow .2s ease, background .2s ease;
+  transition: transform .05s ease, box-shadow .2s ease, background .2s ease, opacity .2s ease;
 }
+.btn:hover{ box-shadow: 0 8px 18px rgba(0,0,0,.25); }
+.btn:active{ transform: translateY(1px); }
+.btn:focus{ outline: 3px solid rgba(97,218,251,.35); outline-offset: 2px; }
 
-/* Hover/active/focus states */
-.btn:hover { box-shadow: 0 6px 16px rgba(0,0,0,.2); }
-.btn:active { transform: translateY(1px); }
-.btn:focus { outline: 3px solid rgba(97,218,251,.35); outline-offset: 2px; }
-
-/* Variants */
-.btn.btn-secondary {
-  background: #374151;
-  color: #fff;
-  align-items: center; 
-
+.btn.btn-secondary{
+  background: #222b45;
+  color: #e8eef8;
+  border-color: #22304b;
 }
+.btn.btn-secondary:hover{ background: #29324f; }
 
-
-/* Disabled */
-.btn:disabled {
-  opacity: .55;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
+/* cards (shared) */
+.card{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.35);
+  overflow: hidden;
 }
-
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.card-hdr{
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(97,218,251,.08), rgba(97,218,251,0));
 }
+.card-body{ padding: 14px 16px; color: #d1d5db; }
+.card-body p{ margin: 6px 0; color: #cdd5e1; }
+.card-ftr{ padding: 10px 16px; border-top: 1px solid var(--border); color: var(--muted); }
+
+/* utility */
+.muted{ color: var(--muted); }
