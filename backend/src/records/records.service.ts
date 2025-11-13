@@ -1,7 +1,6 @@
 // src/records/records.service.ts
-import { DataSource, EntityManager } from 'typeorm/browser';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, DataSource, EntityManager } from 'typeorm';
 import { Person } from 'src/db/entities/Person';
 import queries from './queries';
 import * as fs from 'fs';

@@ -44,4 +44,12 @@ export class ScraperService {
       );
     });
   }
+
+  //placeholder
+  runScraperWithName(firstName: string, lastName: string) {
+    return {
+      firstName,
+      lastName,
+    };
+  }
 }

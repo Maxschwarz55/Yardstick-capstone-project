@@ -6,14 +6,20 @@ export class ScraperController {
   constructor(private readonly scraperService: ScraperService) {}
 
   @Post()
-  async scrapePerson(@Body() body: { firstName: string; lastName: string }) {
+  scrapePerson(@Body() body: { firstName: string; lastName: string }) {
     const { firstName, lastName } = body;
 
     try {
-      const output = await this.scraperService.runScraper(firstName, lastName);
+      // const output = await this.scraperService.runScraper(firstName, lastName);
+      const output = this.scraperService.runScraperWithName(
+        firstName,
+        lastName,
+      );
       return { message: 'Scraper ran successfully', output };
     } catch (error) {
-      return { message: 'Scraper failed', error };
+      if (error instanceof Error) return { message: 'Scraper failed', error };
+
+      return { message: 'Scraper failed' };
     }
   }
 }
