@@ -4,9 +4,10 @@ import { RecordsService } from './records.service';
 import { ScraperModule } from 'src/scrapers/scraper.module';
 import { DatabaseModule } from 'src/db/database.module';
 import queries from './queries';
+import { JobModule } from 'src/jobs/jobs.module';
 
 @Module({
-  imports: [ScraperModule, DatabaseModule],
+  imports: [ScraperModule, DatabaseModule, JobModule],
   controllers: [RecordsController],
   providers: [
     RecordsService,

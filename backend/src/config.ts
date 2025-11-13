@@ -6,4 +6,5 @@ export default () => ({
     user: process.env.DB_USER,
     db: process.env.DB_DB,
   },
+  node_env: process.env.NODE_ENV,
 });
