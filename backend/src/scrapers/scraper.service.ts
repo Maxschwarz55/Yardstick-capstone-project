@@ -9,7 +9,7 @@ export class ScraperService {
     this.INSERTER_PATH = this.configService.get<string>('INSERTER_PATH');
   }
 
-  async runScraper(firstName: string, lastName: string): Promise<any> {
+  async runScraper(): Promise<any> {
     const INSERTER_PATH: string | undefined =
       this.configService.get<string>('INSERTER_PATH');
 
@@ -43,5 +43,13 @@ export class ScraperService {
         },
       );
     });
+  }
+
+  //placeholder
+  runScraperWithName(firstName: string, lastName: string) {
+    return {
+      firstName,
+      lastName,
+    };
   }
 }
