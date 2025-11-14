@@ -1,22 +1,19 @@
-import requests
 from rapidfuzz import fuzz, utils
 import boto3
 
 rekognition = boto3.client("rekognition")
 
-def get_face_similarity(img_url, db_img_url):
+def get_face_similarity_s3(bucket, input_s3_key, db_s3_key):
     try:
-        img1_bytes = requests.get(img_url).content
-        img2_bytes = requests.get(db_img_url).content
         response = rekognition.compare_faces(
-            SourceImage={'Bytes': img1_bytes},
-            TargetImage={'Bytes': img2_bytes},
+            SourceImage={"S3Object": {"Bucket": bucket, "Name": input_s3_key}},
+            TargetImage={"S3Object": {"Bucket": bucket, "Name": db_s3_key}},
             SimilarityThreshold=0
         )
         matches = response.get("FaceMatches", [])
         return matches[0]["Similarity"] if matches else 0.0
     except Exception:
-        return 0.0  # Image is missing or inaccessible
+        return 0.0
 
 def compute_score(input_person, record, face_similarity):
     score = 0
@@ -57,27 +54,27 @@ def match_decision(score):
     else:
         return "Likely different person"
 
-# Example usage
-input_person = {
-    "first_name": "Jane",
-    "last_name": "Doe",
-    "dob": "1990-03-14",
-    # "photo_url": optional
-}
+# # Example usage
+# input_person = {
+#     "first_name": "Jane",
+#     "last_name": "Doe",
+#     "dob": "1990-03-14",
+#     # "photo_url": optional
+# }
 
-db_record = {
-    "first_name": "Janie",
-    "last_name": "Doe",
-    "dob": "1990-03-14",
-    "photo_url": "https://example.com/photo.jpg"
-}
+# db_record = {
+#     "first_name": "Janie",
+#     "last_name": "Doe",
+#     "dob": "1990-03-14",
+#     "photo_url": "https://example.com/photo.jpg"
+# }
 
-# Only compute face similarity if input has a photo
-face_sim = 0
-if input_person["photo_url"]:
-    face_sim = get_face_similarity(input_person["photo_url"], db_record["photo_url"])
+# # Only compute face similarity if input has a photo
+# face_sim = 0
+# if input_person["photo_url"]:
+#     face_sim = get_face_similarity(input_person["photo_url"], db_record["photo_url"])
 
-score = compute_score(input_person, db_record, face_sim)
-decision = match_decision(score)
+# score = compute_score(input_person, db_record, face_sim)
+# decision = match_decision(score)
 
-print(f"Score: {score}/10 → {decision}")
+# print(f"Score: {score}/10 → {decision}")
