@@ -3,7 +3,6 @@ import os
 import sys
 from dotenv import load_dotenv
 from scrapy.crawler import CrawlerProcess
-from spiders.sor_spider import SorSpider
 from scrapy import signals
 from scrapy.signalmanager import dispatcher
 
