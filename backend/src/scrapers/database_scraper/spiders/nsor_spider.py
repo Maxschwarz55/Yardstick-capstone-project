@@ -26,13 +26,14 @@ class NsorSpider(sc.Spider):
             for char in zip_code:
                 if not char.isdigit():
                     raise ValueError(f"Zips must contain only digits: {zip_code}")
-                 
+
         self.zips = zips
-        
+
         if batch_size > 5:
             raise ValueError("Batch size must be less than 5")
         else:
             self.batch_size = batch_size
+
 
         self.headers = {
             "accept": "application/json, text/plain, */*",
@@ -49,7 +50,7 @@ class NsorSpider(sc.Spider):
             "sec-fetch-mode": "cors",
             "sec-fetch-site": "cross-site",
         }
-    
+
     def start_requests(self):
         offenders = self.query_zips()
 
@@ -135,10 +136,12 @@ class NsorSpider(sc.Spider):
           verify=False
         )
 
+        offender_data_detailed = None
+
         try:
             if api_response.status_code == 200:
                 offender_data_detailed = api_response.json()
-                
+
             elif api_response.status_code == 429:
                 print("Error: Rate limit reached!")
                 print(f"api_response: {api_response.text[:200]}")
@@ -155,8 +158,10 @@ class NsorSpider(sc.Spider):
             print(f"Error: Exception {e}")
             return None
         
-        
+
+        # Write offender_data_detailed to file
         if offender_data_detailed:
+
             full_offender_data = {
                 **offender_data,
                 **offender_data_detailed
@@ -202,6 +207,7 @@ class NsorSpider(sc.Spider):
             full_offender_data = {
                 **offender_data
             }
+
 
         insert_nsor_data(full_offender_data)
 
