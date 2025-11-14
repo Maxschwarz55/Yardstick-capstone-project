@@ -23,6 +23,16 @@ jobs:
           source: "."
           target: "/home/ubuntu/app"
 
+      - name: Sync files to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            rsync -avz --delete --exclude '.git' -e "ssh -i ${{ secrets.EC2_SSH_KEY }}" ./ ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/app
+
+
       # Pull latest code & restart Docker containers on EC2
       - name: Update Docker containers
         uses: appleboy/ssh-action@master
