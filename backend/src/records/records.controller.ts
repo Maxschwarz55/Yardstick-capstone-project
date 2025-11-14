@@ -17,9 +17,14 @@ export class RecordsController {
   async searchByName(
     @Query('first') first: string,
     @Query('last') last: string,
-    @Query('limit') limit = '10',
-    @Query('page') page = '1',
+    @Query('limit') limit: number = 10,
+    @Query('page') page: number = 1,
   ) {
-    return this.recordsService.searchByName(first ?? '', last ?? '', Number(limit), Number(page));
+    return this.recordsService.searchByName(
+      first ?? '',
+      last ?? '',
+      limit,
+      page,
+    );
   }
 }

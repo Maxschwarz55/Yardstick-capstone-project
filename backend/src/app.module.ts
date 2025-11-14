@@ -11,15 +11,15 @@ import config from './config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      validationSchema: Joi.object({
-        DATABASE_URL: Joi.string().uri().required(),
-        PORT: Joi.number().default(4000),
-        CORS_ORIGIN: Joi.string().default('http://localhost:3000'),
-      }),
-    }),
-    /*
+    // ConfigModule.forRoot({
+    //   envFilePath: ['../.env'],
+    //   isGlobal: true,
+    //   validationSchema: Joi.object({
+    //     DATABASE_URL: Joi.string().uri().required(),
+    //     DATABASE_PORT: Joi.number().default(4000),
+    //     CORS_ORIGIN: Joi.string().default('http://localhost:3000'),
+    //   }),
+    // }),
     ConfigModule.forRoot({
       load: [config],
       validationSchema: Joi.object({
@@ -34,23 +34,22 @@ import config from './config';
           'string.empty': 'DB_PWD is required',
         }),
         DB_USER: Joi.string().required().messages({
-          'string.base': 'DB_PWD must be a string',
-          'string.empty': 'DB_PWD is required',
+          'string.base': 'DB_USER must be a string',
+          'string.empty': 'DB_USER is required',
         }),
         DB_DB: Joi.string().required().messages({
-          'string.base': 'DB_PWD must be a string',
-          'string.empty': 'DB_PWD is required',
+          'string.base': 'DB_DB must be a string',
+          'string.empty': 'DB_DB is required',
         }),
+        NODE_ENV: Joi.string().default('production')
       }),
     }),
-    */
     ScheduleModule.forRoot(),
     JobModule,
     RecordsModule,
-    DiagnosticsModule
+    DiagnosticsModule,
   ],
   controllers: [WebAppController],
   providers: [],
 })
-
 export class AppModule {}
