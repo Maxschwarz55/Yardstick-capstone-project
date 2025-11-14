@@ -69,18 +69,22 @@ export default {
         ), '[]'::json),
 
         'aliases', COALESCE((
-          SELECT json_agg(row_to_json(al) ORDER BY al.last_name, al.first_name)
-          FROM ( SELECT first_name, middle_name, last_name FROM alias_name WHERE person_id = p.person_id ) al
-        ), '[]'::json),
+        SELECT json_agg(row_to_json(al) ORDER BY al.last_name, al.first_name)
+        FROM ( SELECT first_name, middle_name, last_name FROM alias_name WHERE person_id = p.person_id ) al
+      ), '[]'::json),
 
-        'vehicles', COALESCE((
-          SELECT json_agg(row_to_json(v) ORDER BY v.year NULLS LAST, v.make_model)
-          FROM ( SELECT plate_number, state, year, make_model, color FROM vehicle WHERE person_id = p.person_id ) v
-        ), '[]'::json)
-      ) AS person
-      FROM person p
-      WHERE p.offender_id = $1
-      LIMIT 1;
+      'vehicles', COALESCE((
+        SELECT json_agg(row_to_json(v) ORDER BY v.year NULLS LAST, v.plate_number)
+        FROM (
+          SELECT plate_number, state, year, color
+          FROM vehicle
+          WHERE person_id = p.person_id
+        ) v
+      ), '[]'::json)
+    ) AS person
+    FROM person p
+    WHERE p.offender_id = $1
+    LIMIT 1;
     `,
   dataSQL: `
       WITH matches AS (
@@ -164,10 +168,14 @@ export default {
           FROM ( SELECT first_name, middle_name, last_name FROM alias_name WHERE person_id = p.person_id ) al
         ), '[]'::json),
 
-        'vehicles', COALESCE((
-          SELECT json_agg(row_to_json(v) ORDER BY v.year NULLS LAST, v.make_model)
-          FROM ( SELECT plate_number, state, year, make_model, color FROM vehicle WHERE person_id = p.person_id ) v
-        ), '[]'::json)
+       'vehicles', COALESCE((
+        SELECT json_agg(row_to_json(v) ORDER BY v.year NULLS LAST, v.plate_number)
+        FROM (
+          SELECT plate_number, state, year, color
+          FROM vehicle
+          WHERE person_id = p.person_id
+        ) v
+      ), '[]'::json)
       ) AS person
       FROM matches m
       JOIN person p ON p.person_id = m.person_id;
