@@ -4,52 +4,83 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ScraperService {
-  private readonly INSERTER_PATH: string | undefined;
+  private readonly inserterPath: string;
+
   constructor(private configService: ConfigService) {
-    this.INSERTER_PATH = this.configService.get<string>('INSERTER_PATH');
+    const path = this.configService.get<string>('INSERTER_PATH');
+    if (!path) {
+      throw new Error('INSERTER_PATH env not set, see README.md for more');
+    }
+    this.inserterPath = path;
   }
 
   async runScraper(): Promise<any> {
-    const INSERTER_PATH: string | undefined =
-      this.configService.get<string>('INSERTER_PATH');
-
-    if (!INSERTER_PATH)
-      throw new Error('INSERTER_PATH env not set, see README.md for more');
-
     return new Promise((resolve, reject) => {
-      exec(`bash ${INSERTER_PATH}`, (error, stdout, stderr) => {
+      exec(`bash ${this.inserterPath}`, (error, stdout, stderr) => {
         if (error) {
-          console.error('Scraper failed:', stderr);
+          console.error('Scraper failed:', stderr || error.message);
           return reject(error);
         }
-        reject(new Error('Scraper failed'));
+
+        if (stderr) {
+          console.warn('Scraper stderr:', stderr);
+        }
+
+        // Try to parse JSON from the script output
+        try {
+          const parsed = JSON.parse(stdout);
+          return resolve(parsed);
+        } catch {
+          return resolve({ raw: stdout.trim() });
+        }
       });
     });
   }
 
-  async runScraperTest(): Promise<void> {
-    if (!this.INSERTER_PATH)
-      throw new Error('INSERTER_PATH env not set, see README.md for more');
-
+  async runScraperTest(): Promise<any> {
     return new Promise((resolve, reject) => {
-      exec(
-        `python3 ${this.INSERTER_PATH} Adam Jones`,
-        (error, stdout, stderr) => {
-          if (error) {
-            console.error('Scraper failed:', stderr);
-            return reject(error);
-          }
-          reject(new Error('Scraper failed'));
-        },
-      );
+      // ⬇⬇⬇ changed from `python3` to `bash`
+      exec(`bash ${this.inserterPath} "Adam" "Jones"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error('Scraper failed:', stderr || error.message);
+          return reject(error);
+        }
+
+        if (stderr) {
+          console.warn('Scraper stderr:', stderr);
+        }
+
+        try {
+          const parsed = JSON.parse(stdout);
+          return resolve(parsed);
+        } catch {
+          return resolve({ raw: stdout.trim() });
+        }
+      });
     });
   }
 
-  //placeholder
-  runScraperWithName(firstName: string, lastName: string) {
-    return {
-      firstName,
-      lastName,
-    };
+  // Example: run the script with arbitrary name
+  runScraperWithName(firstName: string, lastName: string): Promise<any> {
+    const fullName = `${firstName} ${lastName}`;
+    return new Promise((resolve, reject) => {
+      exec(`bash ${this.inserterPath} "${fullName}"`, (error, stdout, stderr) => {
+        if (error) {
+          console.error('Scraper failed:', stderr || error.message);
+          return reject(error);
+        }
+
+        if (stderr) {
+          console.warn('Scraper stderr:', stderr);
+        }
+
+        try {
+          const parsed = JSON.parse(stdout);
+          return resolve(parsed);
+        } catch {
+          return resolve({ raw: stdout.trim() });
+        }
+      });
+    });
   }
 }

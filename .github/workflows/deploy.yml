@@ -13,15 +13,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Copy repo to EC2
-      - name: Copy files to EC2
-        uses: appleboy/scp-action@master
+      - name: Sync files to EC2
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "."
-          target: "/home/ubuntu/app"
+          script: |
+            rsync -avz --delete --exclude '.git' -e "ssh -i ${{ secrets.EC2_SSH_KEY }}" ./ ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/app
+
 
       # Pull latest code & restart Docker containers on EC2
       - name: Update Docker containers
