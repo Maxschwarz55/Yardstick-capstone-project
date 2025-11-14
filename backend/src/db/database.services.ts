@@ -19,7 +19,9 @@ export const dbProviders: Provider[] = [
         password: configService.get<string>('db.pwd'),
         database: configService.get<string>('db.db'),
         entities: [Person],
-        ssl: ssl,
+        ssl: {
+    rejectUnauthorized: false,
+  },
       });
       try {
         await source.initialize();
