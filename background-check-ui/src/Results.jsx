@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./Results.css";
 import blankPhoto from "./Blank-Profile-Picture.webp";
 import SelfieUploader from "./SelfieUploader";
+import { getAiSummary } from './api';
+
 
 export default function Results() {
   const { state } = useLocation();
@@ -16,6 +18,11 @@ export default function Results() {
   const [error, setError] = useState("");
   const [uploadedSelfieKey, setUploadedSelfieKey] = useState(null);
   const [similarityResult, setSimilarityResult] = useState(null);
+  const [summary, setSummary] = useState('');
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState('');
+  const middleName = state?.middleName;
+
 
   const API = "http://localhost:4000";
 
@@ -90,6 +97,31 @@ export default function Results() {
     }
   }
 
+    // When we have a person, fetch the AI summary
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!person) return;
+      try {
+        setSummaryLoading(true);
+        setSummary('');
+        setSummaryError('');
+        // your record’s id field might be id or person_id — handle both
+        const pid = person.id ?? person.person_id;
+        if (!pid) return;
+        const ai = await getAiSummary(pid);
+        if (!cancelled) setSummary(ai.summary || "");
+      } catch (e) {
+        console.error("ai-summary failed:", e);
+        if (!cancelled) setSummaryError('AI summary failed');
+      } finally{
+          if (!cancelled) setSummaryLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [person]);
+
+
   if (loading) return <div className="results-page"><h1>Searching…</h1></div>;
   if (error) return (
     <div className="results-page">
@@ -128,16 +160,24 @@ export default function Results() {
           width="200"
           height="250"
         />
-        <div className="summary-box">
-          {"Do not hire: candidate has appeared in the New York Sex Offender Registry and is convicted of 3rd degree rape"}
-          {similarityResult && (
-            <div style={{marginTop:"8px"}}>
-              <strong>Match Score:</strong> {similarityResult.score}/10<br/>
-              <strong>Decision:</strong> {similarityResult.decision}
-            </div>
-          )}
-        </div>
+        <div className="summary-box" aria-live="polite" aria-busy={summaryLoading}>
+        {summaryLoading ? (
+          <div className="summary-skeleton">
+            <span className="spinner" aria-label="Loading" role="status"></span>
+            <div className="bar"></div>
+            <div className="bar"></div>
+            <div className="bar"></div>
+          </div>
+        ) : summary ? (
+          summary
+        ) : summaryError ? (
+          <span className="muted">{summaryError}</span>
+        ) : (
+          <span className="muted">AI summary not available</span>
+        )}
       </div>
+      </div>
+      
 
       {/* The rest of your sections remain unchanged */}
       <Section title="Description">
