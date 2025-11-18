@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Results from "./Results";
 import Diagnostics from "./Diagnostics";
+import SelfieUploader from "./SelfieUploader";
+
 
 
 function DOBPicker({ value, onChange }) {
@@ -41,6 +43,7 @@ function Home() {
   const [city, setCity] = useState("");
   const [stateAddr, setStateAddr] = useState("");
   const [zip, setZip] = useState("");
+  const [selfieKey, setSelfieKey] = useState(null);
 
   const navigate = useNavigate();
 
@@ -60,6 +63,7 @@ function Home() {
         city,
         state: stateAddr,
         zip,
+        selfieKey
       },
     });
   };
@@ -123,6 +127,9 @@ function Home() {
           value={zip}
           onChange={(e) => setZip(e.target.value)}
         />
+
+        <h3>Upload a Selfie</h3>
+        <SelfieUploader onUploadComplete={setSelfieKey} />
 
       </div>
 
