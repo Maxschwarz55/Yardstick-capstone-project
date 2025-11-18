@@ -22,3 +22,13 @@ jobs:
           target: "/mnt/backend/"
           overwrite: true  
           strip_components: 0
+          
+      - name: Reload systemd and restart service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH }}
+          script: |
+            sudo systemctl daemon-reload
+            sudo systemctl restart backend
