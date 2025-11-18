@@ -18,9 +18,9 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_SSH }}
           script: |
-            rsync -avz --delete --exclude '.git' -e "ssh -i ${{ secrets.EC2_SSH_KEY }}" ./ ubuntu@${{ secrets.EC2_HOST }}:/mnt/backend/Yardstick_capstone_project
+            rsync -avz --delete --exclude '.git' -e "ssh -i ${{ secrets.EC2_SSH }}" ./ ubuntu@${{ secrets.EC2_HOST }}:/mnt/backend/Yardstick_capstone_project
 
 
       # Pull latest code & restart Docker containers on EC2
