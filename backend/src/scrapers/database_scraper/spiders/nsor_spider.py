@@ -159,17 +159,48 @@ class NsorSpider(sc.Spider):
             return None
         
 
-        # Write offender_data_detailed to file
+        # Flatten the nested API response
+        flattened_detailed = {}
         if offender_data_detailed:
+            # Flatten generalInformation
+            if 'generalInformation' in offender_data_detailed:
+                flattened_detailed.update(offender_data_detailed['generalInformation'])
 
+            # Add addresses, photos, vehicles, identifyingMarks as lists
+            for key in ['addresses', 'photos', 'vehicles', 'identifyingMarks']:
+                if key in offender_data_detailed and offender_data_detailed[key]:
+                    flattened_detailed[key] = offender_data_detailed[key]
+
+            # Add offenderMapId
+            if 'offenderMapId' in offender_data_detailed:
+                flattened_detailed['offenderMapId'] = offender_data_detailed['offenderMapId']
+
+        # Merge API data with flattened detailed data
+        if flattened_detailed:
             full_offender_data = {
                 **offender_data,
-                **offender_data_detailed
+                **flattened_detailed
             }
         else:
             full_offender_data = {
                 **offender_data
             }
+
+        # Write debug data to JSON file
+        debug_data = {
+            'offender_data': offender_data,
+            'offender_data_detailed_flattened': flattened_detailed,
+            'full_offender_data': full_offender_data
+        }
+
+        # Append to debug file
+        debug_file = 'debug_por_state_scraper.json'
+        try:
+            with open(debug_file, 'a') as f:
+                f.write(json.dumps(debug_data, indent=2))
+                f.write('\n' + '='*80 + '\n')
+        except Exception as e:
+            print(f"Error writing debug file: {e}")
 
         insert_nsor_data(full_offender_data)
 
@@ -208,6 +239,21 @@ class NsorSpider(sc.Spider):
                 **offender_data
             }
 
+        # Write debug data to JSON file
+        debug_data = {
+            'offender_data': offender_data,
+            'offender_data_detailed_scraped': offender_data_detailed,
+            'full_offender_data': full_offender_data
+        }
+
+        # Append to debug file
+        debug_file = 'debug_coms_doc_scraper.json'
+        try:
+            with open(debug_file, 'a') as f:
+                f.write(json.dumps(debug_data, indent=2))
+                f.write('\n' + '='*80 + '\n')
+        except Exception as e:
+            print(f"Error writing debug file: {e}")
 
         insert_nsor_data(full_offender_data)
 
