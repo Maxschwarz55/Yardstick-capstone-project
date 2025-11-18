@@ -1,9 +1,9 @@
 name: GitHub to AWS EC2 Pipeline
 
 ##### Uncomment the 'on' section to trigger the workflow #####
-# on:
-#   push:
-#     branches: [ "feat/scraper-scheduling" ]
+on:
+  push:
+    branches: [ "main" ]
 
 jobs:
   deploy:
