@@ -19,6 +19,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH }}
           source: "./"
-          target: "/mnt/backend/Yardstick-capstone-project"
+          target: "/mnt/backend/"
           overwrite: true  
           strip_components: 0
