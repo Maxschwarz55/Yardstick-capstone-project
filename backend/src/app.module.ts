@@ -8,6 +8,7 @@ import { WebAppController } from './webapp/webapp.controller';
 import { RecordsModule } from './records/records.module';
 import { DiagnosticsModule } from './webapp/diagnostics/diagnostics.module';
 import config from './config';
+import { SummaryModule } from './summary/summary.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import config from './config';
     JobModule,
     RecordsModule,
     DiagnosticsModule,
+    SummaryModule,
   ],
   controllers: [WebAppController],
   providers: [],

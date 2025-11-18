@@ -91,7 +91,7 @@ class NsorSpider(sc.Spider):
                 headers=self.headers,
                 json=payload,
                 timeout=60,
-                impersonate="chrome124",
+                impersonate="chrome120",
                 verify=False
             )
             
@@ -131,7 +131,7 @@ class NsorSpider(sc.Spider):
 
         api_response = requests.get(
           api_url,
-          impersonate="chrome124",
+          impersonate="chrome120",
           timeout=30,
           verify=False
         )
