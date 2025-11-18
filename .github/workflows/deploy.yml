@@ -1,43 +1,24 @@
-name: GitHub to AWS EC2 Pipeline
+name: Deploy to EC2
 
-##### Uncomment the 'on' section to trigger the workflow #####
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
     steps:
-      # Checkout code in GitHub runner
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Sync files to EC2
-        uses: appleboy/ssh-action@master
+      
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH }}
-          script: |
-            rsync -avz --delete --exclude '.git' -e "ssh -i ${{ secrets.EC2_SSH }}" ./ ubuntu@${{ secrets.EC2_HOST }}:/mnt/backend/Yardstick_capstone_project
-
-
-      # Pull latest code & restart Docker containers on EC2
-      # - name: Update Docker containers
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST }}
-      #     username: ubuntu
-      #     key: ${{ secrets.EC2_SSH_KEY }}
-      #     script: |
-      #       cd /home/ubuntu/app # path on EC2 where your repo is deployed, CHANGE IF NEEDED
-      #       git pull origin main
-      #       docker-compose down
-      #       docker-compose up -d
-
-# Configure GitHub Secrets
-# In your repo Settings → Secrets → Actions, add:
-# EC2_HOST	(Public IP or DNS of your EC2 instance)
-# EC2_SSH_KEY	(Your private key for SSH to EC2)
-# Make sure your EC2 user (e.g., ubuntu) has the public key in ~/.ssh/authorized_keys
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "./"
+          target: "/mnt/backend/Yardstick_capstone_project"
+          rm: true  # removes files on target that aren't in source
+          strip_components: 0
