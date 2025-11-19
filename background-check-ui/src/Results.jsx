@@ -50,6 +50,12 @@ export default function Results() {
         const json = await res.json();
         const firstMatch = json?.data?.[0] ?? null;
         if (!cancelled) setPerson(firstMatch);
+
+        if(fistMatch?.photo_url){
+            const similarityRes = await fetch(`${API}/similarity/check`, {
+
+            });
+        }
       } catch (e) {
         if (!cancelled) setError(e.message ?? "Failed to fetch");
       } finally {

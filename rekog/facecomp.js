@@ -1,8 +1,8 @@
 // Load the SDK
 var AWS = require('aws-sdk');
 const bucket = 'yardstik-bucket' // the bucket name without s3://
-//const photo_source = 'patrick_1.jpeg' // path and the name of file
-const photo_source = 'adam_jones.jpeg' // path and the name of file
+const photo_source = 'patrick_1.jpeg' // path and the name of file
+//const photo_source = 'adam_jones.jpeg' // path and the name of file
 const photo_target = 'patrick_2.jpeg'
 
 var credentials = new AWS.SharedIniFileCredentials({ profile: 'default' });
