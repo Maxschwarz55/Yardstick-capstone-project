@@ -28,7 +28,7 @@ jobs:
         run: |
           cd backend
           npm install
-
+          
       - name: Build Backend
         run: |
           cd backend
@@ -41,6 +41,10 @@ jobs:
           mkdir -p bundle/backend
           cp -r background-check-ui/build/* bundle/background-check-ui/
           cp -r backend/dist/* bundle/backend/
+          cp -r backend/src/scrapers/database_scraper bundle/scrapers
+          python3 -m venv bundle/scrapers/venv
+          bundle/scrapers/venv/bin/pip install -r backend/src/scrapers/database_scraper/requirements.txt
+
           
       
       - name: Copy files to EC2
