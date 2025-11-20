@@ -55,7 +55,7 @@ export default function Results() {
         const firstMatch = json?.data?.[0] ?? null;
         if (!cancelled) setPerson(firstMatch);
 
-        if(fistMatch?.photo_url){
+        if(firstMatch?.photo_url){
             const similarityRes = await fetch(`${API}/similarity/check`, {
 
             });
