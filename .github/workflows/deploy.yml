@@ -33,6 +33,9 @@ jobs:
         run: |
           cd backend
           npm run build
+          cp -r ./src/scrapers/database_scraper ./dist/scrapers
+          python3 -m venv ./dist/scrapers/venv python3 -m venv ./dist/scrapers/venv
+          ./dist/scrapers/venv/bin/pip install -r ./dist/scrapers/database_scraper/requirements.txt
 
       - name: Bundle Frontend + Backend
         run: |
