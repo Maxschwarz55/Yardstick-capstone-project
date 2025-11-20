@@ -7,7 +7,9 @@ import { JobModule } from './jobs/jobs.module';
 import { WebAppController } from './webapp/webapp.controller';
 import { RecordsModule } from './records/records.module';
 import { DiagnosticsModule } from './webapp/diagnostics/diagnostics.module';
+import { SimilarityCheckModule } from './webapp/matcher/similarity_check.module';
 import config from './config';
+import { SummaryModule } from './summary/summary.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import config from './config';
     JobModule,
     RecordsModule,
     DiagnosticsModule,
+    SummaryModule,
+    SimilarityCheckModule,
   ],
   controllers: [WebAppController],
   providers: [],
