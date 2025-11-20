@@ -16,12 +16,12 @@ jobs:
 
       - name: Install Frontend Deps
         run: |
-          cd frontend
+          cd background-check-ui
           npm install
 
       - name: Build Frontend
         run: |
-          cd frontend
+          cd background-check-ui
           npm run build
 
       - name: Install Backend Deps
@@ -34,8 +34,13 @@ jobs:
           cd backend
           npm run build
 
-      - name: Bundle frontend-backend
+      - name: Bundle Frontend + Backend
         run: |
+          rm -rf bundle
+          mkdir -p bundle/background-check-ui
+          mkdir -p bundle/backend
+          cp -r frontend/dist/* bundle/background-check-ui/
+          cp -r backend/dist/* bundle/backend/
           
       
       - name: Copy files to EC2
