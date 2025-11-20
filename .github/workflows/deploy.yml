@@ -39,7 +39,7 @@ jobs:
           rm -rf bundle
           mkdir -p bundle/background-check-ui
           mkdir -p bundle/backend
-          cp -r frontend/dist/* bundle/background-check-ui/
+          cp -r background-check-ui/build/* bundle/background-check-ui/
           cp -r backend/dist/* bundle/backend/
           
       
