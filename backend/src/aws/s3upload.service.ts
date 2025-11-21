@@ -34,7 +34,7 @@ export class S3UploadService{
             throw new Error(`Failed to download mugshot: HTTP ${res.status}`);
         }
         const buffer = Buffer.from(await res.arrayBuffer());
-        //upload w/ key
+
         await this.s3
             .upload({
                 Bucket: this.bucket,
@@ -44,6 +44,6 @@ export class S3UploadService{
             })
             .promise();
 
-        return key;
+        return key;//s3 key for rekog
     }
 }

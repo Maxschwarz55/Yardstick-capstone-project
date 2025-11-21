@@ -3,10 +3,10 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 @Entity('person')
 export class Person {
   @PrimaryGeneratedColumn({ name: 'person_id' })
-  personId: number;
+  person_id: number;
 
   @Column({ type: 'text', nullable: true, name: 'offender_id' })
-  offenderId: string;
+  offender_id: string;
 
   @Column({ type: 'text', nullable: true, name: 'first_name' })
   firstName: string;
@@ -56,6 +56,9 @@ export class Person {
   @Column({ type: 'date', nullable: true, name: 'photo_date' })
   photoDate: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   photo_url: string;
+
+  @Column({ type: 'text', nullable: true })
+  photo_s3_key: string;
 }

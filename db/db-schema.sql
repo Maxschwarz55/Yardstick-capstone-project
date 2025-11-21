@@ -24,6 +24,7 @@ CREATE TABLE person (
     designation TEXT,
     photo_date TEXT,
     photo_url TEXT,
+    photo_s3_key TEXT,
     photo_type TEXT,
     offender_url TEXT,
     skin_tone TEXT,
