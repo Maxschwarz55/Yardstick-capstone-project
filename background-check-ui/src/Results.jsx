@@ -77,7 +77,7 @@ export default function Results() {
     }, [firstName, lastName, navigate, API]);
 
     async function runSimilarityCheck() {
-        if (!person) return;
+        if (!person.photo_s3_key) return;
         if (!selfieKey) return;
 
         const inputPerson = {
@@ -91,7 +91,7 @@ export default function Results() {
             first_name: person.first_name,
             last_name: person.last_name,
             dob: person.dob,
-            photo_s3_key: person.photo_url//TODO:
+            photo_s3_key: person.photo_s3_key
         };
 
         try {

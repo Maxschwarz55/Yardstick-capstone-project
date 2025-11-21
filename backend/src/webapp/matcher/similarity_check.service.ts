@@ -1,4 +1,5 @@
 import {Injectable} from '@nestjs/common';
+import { Person } from 'src/db/entities/Person';
 import { RekognitionService } from 'src/aws/rekognition.service';
 import {computeScore, matchDecision} from 'src/webapp/matcher/similarity_alg'
 
@@ -8,12 +9,12 @@ export class SimilarityCheckService{
 
     constructor(private readonly rekog: RekognitionService) {}
 
-    async checkSimilarity(inPerson: any, dbPerson: any){
-        const inName = inPerson?.photo_s3_key;
-        const dbName = dbPerson?.photo_s3_key;
+    async checkSimilarity(inPerson: Person, dbPerson: Person){
+        const inKey = inPerson?.photo_s3_key;
+        const dbKey = dbPerson?.photo_s3_key;
         let faceSimScore = 0;
-        if(inName && dbName){
-            faceSimScore = await this.rekog.compareFace(this.BUCKETNAME, inName, dbName);
+        if(inKey && dbKey){
+            faceSimScore = await this.rekog.compareFace(this.BUCKETNAME, inKey, dbKey);
         }
 
         const score = computeScore(inPerson, dbPerson, faceSimScore);
