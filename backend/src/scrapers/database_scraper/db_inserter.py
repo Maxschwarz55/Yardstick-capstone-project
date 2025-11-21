@@ -17,14 +17,11 @@ DB_CONFIG = {
     "port": int(os.getenv("DB_PORT"))
 }
 
-
 FIELD_MAPPINGS = {
-    #Person fields - API format
+    #Person fields - API format (nsopw-api.ojp.gov)
     'givenName': ('person', 'first_name'),
     'middleName': ('person', 'middle_name'),
     'surName': ('person', 'last_name'),
-    'firstName': ('person', 'first_name'),
-    'lastName': ('person', 'last_name'),
     'offenderUri': ('person', 'offender_url'),
     'age': ('person', 'age'),
     'gender': ('person', 'sex'),
@@ -32,12 +29,21 @@ FIELD_MAPPINGS = {
     'imageUri': ('person', 'photo_url'),
     'absconder': ('person', 'absconder'),
     'jurisdictionId': ('person', 'jurisdiction_id'),
+
+    #Person fields - API format (por.state.mn.us)
+    'firstName': ('person', 'first_name'),
+    'lastName': ('person', 'last_name'),
     'height': ('person', 'height'),
     'weight': ('person', 'weight'),
     'ethnicityDescription': ('person', 'ethnicity'),
     'eyeColorDesc': ('person', 'eyes'),
     'hairColorDesc': ('person', 'hair'),
     'raceDescription': ('person', 'race'),
+    'startDate': ('conviction', 'date_of_registration'),
+    'level3Offender': ('conviction', 'level_three_offender'),
+    'offenderSubStatus': ('conviction', 'offender_substatus'),
+
+    #Photo fields
     'photos': ('person', 'photo_url'),
     'photographDate': ('person', 'photo_date'),
     'photographType': ('person', 'photo_type'),
@@ -135,7 +141,9 @@ def insert_nsor_data(offender_data):
         def add_field(table, field, value):
             if table not in tables_data:
                 tables_data[table] = {}
-            if field not in tables_data[table] and value not in [None, '', []]:
+            # Allow overwriting if new value is more substantial (not None, '', or [])
+            # This allows scraped detailed data to overwrite sparse API data
+            if value not in [None, '', []]:
                 tables_data[table][field] = value
 
         if 'name' in offender_data and isinstance(offender_data['name'], dict):
@@ -151,6 +159,34 @@ def insert_nsor_data(offender_data):
 
         person_data = tables_data.get('person', {})
         if person_data:
+            # Check if person already exists based on first_name, last_name, and dob
+            # This prevents duplicate entries for the same person
+            check_fields = []
+            check_values = []
+
+            if 'first_name' in person_data and person_data['first_name']:
+                check_fields.append("first_name = %s")
+                check_values.append(person_data['first_name'])
+            if 'last_name' in person_data and person_data['last_name']:
+                check_fields.append("last_name = %s")
+                check_values.append(person_data['last_name'])
+            if 'dob' in person_data and person_data['dob']:
+                check_fields.append("dob = %s")
+                check_values.append(person_data['dob'])
+
+            # Only check for duplicates if we have at least first name, last name
+            if len(check_fields) >= 2:
+                check_query = f"SELECT person_id FROM person WHERE {' AND '.join(check_fields)}"
+                cursor.execute(check_query, check_values)
+                existing_person = cursor.fetchone()
+
+                if existing_person:
+                    person_id = existing_person[0]
+                    print(f"Person already exists with person_id {person_id}, skipping duplicate insertion")
+                    conn.commit()
+                    return person_id
+
+            # If no duplicate found, insert new person
             columns = ', '.join(person_data.keys())
             placeholders = ', '.join(['%s'] * len(person_data))
             query = f"INSERT INTO person ({columns}) VALUES ({placeholders}) RETURNING person_id"
@@ -159,6 +195,7 @@ def insert_nsor_data(offender_data):
         else:
             raise ValueError("No person data to insert")
 
+        # Handle locations from nsopw-api.ojp.gov format
         if 'locations' in offender_data and isinstance(offender_data['locations'], list):
             for location in offender_data['locations']:
                 address_data = {'person_id': person_id}
@@ -173,6 +210,54 @@ def insert_nsor_data(offender_data):
                     placeholders = ', '.join(['%s'] * len(address_data))
                     query = f"INSERT INTO address ({columns}) VALUES ({placeholders})"
                     cursor.execute(query, list(address_data.values()))
+
+        # Handle addresses from por.state.mn.us format
+        if 'addresses' in offender_data and isinstance(offender_data['addresses'], list):
+            for location in offender_data['addresses']:
+                address_data = {'person_id': person_id}
+                for key, value in location.items():
+                    if key in FIELD_MAPPINGS:
+                        table, field = FIELD_MAPPINGS[key]
+                        if table == 'address' and value not in [None, '', 0]:
+                            address_data[field] = value
+
+                if len(address_data) > 1:
+                    columns = ', '.join(address_data.keys())
+                    placeholders = ', '.join(['%s'] * len(address_data))
+                    query = f"INSERT INTO address ({columns}) VALUES ({placeholders})"
+                    cursor.execute(query, list(address_data.values()))
+
+        # Handle vehicles from por.state.mn.us format
+        if 'vehicles' in offender_data and isinstance(offender_data['vehicles'], list):
+            for vehicle in offender_data['vehicles']:
+                vehicle_data = {'person_id': person_id}
+                for key, value in vehicle.items():
+                    if key in FIELD_MAPPINGS:
+                        table, field = FIELD_MAPPINGS[key]
+                        if table == 'vehicle' and value not in [None, '', 0]:
+                            vehicle_data[field] = value
+
+                if len(vehicle_data) > 1:
+                    columns = ', '.join(vehicle_data.keys())
+                    placeholders = ', '.join(['%s'] * len(vehicle_data))
+                    query = f"INSERT INTO vehicle ({columns}) VALUES ({placeholders})"
+                    cursor.execute(query, list(vehicle_data.values()))
+
+        # Handle identifying marks (scars/marks/tattoos) from por.state.mn.us format
+        if 'identifyingMarks' in offender_data and isinstance(offender_data['identifyingMarks'], list):
+            for mark in offender_data['identifyingMarks']:
+                scar_data = {'person_id': person_id}
+                for key, value in mark.items():
+                    if key in FIELD_MAPPINGS:
+                        table, field = FIELD_MAPPINGS[key]
+                        if table == 'scar_mark' and value not in [None, '', 0]:
+                            scar_data[field] = value
+
+                if len(scar_data) > 1:
+                    columns = ', '.join(scar_data.keys())
+                    placeholders = ', '.join(['%s'] * len(scar_data))
+                    query = f"INSERT INTO scar_mark ({columns}) VALUES ({placeholders})"
+                    cursor.execute(query, list(scar_data.values()))
 
         if 'aliases' in offender_data and isinstance(offender_data['aliases'], list):
             for alias in offender_data['aliases']:

@@ -7,4 +7,5 @@ export default () => ({
     db: process.env.DB_DB,
   },
   node_env: process.env.NODE_ENV,
+  static_path: process.env.STATIC_PATH,
 });

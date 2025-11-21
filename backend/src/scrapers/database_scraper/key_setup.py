@@ -1,6 +1,6 @@
 import boto3
 import json
-from openai import OpenAI
+# from openai import OpenAI
 
 def get_openai_key():
     """Retrieve OpenAI key from AWS Secrets Manager"""

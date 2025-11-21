@@ -1,13 +1,13 @@
 // src/Diagnostics.jsx
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Diagnostics.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+//import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
 export default function Diagnostics() {
-  const location = useLocation();
+  //const location = useLocation();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);

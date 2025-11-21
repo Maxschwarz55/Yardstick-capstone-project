@@ -1,43 +1,75 @@
-name: GitHub to AWS EC2 Pipeline
+name: Deploy to EC2
 
-##### Uncomment the 'on' section to trigger the workflow #####
-# on:
-#   push:
-#     branches: [ "feat/scraper-scheduling" ]
+on:
+  push:
+    branches: [ main ]
 
 jobs:
   deploy:
+    name: Deploy
     runs-on: ubuntu-latest
+    environment: production
+    
     steps:
-      # Checkout code in GitHub runner
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Sync files to EC2
+      - name: Purge caches
+        run: |
+          pip cache purge
+          npm cache clean --force
+
+      - name: Install Frontend Deps
+        run: |
+          cd background-check-ui
+          npm install
+
+      - name: Build Frontend
+        run: |
+          cd background-check-ui
+          npm run build
+
+      - name: Install Backend Deps
+        run: |
+          cd backend
+          npm install
+          
+      - name: Build Backend
+        run: |
+          cd backend
+          npm run build
+
+      - name: Bundle Frontend + Backend
+        run: |
+          rm -rf bundle
+          mkdir -p bundle/background-check-ui
+          mkdir -p bundle/backend
+          cp -r background-check-ui/build/* bundle/background-check-ui/
+          cp -r backend/dist/* bundle/backend/
+          cp -r backend/src/scrapers/database_scraper bundle/scrapers
+          python3 -m venv bundle/scrapers/venv
+          bundle/scrapers/venv/bin/pip install -r backend/src/scrapers/database_scraper/requirements.txt
+
+          
+      
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH }}
+          source: "./"
+          target: "/mnt/backend/Yardstick-capstone-project"
+          overwrite: true  
+          strip_components: 0
+          debug: true
+          
+      - name: Reload systemd and restart service
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_SSH }}
           script: |
-            rsync -avz --delete --exclude '.git' -e "ssh -i ${{ secrets.EC2_SSH_KEY }}" ./ ubuntu@${{ secrets.EC2_HOST }}:/mnt/backend/Yardstick_capstone_project
-
-
-      # Pull latest code & restart Docker containers on EC2
-      # - name: Update Docker containers
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.EC2_HOST }}
-      #     username: ubuntu
-      #     key: ${{ secrets.EC2_SSH_KEY }}
-      #     script: |
-      #       cd /home/ubuntu/app # path on EC2 where your repo is deployed, CHANGE IF NEEDED
-      #       git pull origin main
-      #       docker-compose down
-      #       docker-compose up -d
-
-# Configure GitHub Secrets
-# In your repo Settings → Secrets → Actions, add:
-# EC2_HOST	(Public IP or DNS of your EC2 instance)
-# EC2_SSH_KEY	(Your private key for SSH to EC2)
-# Make sure your EC2 user (e.g., ubuntu) has the public key in ~/.ssh/authorized_keys
+            sudo systemctl daemon-reload
+            sudo systemctl restart backend
