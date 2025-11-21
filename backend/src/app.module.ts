@@ -1,14 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 // import { ScraperModule } from './scrapers/scraper.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import * as Joi from 'joi';
 import { ScheduleModule } from '@nestjs/schedule';
 import { JobModule } from './jobs/jobs.module';
 import { WebAppController } from './webapp/webapp.controller';
 import { RecordsModule } from './records/records.module';
 import { DiagnosticsModule } from './webapp/diagnostics/diagnostics.module';
+import { SimilarityCheckModule } from './webapp/matcher/similarity_check.module';
 import config from './config';
 import { SummaryModule } from './summary/summary.module';
+import { join } from 'path';
+import { ConfigService } from 'aws-sdk';
 
 @Module({
   imports: [
@@ -42,7 +46,12 @@ import { SummaryModule } from './summary/summary.module';
           'string.base': 'DB_DB must be a string',
           'string.empty': 'DB_DB is required',
         }),
-        NODE_ENV: Joi.string().default('production')
+        NODE_ENV: Joi.string().default('production'),
+        // backend/src/app.module
+        //assume prod
+        STATIC_PATH: Joi.string().default(
+          join(__dirname, '..', '..', 'bundle', 'background-check-ui'),
+        ),
       }),
     }),
     ScheduleModule.forRoot(),
@@ -50,6 +59,10 @@ import { SummaryModule } from './summary/summary.module';
     RecordsModule,
     DiagnosticsModule,
     SummaryModule,
+    SimilarityCheckModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'bundle', 'background-check-ui'),
+    }),
   ],
   controllers: [WebAppController],
   providers: [],

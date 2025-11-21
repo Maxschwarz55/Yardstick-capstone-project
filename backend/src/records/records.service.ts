@@ -27,7 +27,7 @@ export class RecordsService {
   ) {
     this.#manager = this.dataSource.manager;
   }
-  rdsCa = fs.readFileSync('rds-combined-ca-bundle.pem', 'utf8');
+  // rdsCa = fs.readFileSync('rds-combined-ca-bundle.pem', 'utf8');
   /*
     // private pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
