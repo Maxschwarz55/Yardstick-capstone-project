@@ -1,12 +1,14 @@
-
-import './App.css';
+import "./App.css";
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import Results from "./Results";
 import Diagnostics from "./Diagnostics";
 import SelfieUploader from "./SelfieUploader";
-
-
 
 function DOBPicker({ value, onChange }) {
   return (
@@ -18,17 +20,16 @@ function DOBPicker({ value, onChange }) {
   );
 }
 
-
-
 export default function App() {
   return (
-<Router>
-  <Routes>
-    <Route path="/" element={<Home />} />
-    <Route path="/results" element={<Results />} />
-    <Route path="/diagnostics" element={<Diagnostics />} /> {/* new route */}
-  </Routes>
-</Router>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/results" element={<Results />} />
+        <Route path="/diagnostics" element={<Diagnostics />} />{" "}
+        {/* new route */}
+      </Routes>
+    </Router>
   );
 }
 
@@ -63,18 +64,18 @@ function Home() {
         city,
         state: stateAddr,
         zip,
-        selfieKey
+        selfieKey,
       },
     });
   };
 
   return (
-    <div className="App container">
-      <h1 className='underline'>Background Check</h1>
+    <div className="text-zinc-100 flex justify-evenly align-start flex-col bg-zinc-900 min-h-screen p-lg">
+      <h1 className="text-3xl">Background Check</h1>
 
-      <div className="form">
-
+      <div className="flex flex-col py-lg2 justify-evenly px-md h-[500px]">
         <input
+          className="input-primary"
           type="text"
           placeholder="First Name"
           value={firstName}
@@ -130,16 +131,17 @@ function Home() {
 
         <h3>Upload a Selfie</h3>
         <SelfieUploader onUploadComplete={setSelfieKey} />
-
       </div>
 
-      <button className="btn" onClick={handleClick}>Run Search</button>
-      <button className="btn btn-secondary" onClick={() => navigate("/diagnostics")}>
+      <button className="btn" onClick={handleClick}>
+        Run Search
+      </button>
+      <button
+        className="btn btn-secondary"
+        onClick={() => navigate("/diagnostics")}
+      >
         Diagnostics
       </button>
     </div>
   );
 }
-
-
-

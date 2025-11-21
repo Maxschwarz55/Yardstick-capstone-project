@@ -14,3 +14,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@layer components {
+  .input-primary {
+    @apply bg-zinc-700 rounded-md w-1/3 h-lg px-sm2 py-md
+  }
+}
