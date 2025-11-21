@@ -49,7 +49,7 @@ export class ScraperService {
   async runScraperTest(): Promise<any> {
     return new Promise((resolve, reject) => {
       exec(
-        `source ${this.venvPath}/bin/activate && python3 ${this.inserterPath} `,
+        `${this.venvPath}/bin/python3 ${this.inserterPath} `,
         (error, stdout, stderr) => {
           if (error) {
             console.error('Scraper failed:', stderr || error.message);
