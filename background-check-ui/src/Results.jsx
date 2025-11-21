@@ -188,8 +188,107 @@ export default function Results() {
         {person.last_updated && <p>Last Updated: {fmt(person.last_updated)}</p>}
       </Section>
 
-      {/* ...keep all your other sections here as-is... */}
+    <Section title="Last Known Address">
+        <p>{formatPrimaryAddress(person.addresses)}</p>
+      </Section>
 
+      <Section title="All Addresses">
+        <List
+          data={person.addresses}
+          empty="None Reported"
+          render={(a,i)=>(
+            <li key={i}><strong>{a.type ?? "ADDR"}</strong>: {lineAddr(a)}</li>
+          )}
+        />
+      </Section>
+
+      <Section title="Current Convictions">
+        <List
+          data={person.convictions}
+          empty="No convictions"
+          render={(c,i)=>(
+            <li key={i} style={{marginBottom:8}}>
+              <div><strong>{c.title || "—"}</strong> {c.class ? `Class ${c.class}` : ""} {c.category ? `(${c.category})` : ""}</div>
+              {c.description && <div>{c.description}</div>}
+              <small>
+                PL {c.pl_section || "—"}{c.subsection ? `(${c.subsection})` : ""} | Counts: {c.counts ?? "—"} |
+                Crime: {fmt(c.date_of_crime)} | Convicted: {fmt(c.date_convicted)} |
+                Computer used: {bool(c.computer_used)} | Pornography involved: {bool(c.pornography_involved)}
+              </small>
+              {c.victim_sex_age && <div><small>Victim: {c.victim_sex_age}</small></div>}
+              {(c.arresting_agency || c.relationship_to_victim || c.weapon_used || c.force_used) && (
+                <div>
+                  <small>
+                    {c.arresting_agency ? `Arresting agency: ${c.arresting_agency}` : ""}
+                    {c.relationship_to_victim ? ` | Relationship: ${c.relationship_to_victim}` : ""}
+                    {c.weapon_used ? ` | Weapon: ${c.weapon_used}` : ""}
+                    {c.force_used ? ` | Force: ${c.force_used}` : ""}
+                  </small>
+                </div>
+              )}
+              {c.sentence_term || c.sentence_type ? (
+                <div><small>Sentence: {c.sentence_term || "—"} {c.sentence_type ? `(${c.sentence_type})` : ""}</small></div>
+              ) : null}
+            </li>
+          )}
+        />
+      </Section>
+
+      <Section title="Previous Conviction(s) Requiring Registration">
+        <List
+          data={person.previous_convictions}
+          empty="None Reported"
+          render={(pc,i)=> <li key={i}>{pc.title || "—"}</li>}
+        />
+      </Section>
+
+      <Section title="Supervising Agency Information">
+        <List
+          data={person.supervising_agencies}
+          empty="None Reported"
+          render={(sa,i)=> <li key={i}>{sa.agency_name || "—"}</li>}
+        />
+      </Section>
+
+      <Section title="Special Conditions of Supervision">
+        <List
+          data={person.special_conditions}
+          empty="None Reported"
+          render={(sc,i)=> <li key={i}>{sc.description || "—"}</li>}
+        />
+      </Section>
+
+      <Section title="Maximum Expiration Date/Post Release Supervision Date of Sentence">
+        <List
+          data={person.max_expiration_dates}
+          empty="None Reported"
+          render={(me,i)=> <li key={i}>{me.description || "—"}</li>}
+        />
+      </Section>
+
+      <Section title="Scars / Marks / Tattoos">
+        <List
+          data={person.scars_marks}
+          empty="None Reported"
+          render={(sm,i)=> <li key={i}>{sm.description || "—"}{sm.location ? ` — ${sm.location}` : ""}</li>}
+        />
+      </Section>
+
+      <Section title="Aliases / Additional Names">
+        <List
+          data={person.aliases}
+          empty="None Reported"
+          render={(x,i)=> <li key={i}>{[x.first_name, x.middle_name, x.last_name].filter(Boolean).join(" ")}</li>}
+        />
+      </Section>
+
+      <Section title="Vehicles">
+        <List
+          data={person.vehicles}
+          empty="None Reported"
+          render={(v,i)=> <li key={i}>{v.year || "—"} {v.make_model || ""} — {v.color || "—"} ({v.state || "—"} • {v.plate_number || "—"})</li>}
+        />
+      </Section>
       <button className="btn" onClick={()=>navigate("/")} style={{marginTop:16}}>Return</button>
     </div>
   );
