@@ -31,7 +31,7 @@ CREATE TABLE person (
     release_date TEXT,
     supervision_comments TEXT,
     absconder BOOLEAN,
-    jurisdiction_id TEXT
+    jurisdiction_id TEXT,
     mugshot_front_url TEXT,
     mugshot_side_url TEXT
 );
