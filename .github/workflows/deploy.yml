@@ -41,7 +41,7 @@ jobs:
 
       - name: Venv
         run: |
-          python3 -m venv backend/
+          python3 -m venv backend/venv
           backend/venv/bin/pip install -r backend/src/scrapers/database_scraper/requirements.txt
 
           
