@@ -39,16 +39,10 @@ jobs:
           cd backend
           npm run build
 
-      - name: Bundle Frontend + Backend
+      - name: Venv
         run: |
-          rm -rf bundle
-          mkdir -p bundle/background-check-ui
-          mkdir -p bundle/backend
-          cp -r background-check-ui/build/* bundle/background-check-ui/
-          cp -r backend/dist/* bundle/backend/
-          cp -r backend/src/scrapers/database_scraper bundle/scrapers
-          python3 -m venv bundle/scrapers/venv
-          bundle/scrapers/venv/bin/pip install -r backend/src/scrapers/database_scraper/requirements.txt
+          python3 -m venv backend/
+          backend/venv/bin/pip install -r backend/src/scrapers/database_scraper/requirements.txt
 
           
       
