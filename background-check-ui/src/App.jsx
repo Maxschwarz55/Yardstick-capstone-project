@@ -73,7 +73,7 @@ function Home() {
     <div className="text-zinc-100 flex justify-evenly align-start flex-col bg-zinc-900 min-h-screen p-lg">
       <h1 className="text-3xl">Background Check</h1>
 
-      <div className="flex flex-col py-lg2 justify-evenly px-md h-[500px]">
+      <div className="grid grid-cols-2 grid-rows- py-lg2 justify-evenly px-md h-[500px]">
         <input
           className="input-primary"
           type="text"
