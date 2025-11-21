@@ -17,6 +17,8 @@ class NsorSpider(sc.Spider):
     BASE_URL = "https://nsopw-api.ojp.gov/nsopw/v1/v1.0"
     SEARCH_ENDPOINT = f"{BASE_URL}/search"
     JURISDICTIONS_ENDPOINT = f"{BASE_URL}/jurisdictions/offline"
+    POR_STATE_PREFIX = "https://por.state.mn.us"
+    COMS_DOC_PREFIX = "https://coms.doc.state.mn.us"
 
     def __init__(self, zips: list, batch_size = 5, *args, **kwargs):
         super(NsorSpider, self).__init__(*args, **kwargs)
@@ -54,14 +56,12 @@ class NsorSpider(sc.Spider):
     def start_requests(self):
         offenders = self.query_zips()
 
-        por_state_prefix = "https://por.state.mn.us/"
-        coms_doc_prefix = "https://coms.doc.state.mn.us/"
 
         for offender in offenders:
             url = offender.get('offenderUri')
-            if por_state_prefix in url:
+            if self.POR_STATE_PREFIX in url:
                 self.scrape_api_response(url, offender)
-            elif coms_doc_prefix in url:
+            elif self.COMS_DOC_PREFIX in url:
                 yield sc.Request(
                   url,
                   callback=self.parse_offender_page,
@@ -159,23 +159,18 @@ class NsorSpider(sc.Spider):
             return None
         
 
-        # Flatten the nested API response
         flattened_detailed = {}
         if offender_data_detailed:
-            # Flatten generalInformation
             if 'generalInformation' in offender_data_detailed:
                 flattened_detailed.update(offender_data_detailed['generalInformation'])
 
-            # Add addresses, photos, vehicles, identifyingMarks as lists
             for key in ['addresses', 'photos', 'vehicles', 'identifyingMarks']:
                 if key in offender_data_detailed and offender_data_detailed[key]:
                     flattened_detailed[key] = offender_data_detailed[key]
 
-            # Add offenderMapId
             if 'offenderMapId' in offender_data_detailed:
                 flattened_detailed['offenderMapId'] = offender_data_detailed['offenderMapId']
 
-        # Merge API data with flattened detailed data
         if flattened_detailed:
             full_offender_data = {
                 **offender_data,
@@ -186,14 +181,12 @@ class NsorSpider(sc.Spider):
                 **offender_data
             }
 
-        # Write debug data to JSON file
         debug_data = {
             'offender_data': offender_data,
             'offender_data_detailed_flattened': flattened_detailed,
             'full_offender_data': full_offender_data
         }
 
-        # Append to debug file
         debug_file = 'debug_por_state_scraper.json'
         try:
             with open(debug_file, 'a') as f:
@@ -227,6 +220,24 @@ class NsorSpider(sc.Spider):
         ]
 
         offender_data_detailed = dict(zip(keys, values))
+
+        mugshot_elements = response.css('.mugshot')
+
+        if mugshot_elements:
+            mugshot_data = {}
+
+            for element in mugshot_elements:
+                src = element.css('::attr(src)').get()
+                alt = element.css('::attr(alt)').get()
+                if src and not src.startswith('http'):
+                    src = src.lstrip('/')
+                if src[:10] == "data:image":
+                    mugshot_data[alt] = src
+                else:
+                    mugshot_data[alt] = f"{self.COMS_DOC_PREFIX}/{src}" if src else None
+
+            offender_data_detailed['mugshots'] = mugshot_data
+
         offender_data_detailed = self.clean_scraped_data(offender_data_detailed)
 
         if offender_data_detailed:
@@ -239,14 +250,16 @@ class NsorSpider(sc.Spider):
                 **offender_data
             }
 
-        # Write debug data to JSON file
+        
+
         debug_data = {
             'offender_data': offender_data,
             'offender_data_detailed_scraped': offender_data_detailed,
             'full_offender_data': full_offender_data
         }
 
-        # Append to debug file
+
+
         debug_file = 'debug_coms_doc_scraper.json'
         try:
             with open(debug_file, 'a') as f:

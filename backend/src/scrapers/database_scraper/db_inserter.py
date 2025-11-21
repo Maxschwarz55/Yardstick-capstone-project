@@ -97,7 +97,12 @@ FIELD_MAPPINGS = {
     'color': ('vehicle', 'color'),
     'makeDescription': ('vehicle', 'make'),
     'modelDescription': ('vehicle', 'model'),
-    'vehicleYear': ('vehicle', 'year')
+    'vehicleYear': ('vehicle', 'year'),
+
+    #Mugshot fields
+    'Mugshot Front': ('mugshot', 'front_url'),
+    'Mugshot Side': ('mugshot', 'side_url')
+
 }
 
         
@@ -366,6 +371,14 @@ def insert_nsor_data(offender_data):
             query = f"INSERT INTO vehicle ({columns}) VALUES ({placeholders})"
             cursor.execute(query, list(vehicle_data.values()))
 
+        if 'mugshot' in tables_data:
+            mugshot_data = tables_data['mugshot']
+            mugshot_data['person_id'] = person_id
+            columns = ', '.join(mugshot_data.keys())
+            placeholders = ', '.join(['%s'] * len(mugshot_data))
+            query = f"INSERT INTO mugshot ({columns}) VALUES ({placeholders})"
+            cursor.execute(query, list(mugshot_data.values()))
+
         conn.commit()
         print(f"Data for person_id {person_id} inserted successfully!")
         return person_id
@@ -386,4 +399,3 @@ if __name__ == "__main__":
 
     first_name = sys.argv[1]
     last_name = sys.argv[2]
-    
