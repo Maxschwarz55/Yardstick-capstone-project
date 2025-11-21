@@ -32,6 +32,8 @@ CREATE TABLE person (
     supervision_comments TEXT,
     absconder BOOLEAN,
     jurisdiction_id TEXT
+    mugshot_front_url TEXT,
+    mugshot_side_url TEXT
 );
 
 -- =====================================================
@@ -181,6 +183,8 @@ CREATE TABLE vehicle (
     model VARCHAR(64),
     color VARCHAR(64) 
 );
+
+
 
 CREATE INDEX idx_address_person_id ON address(person_id);
 CREATE INDEX idx_conviction_person_id ON conviction(person_id);
