@@ -40,7 +40,7 @@ export class ScraperService {
   async runScraperTest(): Promise<any> {
     return new Promise((resolve, reject) => {
       // ⬇⬇⬇ changed from `python3` to `bash`
-      exec(`bash ${this.inserterPath} "Adam" "Jones"`, (error, stdout, stderr) => {
+      exec(`python3 ${this.inserterPath} `, (error, stdout, stderr) => {
         if (error) {
           console.error('Scraper failed:', stderr || error.message);
           return reject(error);
@@ -64,23 +64,26 @@ export class ScraperService {
   runScraperWithName(firstName: string, lastName: string): Promise<any> {
     const fullName = `${firstName} ${lastName}`;
     return new Promise((resolve, reject) => {
-      exec(`bash ${this.inserterPath} "${fullName}"`, (error, stdout, stderr) => {
-        if (error) {
-          console.error('Scraper failed:', stderr || error.message);
-          return reject(error);
-        }
+      exec(
+        `bash ${this.inserterPath} "${fullName}"`,
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error('Scraper failed:', stderr || error.message);
+            return reject(error);
+          }
 
-        if (stderr) {
-          console.warn('Scraper stderr:', stderr);
-        }
+          if (stderr) {
+            console.warn('Scraper stderr:', stderr);
+          }
 
-        try {
-          const parsed = JSON.parse(stdout);
-          return resolve(parsed);
-        } catch {
-          return resolve({ raw: stdout.trim() });
-        }
-      });
+          try {
+            const parsed = JSON.parse(stdout);
+            return resolve(parsed);
+          } catch {
+            return resolve({ raw: stdout.trim() });
+          }
+        },
+      );
     });
   }
 }
