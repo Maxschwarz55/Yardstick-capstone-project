@@ -6,7 +6,6 @@ import { ScraperService } from 'src/scrapers/scraper.service';
 export class JobService {
   constructor(private readonly scraperService: ScraperService) {}
   //TODO what's update freq of db?
-  //every minute
   @Cron('0 0 0 * * *')
   getNYData() {
     //TODO
