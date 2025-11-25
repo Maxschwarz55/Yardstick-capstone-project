@@ -1,6 +1,7 @@
 import re
 import scrapy as sc
 from scrapy.http import HtmlResponse
+from datetime import datetime
 
 
 class McroSpider(sc.Spider):
@@ -188,15 +189,80 @@ class McroSpider(sc.Spider):
             "fees": fees,
             "transactions": transactions,
         }
+    def clean_money(self, s: str) -> int:
+        """
+        Convert money text like '$1,234.56' to integer cents (123456).
 
- 
-    def clean_money(self, value: str) -> int:
+        Handles weird concatenated strings by:
+        - trying a simple direct parse first
+        - otherwise extracting all X.XX-looking groups with regex
+          and using the *last* one as the current balance.
         """
-        Convert a money string like '$123.45' into cents (12345).
+
+        if not s:
+            return 0
+
+        # Normalize basic junk
+        text = (
+            s.replace("\xa0", " ")  # non-breaking spaces
+             .replace(",", "")
+             .replace("$", "")
+             .strip()
+        )
+
+        # --- 1) Try the "normal" case: single number, at most one decimal point ---
+        if text.count(".") <= 1 and all(ch.isdigit() or ch in ".- " for ch in text):
+            try:
+                return int(round(float(text), 2) * 100)
+            except ValueError:
+                pass  # fall through to regex parsing
+
+        # --- 2) Weird concatenated case: pull out all dollar-looking groups ---
+        # e.g. "0.00203142008114...125.00125.00" -> ["0.00", "2031.42", ..., "125.00"]
+        matches = re.findall(r"-?\d+\.\d{2}", text)
+        if matches:
+            value = matches[-1]  # heuristic: last amount is the final/current balance
+            try:
+                return int(round(float(value), 2) * 100)
+            except ValueError:
+                pass
+
+        # --- 3) Last-resort: grab any integer-looking chunk and treat as dollars ---
+        ints = re.findall(r"\d+", text)
+        if ints:
+            try:
+                return int(ints[-1]) * 100
+            except ValueError:
+                pass
+
+        # --- 4) Give up, but don't crash the spider ---
+        self.logger.warning("clean_money: could not parse money from %r, returning 0", s)
+        return 0
+    
+    def clean_date(raw):
+        """Normalize weird MCRO date strings to a Python date object.
+
+        Handles:
+        - '09/16/2025'
+        - 'September 16, 2025'
+        - '09/16/2025 September 16, 2025'
         """
-        if not value:
-            return 0
-        cleaned = re.sub(r"[^\d.]", "", value)
-        if not cleaned:
-            return 0
-        return int(float(cleaned) * 100)
+        if raw is None:
+            return None
+
+        raw = raw.strip()
+        if not raw:
+            return None
+
+        # 1) Try to find an mm/dd/yyyy pattern
+        m = re.search(r"\d{2}/\d{2}/\d{4}", raw)
+        if m:
+            return datetime.strptime(m.group(0), "%m/%d/%Y").date()
+
+        # 2) Try to find a 'Month DD, YYYY' pattern
+        m = re.search(r"[A-Za-z]+ \d{1,2}, \d{4}", raw)
+        if m:
+            return datetime.strptime(m.group(0), "%B %d, %Y").date()
+
+        # 3) If nothing matches, blow up so you see what went wrong
+        raise ValueError(f"Unrecognized date format: {raw!r}")
