@@ -13,6 +13,7 @@ import config from './config';
 import { SummaryModule } from './summary/summary.module';
 import { join } from 'path';
 import { ConfigService } from 'aws-sdk';
+import { SelfieModule } from './webapp/matcher/selfie.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { ConfigService } from 'aws-sdk';
     DiagnosticsModule,
     SummaryModule,
     SimilarityCheckModule,
+    SelfieModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'bundle', 'background-check-ui'),
     }),

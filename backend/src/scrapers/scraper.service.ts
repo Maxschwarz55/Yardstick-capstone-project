@@ -22,32 +22,34 @@ export class ScraperService {
 
   async runScraper(): Promise<any> {
     return new Promise((resolve, reject) => {
-      exec(`bash ${this.inserterPath}`, (error, stdout, stderr) => {
-        if (error) {
-          console.error('Scraper failed:', stderr || error.message);
-          return reject(error);
-        }
+      exec(
+        `${this.venvPath}/bin/python3 && ${this.inserterPath}`,
+        (error, stdout, stderr) => {
+          if (error) {
+            console.error('Scraper failed:', stderr || error.message);
+            return reject(error);
+          }
 
-        if (stderr) {
-          console.warn('Scraper stderr:', stderr);
-        }
+          if (stderr) {
+            console.warn('Scraper stderr:', stderr);
+          }
 
-        // Try to parse JSON from the script output
-        try {
-          const parsed = JSON.parse(stdout);
-          return resolve(parsed);
-        } catch {
-          return resolve({ raw: stdout.trim() });
-        }
-      });
+          // Try to parse JSON from the script output
+          try {
+            const parsed = JSON.parse(stdout);
+            return resolve(parsed);
+          } catch {
+            return resolve({ raw: stdout.trim() });
+          }
+        },
+      );
     });
   }
 
   async runScraperTest(): Promise<any> {
     return new Promise((resolve, reject) => {
-      // ⬇⬇⬇ changed from `python3` to `bash`
       exec(
-        `source ${this.venvPath}/bin/activate && python3 ${this.inserterPath} `,
+        `${this.venvPath}/bin/python3 ${this.inserterPath} `,
         (error, stdout, stderr) => {
           if (error) {
             console.error('Scraper failed:', stderr || error.message);

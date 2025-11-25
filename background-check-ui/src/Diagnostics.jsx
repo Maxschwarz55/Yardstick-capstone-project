@@ -62,30 +62,12 @@ export default function Diagnostics() {
             <h2>Databases & Crawl Status</h2>
           </header>
           <div className="card-body">
-            <h3>NY Sex Offender Registry</h3>
+            <h3>Database Diagnostics</h3>
             <p>Total records in database: {num(totalPersons)}</p>
             <p>Last crawled: {lastCrawled}</p>
             <p>Next scheduled crawl: {nextScheduled}</p>
-            <p>Records added in last crawl: 15</p>
+            <p>Records added in last crawl: {num(zips[0].recordsAdded)}</p>
             <p>Records updated in last crawl: 7</p>
-            <p>Database last updated: 2025-10-10 </p>
-            
-            <h3>NY Criminal Records</h3>
-            <p>Total records in database: 438,529</p>
-            <p>Last crawled: 2025-10-11 14:25:12</p>
-            <p>Records added in last crawl: 13</p>
-            <p>Records updated in last crawl: 54</p>
-            <p>Database last updated: 2025-10-10 </p>
-            <p>Next scheduled crawl: 2025-10-21 10:00:00</p>
-
-
-            <h3>NY Civil Records</h3>
-            <p>Total records in database: 39,619</p>
-            <p>Last crawled: 2025-10-11 14:26:30</p>
-            <p>Records added in last crawl: 63</p>
-            <p>Records updated in last crawl: 29</p>
-            <p>Database last updated: 2025-10-09 </p>
-            <p>Next scheduled crawl: 2025-10-21 10:00:00</p>
 
 
 

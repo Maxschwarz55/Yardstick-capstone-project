@@ -70,7 +70,7 @@ function Home() {
 
   return (
     <div className="App container">
-      <h1>Background Check</h1>
+      <h1 className='underline'>Background Check</h1>
 
       <div className="form">
 

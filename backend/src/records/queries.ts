@@ -17,6 +17,7 @@ export default {
         'risk_level', p.risk_level,
         'designation', p.designation,
         'photo_date', p.photo_date,
+        'photo_s3_key', p.photo_s3_key,
 
         'addresses', COALESCE((
           SELECT json_agg(row_to_json(a) ORDER BY a.type)
@@ -112,6 +113,7 @@ export default {
         'risk_level', p.risk_level,
         'designation', p.designation,
         'photo_date', p.photo_date,
+        'photo_url', p.photo_url,
 
         'addresses', COALESCE((
           SELECT json_agg(row_to_json(a) ORDER BY a.type)
