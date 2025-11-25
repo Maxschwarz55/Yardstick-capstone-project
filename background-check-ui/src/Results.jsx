@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./Results.css";
 import blankPhoto from "./Blank-Profile-Picture.webp";
@@ -75,41 +75,50 @@ export default function Results() {
         return () => { cancelled = true; };
     }, [firstName, lastName, navigate, API]);
 
-    useEffect(() => {
-        if (!person.photo_s3_key) return;
+    const runSimilarityCheck = useCallback(async () => {
+        if (!person?.photo_s3_key) return;
         if (!selfieKey) return;
 
-        (async () => {
-            const inputPerson = {
-                first_name: person.first_name || "",
-                last_name: person.last_name || "",
-                dob: person.dob || "",
-                photo_s3_key: selfieKey
-            };
+        const inputPerson = {
+            first_name: person.first_name || "",
+            last_name: person.last_name || "",
+            dob: person.dob || "",
+            photo_s3_key: selfieKey
+        };
 
-            const dbPerson = {
-                first_name: person.first_name,
-                last_name: person.last_name,
-                dob: person.dob,
-                photo_s3_key: person.photo_s3_key
-            };
+        const dbPerson = {
+            first_name: person.first_name,
+            last_name: person.last_name,
+            dob: person.dob,
+            photo_s3_key: person.photo_s3_key
+        };
 
-            try {
-                const res = await fetch(`${API}/similarity/check`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        input_person: inputPerson,
-                        db_person: dbPerson
-                    })
-                });
-                const data = await res.json();
-                setSimilarityResult(data);
-            } catch (err) {
-                console.error("Similarity check failed", err);
-            }
-        })()
-    }, [person?.photo_s3_key, selfieKey, API]);
+        try {
+            const res = await fetch(`${API}/similarity/check`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ input_person: inputPerson, db_person: dbPerson })
+            });
+            const data = await res.json();
+            setSimilarityResult(data);
+        } catch (err) {
+            console.error("Similarity check failed", err);
+        }
+    }, [
+        person?.photo_s3_key,
+        person?.first_name,
+        person?.last_name,
+        person?.dob,
+        selfieKey,
+        API
+    ]);
+
+    useEffect(() => {
+        if (person?.photo_s3_key && selfieKey) {
+            runSimilarityCheck();
+        }
+    }, [runSimilarityCheck]);
+
 
     // When we have a person, fetch the AI summary
     useEffect(() => {
