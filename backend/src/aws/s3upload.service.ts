@@ -27,23 +27,29 @@ export class S3UploadService{
         }
     }
 
-    async uploadMugshotFromUrl(url: string, key: string): Promise<string>{
-        //download
-        const res = await fetch(url);
-        if (!res.ok){
-            throw new Error(`Failed to download mugshot: HTTP ${res.status}`);
-        }
-        const buffer = Buffer.from(await res.arrayBuffer());
+    async uploadMugshotFromUrl(url: string, key: string): Promise<string> {
+        try {
+            console.log('[S3UploadService] downloading mugshot:', url);
+            const res = await fetch(url);
+            if (!res.ok) {
+                throw new Error(`Failed to download mugshot: HTTP ${res.status}`);
+            }
+            const buffer = Buffer.from(await res.arrayBuffer());
 
-        await this.s3
-            .upload({
+            console.log('[S3UploadService] uploading to S3 bucket:', this.bucket, 'key:', key);
+            await this.s3.upload({
                 Bucket: this.bucket,
                 Key: key,
                 Body: buffer,
                 ContentType: 'image/jpeg',
-            })
-            .promise();
+            }).promise();
 
-        return key;//s3 key for rekog
+            console.log('[S3UploadService] upload success:', key);
+            return key;
+        } catch (err) {
+            console.error('[S3UploadService] upload failed for', url, err);
+            throw err;
+        }
     }
+
 }

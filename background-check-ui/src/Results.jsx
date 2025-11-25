@@ -76,8 +76,14 @@ export default function Results() {
     }, [firstName, lastName, navigate, API]);
 
     const runSimilarityCheck = useCallback(async () => {
-        if (!person?.photo_s3_key) return;
-        if (!selfieKey) return;
+        if (!person?.photo_s3_key) {
+            console.log("No person photo_s3_key, skipping similarity check");
+            return;
+        }
+        if (!selfieKey) {
+            console.log("No selfieKey, skipping similarity check");
+            return;
+        }
 
         const inputPerson = {
             first_name: person.first_name || "",
@@ -93,6 +99,8 @@ export default function Results() {
             photo_s3_key: person.photo_s3_key
         };
 
+        console.log("Running similarity check with:", { inputPerson, dbPerson });
+
         try {
             const res = await fetch(`${API}/similarity/check`, {
                 method: "POST",
@@ -100,6 +108,7 @@ export default function Results() {
                 body: JSON.stringify({ input_person: inputPerson, db_person: dbPerson })
             });
             const data = await res.json();
+            console.log("Similarity result data:", data);
             setSimilarityResult(data);
         } catch (err) {
             console.error("Similarity check failed", err);
@@ -114,10 +123,13 @@ export default function Results() {
     ]);
 
     useEffect(() => {
+        console.log("Person record:", person);
+        console.log("Person_s3_key:", person?.photo_s3_key);
+        console.log("SelfieKey:", selfieKey);
         if (person?.photo_s3_key && selfieKey) {
             runSimilarityCheck();
         }
-    }, [runSimilarityCheck]);
+    }, [person, person?.photo_s3_key, selfieKey,runSimilarityCheck]);
 
 
     // When we have a person, fetch the AI summary

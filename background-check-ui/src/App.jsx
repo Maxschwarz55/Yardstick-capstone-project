@@ -129,7 +129,9 @@ function Home() {
         />
 
         <h3>Upload a Selfie</h3>
-        <SelfieUploader onUploadComplete={setSelfieKey} />
+        <SelfieUploader 
+          personId={firstName && lastName ? `${firstName}-${lastName}` : null}
+          onUploadComplete={setSelfieKey} />
 
       </div>
 

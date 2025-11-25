@@ -66,38 +66,87 @@ export class RecordsService {
 */
   private readonly logger = new Logger(RecordsService.name);
 
+  // src/records/records.service.ts
   async getRecordById(offenderId: string): Promise<Error | Person> {
     const rows = await this.#manager.query<Person[]>(this.SQLqueries.getByID, [
       offenderId,
     ]);
-    if (!rows) return { error: 'Problem fetching data' };
-    if (rows.length === 0) return { error: 'No record found' };
-    return rows[0];
+
+    if (!rows || rows.length === 0) return { error: 'No record found' };
+
+    const person = rows[0];
+
+    // Normalize the URL and replace backslashes
+    const imageUrl = (
+      person.mugshot_front_url ||
+      person.mugshot_side_url ||
+      person.photo_url
+    )?.replace(/\\/g, '/');
+
+    console.log(`[getRecordById] person ${person.person_id} imageUrl:`, imageUrl);
+
+    if (imageUrl) {
+      const key = `mugshots/${person.person_id}.jpeg`;
+
+      try {
+        const exists = await this.s3upload.exists(key);
+        if (!exists) {
+          console.log(`[getRecordById] Uploading mugshot to S3: ${key}`);
+          await this.s3upload.uploadMugshotFromUrl(imageUrl, key);
+        } else {
+          console.log(`[getRecordById] Mugshot already exists in S3: ${key}`);
+        }
+        person.photo_s3_key = key;
+      } catch (err) {
+        console.error(`[getRecordById] Failed to upload mugshot for person ${person.person_id}:`, err);
+      }
+    } else {
+      console.log(`[getRecordById] No image URL found for person ${person.person_id}`);
+    }
+
+    return person;
   }
 
   async searchByName(first: string, last: string, limit = 10, page = 1) {
     const offset = (page - 1) * limit;
 
-    const dataSql = this.SQLqueries.dataSQL;
-
-    const countSql = this.SQLqueries.countSQL;
-
     const values = [`%${first}%`, `%${last}%`, limit, offset];
+
     const [dataRes, countRes] = await Promise.all([
-      this.#manager.query<DataRow[]>(dataSql, values),
-      this.#manager.query<CountRow[]>(countSql, [`%${first}%`, `%${last}%`]),
+      this.#manager.query<DataRow[]>(this.SQLqueries.dataSQL, values),
+      this.#manager.query<CountRow[]>(this.SQLqueries.countSQL, [`%${first}%`, `%${last}%`]),
     ]);
 
     const people = dataRes.map((r) => r.person);
-    for(const person of people){
-        if(!person.photo_url) continue;
-        const key = `mugshots/${person.person_id}.jpeg`;
 
+    for (const person of people) {
+      const imageUrl = (
+        person.mugshot_front_url ||
+        person.mugshot_side_url ||
+        person.photo_url
+      )?.replace(/\\/g, '/');
+
+      console.log(`Processing person ${person.person_id}, imageUrl:`, imageUrl);
+
+      if (!imageUrl) {
+        console.log(`No image URL, skipping S3 upload for person ${person.person_id}`);
+        continue;
+      }
+
+      const key = `mugshots/${person.person_id}.jpeg`;
+
+      try {
         const exists = await this.s3upload.exists(key);
         if (!exists) {
-            await this.s3upload.uploadMugshotFromUrl(person.photo_url, key);
+          console.log(`Uploading mugshot to S3: ${key}`);
+          await this.s3upload.uploadMugshotFromUrl(imageUrl, key);
+        } else {
+          console.log(`Mugshot already exists in S3: ${key}`);
         }
-        person.photo_s3_key = key; 
+        person.photo_s3_key = key;
+      } catch (err) {
+        console.error(`Failed to upload mugshot for person ${person.person_id}:`, err);
+      }
     }
 
     return {
@@ -107,4 +156,5 @@ export class RecordsService {
       total: countRes[0]?.total ?? 0,
     };
   }
+
 }
