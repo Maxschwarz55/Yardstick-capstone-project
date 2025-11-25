@@ -77,27 +77,23 @@ export default function Results() {
     }, [firstName, lastName, navigate, API]);
 
     const runSimilarityCheck = useCallback(async () => {
-        if (!person?.photo_s3_key) {
-            console.log("No person photo_s3_key, skipping similarity check");
-            return;
-        }
-        if (!selfieKey) {
-            console.log("No selfieKey, skipping similarity check");
+        if (!person) {
+            console.log("No person found, skipping similarity check");
             return;
         }
 
         const inputPerson = {
             first_name: firstName || "",
             last_name: lastName || "",
-            dob: dob || "",
-            photo_s3_key: selfieKey
+            dob: dob || null,
+            photo_s3_key: selfieKey || null
         };
 
         const dbPerson = {
             first_name: person.first_name,
             last_name: person.last_name,
             dob: person.dob,
-            photo_s3_key: person.photo_s3_key
+            photo_s3_key: person.photo_s3_key || null
         };
 
         console.log("Running similarity check with:", { inputPerson, dbPerson });
@@ -115,22 +111,20 @@ export default function Results() {
             console.error("Similarity check failed", err);
         }
     }, [
-        person?.photo_s3_key,
-        person?.first_name,
-        person?.last_name,
-        person?.dob,
         selfieKey,
-        API
+        API,
+        firstName,
+        lastName,
+        dob,
+        person
     ]);
 
     useEffect(() => {
         console.log("Person record:", person);
-        console.log("Photo_s3_key:", person?.photo_s3_key);
-        console.log("SelfieKey:", selfieKey);
-        if (person?.photo_s3_key && selfieKey) {
+        if (person) {
             runSimilarityCheck();
         }
-    }, [person, person?.photo_s3_key, selfieKey,runSimilarityCheck]);
+    }, [person, runSimilarityCheck]);
 
 
     // When we have a person, fetch the AI summary
@@ -143,8 +137,9 @@ export default function Results() {
                 setSummary('');
                 setSummaryError('');
                 // your record’s id field might be id or person_id — handle both
-                const pid = person.id ?? person.person_id;
+                const pid = person.person_id;
                 if (!pid) return;
+                console.log("Sending person_id =", pid);
                 const ai = await getAiSummary(pid);
                 if (!cancelled) setSummary(ai.summary || "");
             } catch (e) {
@@ -173,7 +168,7 @@ export default function Results() {
         </div>
     );
 
-    const photoSrc = person.mugshot_front_url || person.mugshot_side_url || person.photo_url || "Blank-Profile-Picture.webp";
+    const photoSrc = person.mugshot_front_url || person.mugshot_side_url || person.photo_url || blankPhoto;
 
     return (
         <div className="results-page">
@@ -205,9 +200,9 @@ export default function Results() {
                 </div>
             </div>
 
-            {selfieKey && similarityResult && (
+            {similarityResult && (
                 <Section title="Similarity Check">
-                    <p>Similarity Score: <strong>{similarityResult?.score ?? "—"} / 17 </strong></p>
+                    <p>Similarity Score: <strong>{similarityResult?.scoreBreakdown.total ?? "—"} / 12 </strong></p>
                     <p> Similarity Decision: <strong>{similarityResult?.decision ?? "—"}</strong></p>
                 </Section>
             )}

@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import { Person } from 'src/db/entities/Person';
 import { RekognitionService } from 'src/aws/rekognition.service';
-import {computeScore, matchDecision} from 'src/webapp/matcher/similarity_alg'
+import {computeScoreWithBreakdown, matchDecision} from 'src/webapp/matcher/similarity_alg'
 
 @Injectable()
 export class SimilarityCheckService{
@@ -17,14 +17,13 @@ export class SimilarityCheckService{
             console.log('[SimilarityCheck] Comparing faces', { inName, dbName, bucket: this.BUCKETNAME });
             try {
                 faceSimScore = await this.rekog.compareFace(this.BUCKETNAME, inName, dbName);
-                console.log('[SimilarityCheck] Face similarity score:', faceSimScore);
             } catch (err) {
                 console.error('[SimilarityCheck] Rekognition compareFace failed:', err);
                 throw err; 
             }
         }
-        const score = computeScore(inPerson, dbPerson, faceSimScore);
-        const decision = matchDecision(score, faceSimScore);
-        return {score, decision};
+        const scoreBreakdown = computeScoreWithBreakdown(inPerson, dbPerson, faceSimScore);
+        const decision = matchDecision(scoreBreakdown.total, faceSimScore);
+        return {scoreBreakdown, decision};
     }
 }
