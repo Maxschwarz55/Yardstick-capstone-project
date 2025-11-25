@@ -13,16 +13,8 @@ from scrapy import signals
 from scrapy.signalmanager import dispatcher
 from scrapy.utils.project import get_project_settings
 
-# 👇 adjust this import path to match your project structure
 from database_scraper.spiders.McroSpider import McroSpider
 
-# ---------------------------------------------------------
-# Env + DB_CONFIG
-# Make sure your .env has matching variable names.
-# Either:
-#   DB_USER / DB_PASSWORD / DB_NAME / DB_HOST / DB_PORT
-# or change these keys to DB_PWD / DB_DB, etc.
-# ---------------------------------------------------------
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
 
 DB_CONFIG = {

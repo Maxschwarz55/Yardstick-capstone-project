@@ -204,7 +204,7 @@ class McroSpider(sc.Spider):
 
         # Normalize basic junk
         text = (
-            s.replace("\xa0", " ")  # non-breaking spaces
+            s.replace("\xa0", " ")
              .replace(",", "")
              .replace("$", "")
              .strip()
@@ -215,7 +215,7 @@ class McroSpider(sc.Spider):
             try:
                 return int(round(float(text), 2) * 100)
             except ValueError:
-                pass  # fall through to regex parsing
+                pass
 
         # --- 2) Weird concatenated case: pull out all dollar-looking groups ---
         # e.g. "0.00203142008114...125.00125.00" -> ["0.00", "2031.42", ..., "125.00"]
