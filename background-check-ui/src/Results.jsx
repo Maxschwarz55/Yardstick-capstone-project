@@ -9,6 +9,7 @@ export default function Results() {
     const navigate = useNavigate();
     const firstName = state?.firstName;
     const lastName = state?.lastName;
+    const dob = state?.dob;
     const selfieKey = state?.selfieKey;
 
     const [loading, setLoading] = useState(true);
@@ -86,9 +87,9 @@ export default function Results() {
         }
 
         const inputPerson = {
-            first_name: person.first_name || "",
-            last_name: person.last_name || "",
-            dob: person.dob || "",
+            first_name: firstName || "",
+            last_name: lastName || "",
+            dob: dob || "",
             photo_s3_key: selfieKey
         };
 
@@ -124,7 +125,7 @@ export default function Results() {
 
     useEffect(() => {
         console.log("Person record:", person);
-        console.log("Person_s3_key:", person?.photo_s3_key);
+        console.log("Photo_s3_key:", person?.photo_s3_key);
         console.log("SelfieKey:", selfieKey);
         if (person?.photo_s3_key && selfieKey) {
             runSimilarityCheck();
@@ -172,7 +173,7 @@ export default function Results() {
         </div>
     );
 
-    const photoSrc = person.photo_url || "/adam_jones.png";
+    const photoSrc = person.mugshot_front_url || person.mugshot_side_url || person.photo_url || "Blank-Profile-Picture.webp";
 
     return (
         <div className="results-page">
@@ -206,8 +207,8 @@ export default function Results() {
 
             {selfieKey && similarityResult && (
                 <Section title="Similarity Check">
-                    <p>Similarity Score: <strong>{similarityResult?.score ?? "—"}</strong></p>
-                    <p>Status: {similarityResult?.status ?? "—"}</p>
+                    <p>Similarity Score: <strong>{similarityResult?.score ?? "—"} / 17 </strong></p>
+                    <p> Similarity Decision: <strong>{similarityResult?.decision ?? "—"}</strong></p>
                 </Section>
             )}
 

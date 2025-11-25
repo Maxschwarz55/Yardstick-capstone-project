@@ -14,11 +14,17 @@ export class SimilarityCheckService{
         const dbName = dbPerson?.photo_s3_key;
         let faceSimScore = 0;
         if(inName && dbName){
-            faceSimScore = await this.rekog.compareFace(this.BUCKETNAME, inName, dbName);
+            console.log('[SimilarityCheck] Comparing faces', { inName, dbName, bucket: this.BUCKETNAME });
+            try {
+                faceSimScore = await this.rekog.compareFace(this.BUCKETNAME, inName, dbName);
+                console.log('[SimilarityCheck] Face similarity score:', faceSimScore);
+            } catch (err) {
+                console.error('[SimilarityCheck] Rekognition compareFace failed:', err);
+                throw err; 
+            }
         }
-
         const score = computeScore(inPerson, dbPerson, faceSimScore);
-        const decision = matchDecision(score);
+        const decision = matchDecision(score, faceSimScore);
         return {score, decision};
     }
 }
