@@ -4,13 +4,14 @@ import { Repository, DataSource, EntityManager } from 'typeorm';
 import { Person } from 'src/db/entities/Person';
 import queries from './queries';
 import * as fs from 'fs';
+import { S3UploadService } from 'src/aws/s3upload.service';
 
 class Error {
   error: string;
 }
 
 interface DataRow {
-  person: object;
+  person: Person;
 }
 
 interface CountRow {
@@ -24,6 +25,7 @@ export class RecordsService {
     @Inject('RECORDS_QUERIES') private readonly SQLqueries: typeof queries,
     @Inject('PERSON_REPO') private readonly personRepo: Repository<Person>,
     @Inject('DATA_SOURCE') private readonly dataSource: DataSource,
+    private readonly s3upload: S3UploadService,
   ) {
     this.#manager = this.dataSource.manager;
   }
@@ -86,8 +88,20 @@ export class RecordsService {
       this.#manager.query<CountRow[]>(countSql, [`%${first}%`, `%${last}%`]),
     ]);
 
+    const people = dataRes.map((r) => r.person);
+    for(const person of people){
+        if(!person.photo_url) continue;
+        const key = `mugshots/${person.person_id}.jpeg`;
+
+        const exists = await this.s3upload.exists(key);
+        if (!exists) {
+            await this.s3upload.uploadMugshotFromUrl(person.photo_url, key);
+        }
+        person.photo_s3_key = key; 
+    }
+
     return {
-      data: dataRes.map((r) => r.person),
+      data: people,
       page,
       limit,
       total: countRes[0]?.total ?? 0,
