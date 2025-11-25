@@ -10,11 +10,11 @@ export class SimilarityCheckService{
     constructor(private readonly rekog: RekognitionService) {}
 
     async checkSimilarity(inPerson: Person, dbPerson: Person){
-        const inKey = inPerson?.photo_s3_key;
-        const dbKey = dbPerson?.photo_s3_key;
+        const inName = inPerson?.photo_s3_key;
+        const dbName = dbPerson?.photo_s3_key;
         let faceSimScore = 0;
-        if(inKey && dbKey){
-            faceSimScore = await this.rekog.compareFace(this.BUCKETNAME, inKey, dbKey);
+        if(inName && dbName){
+            faceSimScore = await this.rekog.compareFace(this.BUCKETNAME, inName, dbName);
         }
 
         const score = computeScore(inPerson, dbPerson, faceSimScore);

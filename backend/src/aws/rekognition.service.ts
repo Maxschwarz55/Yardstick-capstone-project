@@ -11,18 +11,18 @@ export class RekognitionService{
         this.client = new AWS.Rekognition();
     }
 
-    async compareFace(bucket: string, sourceKey: string, targetKey: string): Promise<number> {
+    async compareFace(bucket: string, sourceName : string, targetName: string): Promise<number> {
         const params: AWS.Rekognition.CompareFacesRequest = {
             SourceImage: {
                 S3Object: {
                     Bucket: bucket,
-                    Name: sourceKey
+                    Name: sourceName
                 },
             },
             TargetImage: {
                 S3Object: {
                     Bucket: bucket,
-                    Name: targetKey
+                    Name: targetName
                 },
             },
             SimilarityThreshold: 70,

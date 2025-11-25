@@ -10,6 +10,7 @@ import { DiagnosticsModule } from './webapp/diagnostics/diagnostics.module';
 import { SimilarityCheckModule } from './webapp/matcher/similarity_check.module';
 import config from './config';
 import { SummaryModule } from './summary/summary.module';
+import { SelfieModule } from './webapp/matcher/selfie.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { SummaryModule } from './summary/summary.module';
     DiagnosticsModule,
     SummaryModule,
     SimilarityCheckModule,
+    SelfieModule,
   ],
   controllers: [WebAppController],
   providers: [],

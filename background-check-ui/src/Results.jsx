@@ -112,7 +112,7 @@ export default function Results() {
 
     // run similarity when person loads & only if selfie uploaded
     useEffect(() => {
-        if (person && selfieKey) {
+        if (person.photo_s3_key && selfieKey) {
             runSimilarityCheck();
         }
     }, [person, selfieKey]);
