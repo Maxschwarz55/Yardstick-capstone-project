@@ -1,11 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { pool } from '../db';
 import OpenAI from 'openai';
-
-
+import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 
 const MODEL = process.env.OPENAI_MODEL ?? 'gpt-4.1-mini';
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY ?? '';
 
 type EventsAgg = Array<{
   id: number;
@@ -22,6 +20,24 @@ type RuleFlag = { code: string; reason: string };
 
 @Injectable()
 export class SummaryService {
+  private async getOpenAIKey(): Promise<string | null> {
+    try {
+      const secretName = "openai"; // AWS secret name
+      const region = "us-east-2";  // Your AWS region
+
+      const client = new SecretsManagerClient({ region });
+      const command = new GetSecretValueCommand({ SecretId: secretName });
+      const response = await client.send(command);
+
+      if (!response.SecretString) return null;
+
+      const secretDict = JSON.parse(response.SecretString);
+      return secretDict.openai_api_key || secretDict.api_key || secretDict.OPENAI_API_KEY || null;
+    } catch (err) {
+      console.warn("Could not fetch OpenAI key from AWS:", err);
+      return null;
+    }
+  }
   /** Build the model (or fallback) input from your existing schema */
   private async fetchInputs(personId: number) {
     const person = await pool.query(
@@ -162,7 +178,9 @@ async generateForPerson(personId: number) {
   }
 
   // If no key yet, return local summary so you can integrate UI
+  const OPENAI_API_KEY = await this.getOpenAIKey();
   if (!OPENAI_API_KEY) {
+    console.warn("OpenAI key missing, using local fallback");
     return this.buildLocalFallback(payload);
   }
 
@@ -217,7 +235,7 @@ async generateForPerson(personId: number) {
   ].join(' ');
 
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+const client = new OpenAI({ apiKey: OPENAI_API_KEY });
 
   
 const chat = await client.chat.completions.create({

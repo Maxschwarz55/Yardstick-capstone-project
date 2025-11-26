@@ -8,6 +8,7 @@ export interface ScoreBreakdown {
   lastNameScore: number;
   dobScore: number;
   addressScore: number;
+  selfieUploaded: boolean; 
 }
 
 function normalizeDob(dob?: string): string | null {
@@ -32,6 +33,7 @@ function normalizeDob(dob?: string): string | null {
  * Compute similarity score and provide breakdown
  */
 export function computeScoreWithBreakdown(inPerson, dbPerson, faceSimScore: number): ScoreBreakdown {
+  const selfieUploaded = !!inPerson.photo_s3_key;
   let breakdown: ScoreBreakdown = {
     total: 0,
     faceScore: 0,
@@ -40,6 +42,7 @@ export function computeScoreWithBreakdown(inPerson, dbPerson, faceSimScore: numb
     lastNameScore: 0,
     dobScore: 0,
     addressScore: 0,
+    selfieUploaded
   };
 
   // 1. Face similarity (0–5)
@@ -94,8 +97,10 @@ export function computeScoreWithBreakdown(inPerson, dbPerson, faceSimScore: numb
 /**
  * Decide match category
  */
-export function matchDecision(score: number, faceSimScore: number): string {
-  if (faceSimScore > 0 && faceSimScore < 40) return "Likely different person";
+export function matchDecision(score: number, faceSimScore: number, selfieUploaded: boolean): string {
+  if (selfieUploaded) {
+    if (faceSimScore < 40) return "Likely different person (based on the selfie)";
+  }
   if (score >= 7.5) return "Highly likely same person";
   if (score >= 6.5) return "Likely same person";
   if (score >= 2.5) return "Possible match";

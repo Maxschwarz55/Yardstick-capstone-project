@@ -1,25 +1,27 @@
+// backend/src/db.ts
 import { Pool } from 'pg';
-import 'dotenv/config'; // ensure .env is loaded
+import 'dotenv/config'; // make sure .env is loaded
 
-const raw =
-  process.env.YARDSTICK_DATABASE_URL ||
-  process.env.DATABASE_URL ||
-  'postgres://yardstick:yardstick@localhost:5432/yardstick';
+// Log DB info
+console.log('[DB] Connecting to PostgreSQL at', process.env.DB_HOST, 'database:', process.env.DB_DB);
 
-console.log('[DB] raw DATABASE_URL =', raw);
-
-const u = new URL(raw);
-
-// ✅ backend/src/db.ts
 export const pool = new Pool({
-  host: u.hostname,
-  port: Number(u.port || 5432),
-  user: decodeURIComponent(u.username),
-  password: String(decodeURIComponent(u.password)),
-  database: u.pathname.replace(/^\//, ''),
-  ssl: u.hostname.includes('rds.amazonaws.com')
-    ? { rejectUnauthorized: false }  // RDS (production)
-    : undefined,                     // Local Docker DB
+  host: process.env.DB_HOST,                     // e.g., RDS endpoint or localhost
+  port: Number(process.env.DB_PORT || 5432),    // default PostgreSQL port
+  user: process.env.DB_USER,                     // DB username
+  password: process.env.DB_PWD,                 // DB password
+  database: process.env.DB_DB,                   // DB name
+  ssl: process.env.DB_HOST?.includes('rds.amazonaws.com')
+    ? { rejectUnauthorized: false }             // RDS requires SSL
+    : undefined,                                // Local DB can skip SSL
 });
 
-
+// test connection on startup
+pool.connect()
+  .then(client => {
+    console.log('[DB] PostgreSQL connection successful');
+    client.release();
+  })
+  .catch(err => {
+    console.error('[DB] PostgreSQL connection error:', err);
+  });
