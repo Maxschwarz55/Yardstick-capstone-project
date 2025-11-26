@@ -99,7 +99,9 @@ export function computeScoreWithBreakdown(inPerson, dbPerson, faceSimScore: numb
  */
 export function matchDecision(score: number, faceSimScore: number, selfieUploaded: boolean): string {
   if (selfieUploaded) {
-    if (faceSimScore < 40) return "Likely different person (based on the selfie)";
+    if (faceSimScore < 50) return "Likely different person (based on the selfie)";
+    if (faceSimScore < 90 && faceSimScore >= 50) return "Possible match (based on the selfie)";
+    if (faceSimScore >= 90) return "Highly likely same person (based on the selfie)";
   }
   if (score >= 7.5) return "Highly likely same person";
   if (score >= 6.5) return "Likely same person";
