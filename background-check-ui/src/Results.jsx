@@ -19,7 +19,7 @@ export default function Results() {
     const [summary, setSummary] = useState('');
     const [summaryLoading, setSummaryLoading] = useState(false);
     const [summaryError, setSummaryError] = useState('');
-    //const middleName = state?.middleName;
+    const middleName = state?.middleName;
 
     const API = "http://localhost:4000";
 
@@ -85,6 +85,7 @@ export default function Results() {
         const inputPerson = {
             first_name: firstName || "",
             last_name: lastName || "",
+            middle_name: middleName || "",
             dob: dob || null,
             photo_s3_key: selfieKey || null
         };
@@ -92,6 +93,7 @@ export default function Results() {
         const dbPerson = {
             first_name: person.first_name,
             last_name: person.last_name,
+            middle_name: person.middle_name,
             dob: person.dob,
             photo_s3_key: person.photo_s3_key || null
         };
@@ -114,6 +116,7 @@ export default function Results() {
         selfieKey,
         API,
         firstName,
+        middleName,
         lastName,
         dob,
         person
