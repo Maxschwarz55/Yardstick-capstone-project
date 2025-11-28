@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import { Person } from 'src/db/entities/Person';
 import { RekognitionService } from 'src/aws/rekognition.service';
-import {computeScoreWithBreakdown, matchDecision} from 'src/webapp/matcher/similarity_alg'
+import {computeScoreWithBreakdown, matchDecision} from 'src/matcher/similarity_alg'
 
 @Injectable()
 export class SimilarityCheckService{

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SelfieController } from './selfie.controller';
 import { SelfieService } from './selfie.service';
-import { S3UploadService } from '../../aws/s3upload.service';
+import { S3UploadService } from '../aws/s3upload.service';
 
 @Module({
     controllers: [SelfieController],
