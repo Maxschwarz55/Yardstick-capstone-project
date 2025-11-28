@@ -7,7 +7,7 @@ const MODEL = process.env.OPENAI_MODEL ?? 'gpt-4.1-mini';
 
 type EventsAgg = Array<{
   id: number;
-  offense: string | null;
+  offense: string | null;9
   statute: string | null;
   disposition: string | null;
   event_date: string | null;
@@ -21,6 +21,10 @@ type RuleFlag = { code: string; reason: string };
 @Injectable()
 export class SummaryService {
   private async getOpenAIKey(): Promise<string | null> {
+    if (process.env.OPENAI_API_KEY) {
+      return process.env.OPENAI_API_KEY; //if there is key in .env use that
+    }
+
     try {
       const secretName = "openai"; // AWS secret name
       const region = "us-east-2";  // Your AWS region
