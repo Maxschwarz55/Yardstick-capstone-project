@@ -1,0 +1,1706 @@
+[
+  {
+    "name": {
+      "givenName": "JOSE",
+      "middleName": "JOAQUIN",
+      "surName": "ALVARADO"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=9533EFD6-E975-4965-8A79-F6F9B34A8D1E",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "PHOEBUS",
+      "middleName": "PHAETON",
+      "surName": "APOLLO"
+    },
+    "aliases": [
+      {
+        "givenName": "FRANCOIS",
+        "surName": "MADISON"
+      },
+      {
+        "givenName": "ARCHBISHOP",
+        "surName": "SHORTYMACNIFISENT"
+      },
+      {
+        "givenName": "FRANCOIS",
+        "middleName": "JAMES BEE",
+        "surName": "MADISON"
+      },
+      {
+        "givenName": "ARCHBISHOP",
+        "middleName": "KINGPIMP",
+        "surName": "SHORTYMACKNIFISENT"
+      },
+      {
+        "givenName": "FRANCOIS",
+        "middleName": "JAMES",
+        "surName": "MADISON"
+      },
+      {
+        "givenName": "FRANCOIS",
+        "middleName": "JAMESBEE",
+        "surName": "MADISON"
+      },
+      {
+        "givenName": "FRANCOIS",
+        "middleName": "J",
+        "surName": "MADISON"
+      }
+    ],
+    "gender": "M",
+    "dob": "1979-11-21T00:00:00",
+    "age": 46,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "2900 BLOCK OF BLOOMINGTON AVENUE",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=206754",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "DANIEL",
+      "surName": "AVILA"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=3E68E9C3-BCFC-4644-A9C9-93744568F1BD",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "ALBERTO",
+      "surName": "BANDOMO"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=70AB1B5E-0C39-4DBF-BBBF-238D37B21CFA",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "RHYAN",
+      "middleName": "GENE",
+      "surName": "BOGLE"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=AC848FB9-3438-437C-94EE-027941367A69",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "KENNETH",
+      "middleName": "HENRY",
+      "surName": "BROWN"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=380EA2D3-B6C5-41F9-9FE9-A16882E37513",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "TERRELL",
+      "middleName": "DONTE",
+      "surName": "BRYANT"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=AEF11BA4-430B-4E2D-9304-4E3DED303989",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "ROBERT",
+      "middleName": "LOUIS",
+      "surName": "CLARK"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=2C417816-E38A-4465-A3C6-C242B2D73F7D",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JARRELL",
+      "middleName": "WALTER",
+      "surName": "COLEMAN"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=B185372A-5F9D-49C6-9B1C-535A05375FAD",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "CORTEZ",
+      "middleName": "GARECUS",
+      "surName": "COOPER"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=CA9D5A08-D586-4215-A219-5B7A7887C0CC",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "WAYNE",
+      "middleName": "LEE",
+      "surName": "CUMMINGS"
+    },
+    "aliases": [
+      {
+        "givenName": "WAYNE",
+        "middleName": "LEE",
+        "surName": "CUMMINGS JR"
+      },
+      {
+        "givenName": "WAYNE",
+        "middleName": "LEE",
+        "surName": "CUMMINGS"
+      },
+      {
+        "givenName": "WAYNE",
+        "surName": "CUMMINGS"
+      }
+    ],
+    "gender": "M",
+    "dob": "1977-09-12T00:00:00",
+    "age": 48,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "3200 BLOCK OF DUPONT AVENUE SOUTH",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=230862",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "MARCUS",
+      "middleName": "ANTOINE",
+      "surName": "FLEMMING"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=BAFC6A04-0330-4631-B4D0-9FB3FED7EF0C",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "ROBIN",
+      "middleName": "CECIL",
+      "surName": "GARDNER"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=24D9D269-A689-4CE5-A812-58A66609423F",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "DESMOND",
+      "middleName": "DURELLE",
+      "surName": "GRAHAM"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=916A2D69-66AC-4798-8C04-05E849B0E254",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "GRANT",
+      "middleName": "JUNIOR",
+      "surName": "GRAYSON"
+    },
+    "aliases": [
+      {
+        "givenName": "GRANT",
+        "surName": "GRAYSON"
+      }
+    ],
+    "gender": "M",
+    "dob": "1967-05-06T00:00:00",
+    "age": 58,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "3100 BLOCK OF HENNEPIN AVENUE SOUTH",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=212882",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "SAMUEL",
+      "middleName": "LEE",
+      "surName": "GRIFFITH"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=F28A8159-1D17-4003-8D3C-5BF4BAF21993",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "MOHAMED",
+      "middleName": "ABDULLAHI",
+      "surName": "HOSH"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=AA8AC247-12BB-46D1-AC4A-18C249DDE0CD",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "LIBAN",
+      "middleName": "ALI",
+      "surName": "HUSSEIN"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=6EB63911-6488-4A56-85D9-3127D6837B81",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "FREDERICK",
+      "middleName": "JOSEPH",
+      "surName": "KENNEDY-HIPPCHEN"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=C7AD7270-A76B-4023-B455-3B4DE8CB553F",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "FREDERICK",
+      "middleName": "JOSEPH",
+      "surName": "KENNEDY-HIPPCHEN"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=C7AD7270-A76B-4023-B455-3B4DE8CB553F",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "EAGLE",
+      "middleName": "WIND",
+      "surName": "LAJEUNESSE"
+    },
+    "aliases": [],
+    "gender": "M",
+    "dob": "1988-05-07T00:00:00",
+    "age": 37,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "3400 BLOCK OF 1ST AVENUE SOUTH",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=254904",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "PAUL",
+      "middleName": "ERIC",
+      "surName": "LANE"
+    },
+    "aliases": [],
+    "gender": "M",
+    "dob": "1966-09-21T00:00:00",
+    "age": 59,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "3200 BLOCK OF DUPONT AVENUE SOUTH",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=220339",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "LEE",
+      "middleName": "ALEXANDER",
+      "surName": "LENOIR"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=ECCABAED-4C7E-4430-9B9D-E5E2DAA87205",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JUAN",
+      "middleName": "LUIS",
+      "surName": "LOPEZ-VALDEPENA"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=FECF5DA8-064F-4982-A35A-FD3FBA70BA17",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "RASHAD",
+      "middleName": "DEVON",
+      "surName": "MICKELSON"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=A7F2B255-644B-44C5-A2C1-6C67E161D3E5",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "ABDINASIR",
+      "middleName": "ALASOW",
+      "surName": "MOHAMED"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=4E0D6F78-FD20-4874-B49B-01CF92A91247",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "FLOYD",
+      "middleName": "GEORGE",
+      "surName": "MOOSE"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=4E617C57-F217-43D7-A512-314A46CE8DC2",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JOSEPH",
+      "middleName": "ROBERT",
+      "surName": "MORGAN"
+    },
+    "aliases": [
+      {
+        "givenName": "JOEY",
+        "middleName": "ROBERT",
+        "surName": "MORGAN"
+      },
+      {
+        "givenName": "JOSEPH",
+        "middleName": "ROBERT",
+        "surName": "MARGAN"
+      },
+      {
+        "givenName": "JOSEPH",
+        "middleName": "ROBERT-MORGAN",
+        "surName": "DEKART"
+      },
+      {
+        "givenName": "JOSEPH",
+        "middleName": "ROBERT MORGAN",
+        "surName": "DEKART"
+      },
+      {
+        "givenName": "JOSEPH",
+        "surName": "MORGAN"
+      },
+      {
+        "givenName": "JOSEPH",
+        "middleName": "DEKART",
+        "surName": "MORGAN"
+      },
+      {
+        "givenName": "JOSEPH",
+        "middleName": "ROBERT",
+        "surName": "DEKART"
+      },
+      {
+        "givenName": "JOSEPH",
+        "middleName": "R",
+        "surName": "MORGAN"
+      }
+    ],
+    "gender": "M",
+    "dob": "1977-11-07T00:00:00",
+    "age": 48,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "2700 BLOCK OF 15TH AVENUE SOUTH",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=203635",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JARROD",
+      "middleName": "EDWARD",
+      "surName": "MULLINS"
+    },
+    "aliases": [
+      {
+        "givenName": "JERROD",
+        "middleName": "EDWARD",
+        "surName": "MULLINS"
+      }
+    ],
+    "gender": "M",
+    "dob": "1980-06-08T00:00:00",
+    "age": 45,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "3100 BLOCK OF GARFIELD AVENUE SOUTH",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=210797",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "AARON",
+      "middleName": "DAVID",
+      "surName": "MURPHY"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=C432DFCD-6A51-454B-B7F5-356E4A9DDA00",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "STEVEN",
+      "middleName": "LEE",
+      "surName": "ODELIUS"
+    },
+    "aliases": [
+      {
+        "givenName": "STEVEN",
+        "middleName": "L",
+        "surName": "ODELIUS"
+      }
+    ],
+    "gender": "M",
+    "dob": "1966-05-29T00:00:00",
+    "age": 59,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "3500 BLOCK OF OAKLAND AVENUE",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=222946",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JERRY",
+      "middleName": "EVERETT",
+      "surName": "PAHL"
+    },
+    "aliases": [
+      {
+        "givenName": "JERRY",
+        "surName": "PAHL"
+      },
+      {
+        "givenName": "GERRY",
+        "surName": "PAHL"
+      },
+      {
+        "givenName": "JERRY",
+        "middleName": "EVERET",
+        "surName": "PAHL"
+      },
+      {
+        "givenName": "JERRY",
+        "surName": "PAUL"
+      }
+    ],
+    "gender": "M",
+    "dob": "1971-09-23T00:00:00",
+    "age": 54,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "2700 BLOCK OF BLOOMINGTON AVENUE",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=161023",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "WILLIE",
+      "surName": "PARKS"
+    },
+    "aliases": [
+      {
+        "givenName": "WILLIE",
+        "surName": "PARKS"
+      },
+      {
+        "givenName": "WILLIE-JR",
+        "surName": "PARKS"
+      },
+      {
+        "givenName": "BILL",
+        "surName": "PARKS"
+      },
+      {
+        "givenName": "WILLIE",
+        "surName": "PARKS JR"
+      },
+      {
+        "givenName": "WILLIE",
+        "middleName": "JR",
+        "surName": "PARKS"
+      }
+    ],
+    "gender": "M",
+    "dob": "1964-04-02T00:00:00",
+    "age": 61,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "2200 BLOCK OF EAST LAKE STREET",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=146312",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JAMES",
+      "middleName": "EARL",
+      "surName": "PATTERSON"
+    },
+    "aliases": [
+      {
+        "givenName": "JAMES",
+        "middleName": "EARL",
+        "surName": "PATTERSON"
+      },
+      {
+        "givenName": "BISHOP",
+        "middleName": "RAHEEM",
+        "surName": "SOLIDEEM"
+      },
+      {
+        "givenName": "ROBERT",
+        "middleName": "EUGENE",
+        "surName": "JACKSON"
+      },
+      {
+        "givenName": "TOM",
+        "middleName": "LEE",
+        "surName": "JACKSON"
+      },
+      {
+        "givenName": "BISHOP",
+        "surName": "PATTERSON"
+      },
+      {
+        "givenName": "JAMES",
+        "surName": "HILLS"
+      },
+      {
+        "givenName": "JAMES",
+        "surName": "HILL"
+      },
+      {
+        "givenName": "HIGHTOP",
+        "surName": "PATTERSON"
+      },
+      {
+        "givenName": "TYENAL",
+        "surName": "REEVES"
+      }
+    ],
+    "gender": "M",
+    "dob": "1971-04-14T00:00:00",
+    "age": 54,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "2800 BLOCK OF PARK AVENUE",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=142954",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "ISAIAH",
+      "middleName": "JAMES",
+      "surName": "PERO"
+    },
+    "aliases": [
+      {
+        "givenName": "ISAIAH",
+        "surName": "PERO"
+      },
+      {
+        "givenName": "ISIAH",
+        "middleName": "JAMES",
+        "surName": "PERO"
+      }
+    ],
+    "gender": "M",
+    "dob": "1984-02-03T00:00:00",
+    "age": 41,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "HOMELESS - VICINITY OF LAKE STREET AND HENNEPIN AVE",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=222071",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "BRANDEN",
+      "middleName": "LEE",
+      "surName": "POLLARD"
+    },
+    "aliases": [
+      {
+        "givenName": "BRANDEN",
+        "surName": "POLLARD"
+      },
+      {
+        "givenName": "BRANDON",
+        "middleName": "LEE",
+        "surName": "POLLARD"
+      }
+    ],
+    "gender": "M",
+    "dob": "1987-01-30T00:00:00",
+    "age": 38,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "2700 BLOCK OF BLOOMINGTON AVENUE",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=225471",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "FREDDIE",
+      "middleName": "JAMES",
+      "surName": "PREWITT"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=DF923EBA-5F9D-4E57-B7C1-95116AFD8106",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "SERGEY",
+      "middleName": "ANATOLYWITCH",
+      "surName": "REZNIKOV"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=F4B9C3D7-882B-4F76-B4F3-C351D7F4A4AA",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "LAYTON",
+      "middleName": "JOHN",
+      "surName": "ROBERTS"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=4C8F517E-46CA-405A-BBC8-3AED9396B984",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JESSE",
+      "middleName": "EDWARD",
+      "surName": "RODRIGUEZ"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=48124161-17BA-443B-A141-3BD79D9D6656",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "DAMON",
+      "middleName": "DEMETRIC",
+      "surName": "ROMAR"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=30DFE772-D2D5-494E-B102-FF074498F901",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "TORRANCE",
+      "middleName": "LEE",
+      "surName": "ROYSTER"
+    },
+    "aliases": [
+      {
+        "givenName": "MORRIS",
+        "middleName": "LEE",
+        "surName": "JORDAN"
+      },
+      {
+        "givenName": "MORRIS",
+        "surName": "JORDAN"
+      },
+      {
+        "givenName": "TORRANCE",
+        "surName": "ROYSTER"
+      },
+      {
+        "givenName": "TORRENCE",
+        "middleName": "LEE",
+        "surName": "ROYSTER"
+      },
+      {
+        "givenName": "JAYLEN",
+        "surName": "SHAW"
+      },
+      {
+        "givenName": "JORDAN",
+        "surName": "MORRIS"
+      },
+      {
+        "givenName": "DARON",
+        "surName": "HENDERSON"
+      },
+      {
+        "givenName": "MORRIS",
+        "middleName": "LEE",
+        "surName": "JORDON"
+      },
+      {
+        "givenName": "DEVEN",
+        "middleName": "LEE",
+        "surName": "JENKINS"
+      }
+    ],
+    "gender": "M",
+    "dob": "1980-12-22T00:00:00",
+    "age": 44,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "HOMELESS",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=212363",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JUAN",
+      "surName": "SANCHEZ-PALACIOS"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=8D82A282-4911-4C1B-ABA5-0546768DB6D1",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "CHRISTOPHER",
+      "middleName": "JOHN",
+      "surName": "SCHNEIDER"
+    },
+    "aliases": [
+      {
+        "givenName": "KRIS",
+        "surName": "SCHNEIDER"
+      }
+    ],
+    "gender": "M",
+    "dob": "1960-04-20T00:00:00",
+    "age": 65,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "2800 BLOCK OF PARK AVENUE",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=242669",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JUMOKE",
+      "middleName": "EDWARD",
+      "surName": "STEWART"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=170D8997-067A-45E0-BA2B-21606ADB75BE",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "CRAIG",
+      "middleName": "GEORGE",
+      "surName": "SUTHERLIN"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=FB6D5E42-9724-4E53-BA72-00AEDE80EB30",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "DEMETRIUS",
+      "middleName": "LAVELL",
+      "surName": "SYDNOR"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=7DDF55A5-425C-4B13-92AC-C639BDD7A8D3",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JUAN",
+      "middleName": "ACOSTA",
+      "surName": "TEJEDA"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=BE31034E-D449-41F6-96EB-1F9E94DC742B",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JHOBANI",
+      "surName": "TELLO GARCIA"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=8811E130-EF17-44AE-B267-52AE0E38ACB7",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JAMAR",
+      "middleName": "CLARENCE",
+      "surName": "THOMAS"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=427D0517-583E-4713-9539-F9197865746F",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JERRY",
+      "middleName": "BRYANT",
+      "surName": "THOMAS"
+    },
+    "aliases": [
+      {
+        "givenName": "LIL",
+        "middleName": "JERRY",
+        "surName": "THOMAS"
+      },
+      {
+        "givenName": "JERRY",
+        "surName": "THOMAS"
+      },
+      {
+        "givenName": "JERRY",
+        "middleName": "B",
+        "surName": "THOMAS"
+      },
+      {
+        "givenName": "JERRY",
+        "middleName": "N",
+        "surName": "THOMAS"
+      },
+      {
+        "givenName": "LIL-JERRY",
+        "surName": "THOMAS"
+      },
+      {
+        "givenName": "JERRY",
+        "middleName": "BRYANT",
+        "surName": "THOMAS"
+      }
+    ],
+    "gender": "M",
+    "dob": "1972-11-26T00:00:00",
+    "age": 53,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "2600 BLOCK OF COLUMBUS AVENUE",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=197696",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "GARY",
+      "middleName": "RAYMOND",
+      "surName": "TOMBERLIN"
+    },
+    "aliases": [
+      {
+        "givenName": "GARY",
+        "surName": "TOMBERLIN"
+      },
+      {
+        "givenName": "GARY",
+        "middleName": "R",
+        "surName": "TOMBERLIN"
+      }
+    ],
+    "gender": "M",
+    "dob": "1949-02-02T00:00:00",
+    "age": 76,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "3300 BLOCK OF NICOLLET AVENUE",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=131190",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "REGINALD",
+      "middleName": "BILLY",
+      "surName": "TURNER"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=A1EB249C-0EB4-4DD8-BD18-962C454F1A6B",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "MICHAEL",
+      "surName": "VAN BELT"
+    },
+    "aliases": [
+      {
+        "givenName": "MICHAEL",
+        "middleName": "JOHN",
+        "surName": "VANBELT"
+      },
+      {
+        "givenName": "MICHAEL",
+        "middleName": "VAN",
+        "surName": "BELT"
+      },
+      {
+        "givenName": "MICHAEL",
+        "surName": "VAN BELT"
+      },
+      {
+        "givenName": "MICHAEL",
+        "middleName": "BELT",
+        "surName": "VAN"
+      },
+      {
+        "givenName": "MICHAEL",
+        "middleName": "VAN",
+        "surName": "BELT"
+      },
+      {
+        "givenName": "MICHAEL",
+        "surName": "VANBELT"
+      },
+      {
+        "givenName": "MICHAEL",
+        "surName": "BELT"
+      }
+    ],
+    "gender": "M",
+    "dob": "1976-06-29T00:00:00",
+    "age": 49,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "VICINITY OF 1ST AVENUE SOUTH AND EAST 34TH STREET",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=190329",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "AARON",
+      "middleName": "LACHON",
+      "surName": "WASHINGTON"
+    },
+    "aliases": [
+      {
+        "givenName": "AARON",
+        "middleName": "LEE",
+        "surName": "WASHINGTON"
+      }
+    ],
+    "gender": "M",
+    "dob": "1961-09-06T00:00:00",
+    "age": 64,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "200 BLOCK OF EAST 36TH STREET",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=185583",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "JAMES",
+      "middleName": "CARROLL",
+      "surName": "WATKINS"
+    },
+    "aliases": [
+      {
+        "givenName": "JAMES",
+        "middleName": "CAROLL",
+        "surName": "WATKINS"
+      },
+      {
+        "givenName": "JAMES",
+        "middleName": "EDWARD",
+        "surName": "CANNON"
+      },
+      {
+        "givenName": "JAMES",
+        "surName": "WATKINS"
+      },
+      {
+        "givenName": "JAMES",
+        "middleName": "C",
+        "surName": "WATKINS"
+      },
+      {
+        "givenName": "JAMES",
+        "middleName": "ED",
+        "surName": "CANNON"
+      }
+    ],
+    "gender": "M",
+    "dob": "1947-05-31T00:00:00",
+    "age": 78,
+    "locations": [
+      {
+        "type": "RESIDENTIAL",
+        "streetAddress": "2700 BLOCK OF CEDAR AVENUE SOUTH",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55407",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://coms.doc.state.mn.us/PublicRegistrantSearch?oid=131834",
+    "imageUri": "",
+    "absconder": false,
+    "jurisdictionId": "MN"
+  },
+  {
+    "name": {
+      "givenName": "HEATHER",
+      "middleName": "DANIELLE",
+      "surName": "WILSON"
+    },
+    "aliases": [],
+    "locations": [
+      {
+        "type": "R",
+        "city": "MINNEAPOLIS",
+        "county": "HENNEPIN",
+        "state": "MN",
+        "zipCode": "55408",
+        "latitude": 0,
+        "longitude": 0
+      }
+    ],
+    "offenderUri": "https://por.state.mn.us/OffenderDetails.html?offenderMapId=81980CCC-8B7B-49D2-8CA0-BF6136E139E5",
+    "imageUri": null,
+    "jurisdictionId": "MN"
+  }
+]
