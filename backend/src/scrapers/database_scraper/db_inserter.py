@@ -11,8 +11,8 @@ load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '..', '.env'))
 
 DB_CONFIG = {
     "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "database": os.getenv("DB_NAME"),
+    "password": os.getenv("DB_PWD"),
+    "database": os.getenv("DB_DB"),
     "host": os.getenv("DB_HOST"),
     "port": int(os.getenv("DB_PORT"))
 }
@@ -136,6 +136,7 @@ def run_spider(offender_data: dict):
         return spider_instance.result
     return None
 
+
 def insert_nsor_data(offender_data):
     conn = psycopg2.connect(**DB_CONFIG)
     cursor = conn.cursor()
@@ -166,22 +167,29 @@ def insert_nsor_data(offender_data):
         if person_data:
             # Check if person already exists based on first_name, last_name, and dob
             # This prevents duplicate entries for the same person
+            #TODO use person matching algo
             check_fields = []
             check_values = []
+            first_name_exists = False
+            last_name_exists = False
 
             if 'first_name' in person_data and person_data['first_name']:
                 check_fields.append("first_name = %s")
                 check_values.append(person_data['first_name'])
+                first_name_exists = True
             if 'last_name' in person_data and person_data['last_name']:
                 check_fields.append("last_name = %s")
                 check_values.append(person_data['last_name'])
+                last_name_exists = True
             if 'dob' in person_data and person_data['dob']:
                 check_fields.append("dob = %s")
                 check_values.append(person_data['dob'])
 
             # Only check for duplicates if we have at least first name, last name
-            if len(check_fields) >= 2:
+            if len(check_fields) >= 2 and first_name_exists and last_name_exists:
                 check_query = f"SELECT person_id FROM person WHERE {' AND '.join(check_fields)}"
+                print(check_query)
+                print(check_values)
                 cursor.execute(check_query, check_values)
                 existing_person = cursor.fetchone()
 

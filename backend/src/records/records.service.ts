@@ -3,7 +3,6 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Repository, DataSource, EntityManager } from 'typeorm';
 import { Person } from 'src/db/entities/Person';
 import queries from './queries';
-import * as fs from 'fs';
 import { S3UploadService } from 'src/aws/s3upload.service';
 
 class Error {
@@ -83,7 +82,10 @@ export class RecordsService {
       person.photo_url
     )?.replace(/\\/g, '/');
 
-    console.log(`[getRecordById] person ${person.person_id} imageUrl:`, imageUrl);
+    console.log(
+      `[getRecordById] person ${person.person_id} imageUrl:`,
+      imageUrl,
+    );
 
     if (imageUrl) {
       const key = `mugshots/${person.person_id}.jpeg`;
@@ -98,10 +100,15 @@ export class RecordsService {
         }
         person.photo_s3_key = key;
       } catch (err) {
-        console.error(`[getRecordById] Failed to upload mugshot for person ${person.person_id}:`, err);
+        console.error(
+          `[getRecordById] Failed to upload mugshot for person ${person.person_id}:`,
+          err,
+        );
       }
     } else {
-      console.log(`[getRecordById] No image URL found for person ${person.person_id}`);
+      console.log(
+        `[getRecordById] No image URL found for person ${person.person_id}`,
+      );
     }
 
     return person;
@@ -114,7 +121,10 @@ export class RecordsService {
 
     const [dataRes, countRes] = await Promise.all([
       this.#manager.query<DataRow[]>(this.SQLqueries.dataSQL, values),
-      this.#manager.query<CountRow[]>(this.SQLqueries.countSQL, [`%${first}%`, `%${last}%`]),
+      this.#manager.query<CountRow[]>(this.SQLqueries.countSQL, [
+        `%${first}%`,
+        `%${last}%`,
+      ]),
     ]);
 
     const people = dataRes.map((r) => r.person);
@@ -129,7 +139,9 @@ export class RecordsService {
       console.log(`Processing person ${person.person_id}, imageUrl:`, imageUrl);
 
       if (!imageUrl) {
-        console.log(`No image URL, skipping S3 upload for person ${person.person_id}`);
+        console.log(
+          `No image URL, skipping S3 upload for person ${person.person_id}`,
+        );
         continue;
       }
 
@@ -145,7 +157,10 @@ export class RecordsService {
         }
         person.photo_s3_key = key;
       } catch (err) {
-        console.error(`Failed to upload mugshot for person ${person.person_id}:`, err);
+        console.error(
+          `Failed to upload mugshot for person ${person.person_id}:`,
+          err,
+        );
       }
     }
 
@@ -156,5 +171,4 @@ export class RecordsService {
       total: countRes[0]?.total ?? 0,
     };
   }
-
 }

@@ -1,10 +1,10 @@
 import json
 from curl_cffi import requests
-import time
-import random
+from datetime import datetime
 import scrapy as sc
 from scrapy.http import HtmlResponse
 from scrapy.crawler import CrawlerProcess
+from crawl_row import CrawlRow
 import re
 import sys
 import os
@@ -30,7 +30,10 @@ class NsorSpider(sc.Spider):
                     raise ValueError(f"Zips must contain only digits: {zip_code}")
 
         self.zips = zips
-
+        #TODO set up initial values
+            #get initial total records
+        self.zip_rows = {zip_code: [CrawlRow(zip_code, None, None, None, 0, None, )] for zip_code in zips}
+    #   'SELECT COUNT(*)::INT AS count FROM person',
         if batch_size > 5:
             raise ValueError("Batch size must be less than 5")
         else:
@@ -56,19 +59,19 @@ class NsorSpider(sc.Spider):
     def start_requests(self):
         offenders = self.query_zips()
 
-
         for offender in offenders:
-            url = offender.get('offenderUri')
-            if self.POR_STATE_PREFIX in url:
-                self.scrape_api_response(url, offender)
-            elif self.COMS_DOC_PREFIX in url:
-                yield sc.Request(
-                  url,
-                  callback=self.parse_offender_page,
-                  meta={'api_data': offender}
-                )
-            else:
-                print("Error: Offender URL does not match specified prefixes")
+            for offender in offenders:
+                url = offender.get('offenderUri')
+                if self.POR_STATE_PREFIX in url:
+                    self.scrape_api_response(url, offender)
+                elif self.COMS_DOC_PREFIX in url:
+                    yield sc.Request(
+                    url,
+                    callback=self.parse_offender_page,
+                    meta={'api_data': offender}
+                    )
+                else:
+                    print("Error: Offender URL does not match specified prefixes")
 
 
     
@@ -115,11 +118,16 @@ class NsorSpider(sc.Spider):
             except Exception as e:
                 print(f"Error: Exception {e}")
                 return None
-            
+
+        #group offenders by zip for diagnostics
+        for offender in all_offenders:
+            for location in offender["locations"]:
+                self.zip_rows[location["zipCode"]].append(offender)
+
         return all_offenders
     
     def scrape_api_response(self, url, offender_data):
-        
+        print(offender_data) 
         match = re.search(r'offenderMapId=([A-F0-9-]+)', url, re.IGNORECASE)
         if not match:
             print(f"Error: Could not extract offenderMapId from {url}")
@@ -195,7 +203,11 @@ class NsorSpider(sc.Spider):
         except Exception as e:
             print(f"Error writing debug file: {e}")
 
-        insert_nsor_data(full_offender_data)
+        try:
+            #TODO update diagnostics data
+            insert_nsor_data(full_offender_data)
+        except:
+           print("Error inserting row") 
 
     def clean_scraped_data(self, raw_data: dict) -> dict:
         cleaned = {}
