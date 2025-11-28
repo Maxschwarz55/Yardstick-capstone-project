@@ -12,7 +12,6 @@ import { SimilarityCheckModule } from './matcher/similarity_check.module';
 import config from './config';
 import { SummaryModule } from './summary/summary.module';
 import { join } from 'path';
-import { ConfigService } from 'aws-sdk';
 import { SelfieModule } from './matcher/selfie.module';
 
 @Module({
@@ -64,7 +63,14 @@ import { SelfieModule } from './matcher/selfie.module';
     SelfieModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'bundle', 'background-check-ui'),
-      exclude: ["/summary/*", "records/*", "/ai-summary/*", ""],
+      exclude: [
+        '/summary/*',
+        '/records/*',
+        '/ai-summary/*',
+        '/selfie/*',
+        '/similarity/*',
+        '/diagnostics/*',
+      ],
     }),
   ],
   controllers: [WebAppController],
