@@ -168,7 +168,9 @@ export default function Results() {
         </div>
     );
 
-    const photoSrc = person.mugshot_front_url || person.mugshot_side_url || person.photo_url || blankPhoto;
+    const photoSrc = getPhotoSrc(person);
+
+    //const photoSrc = person.mugshot_front_url || person.mugshot_side_url || person.photo_url || blankPhoto;
 
     return (
         <div className="results-page">
@@ -353,3 +355,28 @@ function fmt(d) {
 function bool(b) {
     return b === true ? "Yes" : b === false ? "No" : "—";
 }
+
+function getPhotoSrc(person) {
+  if (!person) return blankPhoto;
+
+  const raw =
+    person.mugshot_front_url ||
+    person.mugshot_side_url ||
+    person.photo_url ||
+    null;
+
+  if (!raw) return blankPhoto;
+
+  // data:image/... is already ready for <img src="...">
+  if (raw.startsWith("data:image")) {
+    return raw;
+  }
+
+  // http(s) URLs with backslashes → replace \ with /
+  if (raw.startsWith("http")) {
+    return raw.replace(/\\/g, "/");
+  }
+
+  return blankPhoto;
+}
+
