@@ -334,6 +334,7 @@ function bool(b) {
     return b === true ? "Yes" : b === false ? "No" : "—";
 }
 
+/*
 function getPhotoSrc(person) {
   if (!person) return blankPhoto;
 
@@ -356,3 +357,4 @@ function getPhotoSrc(person) {
   return blankPhoto;
 }
 
+*/
