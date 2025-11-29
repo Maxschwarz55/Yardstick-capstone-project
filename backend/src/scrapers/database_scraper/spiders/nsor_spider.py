@@ -8,6 +8,7 @@ from crawl_row import CrawlRow
 import re
 import sys
 import os
+from diagnostics_inserter import DiagnosticsInserter
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from db_inserter import insert_nsor_data
@@ -30,9 +31,14 @@ class NsorSpider(sc.Spider):
                     raise ValueError(f"Zips must contain only digits: {zip_code}")
 
         self.zips = zips
-        #TODO set up initial values
-            #get initial total records
-        self.zip_rows = {zip_code: [CrawlRow(zip_code, None, None, None, 0, None, )] for zip_code in zips}
+        inserter = DiagnosticsInserter()        
+
+
+        self.zip_rows = inserter.get_zip_rows(zips)
+        print("ZIP ROWS")
+        print(self.zip_rows)
+        for row in self.zip_rows:
+            print(self.zip_rows[row].records_added)
     #   'SELECT COUNT(*)::INT AS count FROM person',
         if batch_size > 5:
             raise ValueError("Batch size must be less than 5")
@@ -119,15 +125,10 @@ class NsorSpider(sc.Spider):
                 print(f"Error: Exception {e}")
                 return None
 
-        #group offenders by zip for diagnostics
-        for offender in all_offenders:
-            for location in offender["locations"]:
-                self.zip_rows[location["zipCode"]].append(offender)
 
         return all_offenders
     
     def scrape_api_response(self, url, offender_data):
-        print(offender_data) 
         match = re.search(r'offenderMapId=([A-F0-9-]+)', url, re.IGNORECASE)
         if not match:
             print(f"Error: Could not extract offenderMapId from {url}")
@@ -206,8 +207,10 @@ class NsorSpider(sc.Spider):
         try:
             #TODO update diagnostics data
             insert_nsor_data(full_offender_data)
-        except:
-           print("Error inserting row") 
+            for location in full_offender_data["locations"]:
+                self.zip_rows[location]["zipCode"].records_added += 1
+        except Exception as e:
+            print(e)
 
     def clean_scraped_data(self, raw_data: dict) -> dict:
         cleaned = {}
@@ -280,7 +283,14 @@ class NsorSpider(sc.Spider):
         except Exception as e:
             print(f"Error writing debug file: {e}")
 
-        insert_nsor_data(full_offender_data)
+        try:
+            #TODO update diagnostics data
+            insert_nsor_data(full_offender_data)
+            for location in full_offender_data["locations"]:
+                self.zip_rows[location]["zipCode"].records_added += 1
+        except Exception as e:
+            print(e)
+
 
 
 if __name__ == '__main__':

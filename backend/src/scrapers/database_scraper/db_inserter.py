@@ -188,8 +188,6 @@ def insert_nsor_data(offender_data):
             # Only check for duplicates if we have at least first name, last name
             if len(check_fields) >= 2 and first_name_exists and last_name_exists:
                 check_query = f"SELECT person_id FROM person WHERE {' AND '.join(check_fields)}"
-                print(check_query)
-                print(check_values)
                 cursor.execute(check_query, check_values)
                 existing_person = cursor.fetchone()
 
