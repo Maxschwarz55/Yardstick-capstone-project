@@ -13,7 +13,7 @@ export default function Results() {
     const selfieKey = state?.selfieKey;
 
     const [loading, setLoading] = useState(true);
-    const [person, setPerson] = useState(null);
+    const [people, setPeople] = useState([]);
     const [error, setError] = useState("");
     const [similarityResult, setSimilarityResult] = useState(null);
     const [summary, setSummary] = useState('');
@@ -34,11 +34,10 @@ export default function Results() {
             try {
                 setLoading(true);
                 setError("");
-                setPerson(null);
 
                 const url = `${API}/records/search/by-name?first=${encodeURIComponent(
                     firstName
-                )}&last=${encodeURIComponent(lastName)}&limit=1&page=1`;
+                )}&last=${encodeURIComponent(lastName)}&limit=50&page=1`;
 
                 const res = await fetch(url);
                 const ct = res.headers.get("content-type") || "";
@@ -52,21 +51,10 @@ export default function Results() {
                 }
 
                 const json = await res.json();
-                const firstMatch = json?.data?.[0] ?? null;
-                if (!cancelled) setPerson(firstMatch);
+                //const firstMatch = json?.data?.[0] ?? null;
+                const matches = json?.data ?? [];
+                if (!cancelled) setPeople(matches);
 
-                /*
-                if (firstMatch?.photo_file_name) {
-                    const similarityRes = await fetch(`${API}/similarity/check`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            input_person: inputPerson,
-                            db_person: dbPerson
-                        })
-                    });
-                }
-                */
             } catch (e) {
                 if (!cancelled) setError(e.message ?? "Failed to fetch");
             } finally {
@@ -77,6 +65,7 @@ export default function Results() {
     }, [firstName, lastName, navigate, API]);
 
     const runSimilarityCheck = useCallback(async () => {
+        const person = people[0];
         if (!person) {
             console.log("No person found, skipping similarity check");
             return;
@@ -112,35 +101,28 @@ export default function Results() {
         } catch (err) {
             console.error("Similarity check failed", err);
         }
-    }, [
-        selfieKey,
-        API,
-        firstName,
-        middleName,
-        lastName,
-        dob,
-        person
-    ]);
+    }, [selfieKey, API, firstName, middleName, lastName, dob, people]);
 
     useEffect(() => {
-        console.log("Person record:", person);
-        if (person) {
+        console.log("Person record:", people);
+        if (people.length > 0) {
             runSimilarityCheck();
         }
-    }, [person, runSimilarityCheck]);
+    }, [people, runSimilarityCheck]);
 
 
     // When we have a person, fetch the AI summary
     useEffect(() => {
+        if(people.length === 0) return;
+
         let cancelled = false;
         (async () => {
-            if (!person) return;
             try {
                 setSummaryLoading(true);
                 setSummary('');
                 setSummaryError('');
                 // your record’s id field might be id or person_id — handle both
-                const pid = person.person_id;
+                const pid = people[0].person_id;
                 if (!pid) return;
                 console.log("Sending person_id =", pid);
                 const ai = await getAiSummary(pid);
@@ -153,7 +135,7 @@ export default function Results() {
             }
         })();
         return () => { cancelled = true; };
-    }, [person]);
+    }, [people]);
 
 
     if (loading) return <div className="results-page"><h1>Searching…</h1></div>;
@@ -164,20 +146,63 @@ export default function Results() {
             <button className="btn" onClick={() => navigate("/")}>Return</button>
         </div>
     );
-    if (!person) return (
+    if (people.length === 0) return (
         <div className="results-page">
             <h1>No results</h1>
             <button className="btn" onClick={() => navigate("/")}>Return</button>
         </div>
     );
 
-    const photoSrc = getPhotoSrc(person);
+    const photoSrc = getPhotoSrc(people[0]);
 
     //const photoSrc = person.mugshot_front_url || person.mugshot_side_url || person.photo_url || blankPhoto;
 
     return (
         <div className="results-page">
-            <h1>Background Check Results for {person.first_name ?? firstName} {person.last_name ?? lastName}</h1>
+            <h1>Background Check Results</h1>
+                        <div className="ai-summary" aria-live="polite" aria-busy={summaryLoading}>
+                {summaryLoading ? (
+                    <div className="summary-skeleton">
+                        <span className="spinner" aria-label="Loading" role="status"></span>
+                        <div className="bar"></div><div className="bar"></div><div className="bar"></div>
+                    </div>
+                ) : summary ? (
+                    summary
+                ) : summaryError ? (
+                    <span className="muted">{summaryError}</span>
+                ) : (
+                    <span className="muted">AI summary not available</span>
+                )}
+            </div>
+
+            {similarityResult && (
+                <Section title="Similarity Check">
+                    <p>Similarity Score: <strong>{similarityResult?.scoreBreakdown.total ?? "—"} / 12 </strong></p>
+                    <p>Similarity Decision: <strong>{similarityResult?.decision ?? "—"}</strong></p>
+                </Section>
+            )}
+
+            <h2>Matched Individuals ({people.length})</h2>
+
+            {people.map((p, idx) => (
+                <PersonEntry key={p.person_id || idx} person={p} />
+            ))}
+
+            <button className="btn" onClick={() => navigate("/")} style={{ marginTop: 16 }}>Return</button>
+        </div>
+    );
+}
+
+function PersonEntry({ person }) {
+    const photoSrc =
+        person.mugshot_front_url ||
+        person.mugshot_side_url ||
+        person.photo_url ||
+        blankPhoto;
+
+    return (
+        <div className="person-entry">
+            <h3>{person.first_name} {person.last_name}</h3>
 
             <div className="photo-and-summary">
                 <img
@@ -187,30 +212,7 @@ export default function Results() {
                     width="200"
                     height="250"
                 />
-                <div className="summary-box" aria-live="polite" aria-busy={summaryLoading}>
-                    {summaryLoading ? (
-                        <div className="summary-skeleton">
-                            <span className="spinner" aria-label="Loading" role="status"></span>
-                            <div className="bar"></div>
-                            <div className="bar"></div>
-                            <div className="bar"></div>
-                        </div>
-                    ) : summary ? (
-                        summary
-                    ) : summaryError ? (
-                        <span className="muted">{summaryError}</span>
-                    ) : (
-                        <span className="muted">AI summary not available</span>
-                    )}
-                </div>
             </div>
-
-            {similarityResult && (
-                <Section title="Similarity Check">
-                    <p>Similarity Score: <strong>{similarityResult?.scoreBreakdown.total ?? "—"} / 12 </strong></p>
-                    <p> Similarity Decision: <strong>{similarityResult?.decision ?? "—"}</strong></p>
-                </Section>
-            )}
 
             <Section title="Description">
                 <p>Height: {person.height || "—"}, Weight: {person.weight ?? "—"} lbs, Hair: {person.hair || "—"}, Eyes: {person.eyes || "—"}</p>
@@ -247,55 +249,25 @@ export default function Results() {
                                 Crime: {fmt(c.date_of_crime)} | Convicted: {fmt(c.date_convicted)} |
                                 Computer used: {bool(c.computer_used)} | Pornography involved: {bool(c.pornography_involved)}
                             </small>
-                            {c.victim_sex_age && <div><small>Victim: {c.victim_sex_age}</small></div>}
-                            {(c.arresting_agency || c.relationship_to_victim || c.weapon_used || c.force_used) && (
-                                <div>
-                                    <small>
-                                        {c.arresting_agency ? `Arresting agency: ${c.arresting_agency}` : ""}
-                                        {c.relationship_to_victim ? ` | Relationship: ${c.relationship_to_victim}` : ""}
-                                        {c.weapon_used ? ` | Weapon: ${c.weapon_used}` : ""}
-                                        {c.force_used ? ` | Force: ${c.force_used}` : ""}
-                                    </small>
-                                </div>
-                            )}
-                            {c.sentence_term || c.sentence_type ? (
-                                <div><small>Sentence: {c.sentence_term || "—"} {c.sentence_type ? `(${c.sentence_type})` : ""}</small></div>
-                            ) : null}
                         </li>
                     )}
                 />
             </Section>
 
             <Section title="Previous Conviction(s) Requiring Registration">
-                <List
-                    data={person.previous_convictions}
-                    empty="None Reported"
-                    render={(pc, i) => <li key={i}>{pc.title || "—"}</li>}
-                />
+                <List data={person.previous_convictions} empty="None Reported" render={(pc, i) => <li key={i}>{pc.title || "—"}</li>} />
             </Section>
 
             <Section title="Supervising Agency Information">
-                <List
-                    data={person.supervising_agencies}
-                    empty="None Reported"
-                    render={(sa, i) => <li key={i}>{sa.agency_name || "—"}</li>}
-                />
+                <List data={person.supervising_agencies} empty="None Reported" render={(sa, i) => <li key={i}>{sa.agency_name || "—"}</li>} />
             </Section>
 
             <Section title="Special Conditions of Supervision">
-                <List
-                    data={person.special_conditions}
-                    empty="None Reported"
-                    render={(sc, i) => <li key={i}>{sc.description || "—"}</li>}
-                />
+                <List data={person.special_conditions} empty="None Reported" render={(sc, i) => <li key={i}>{sc.description || "—"}</li>} />
             </Section>
 
             <Section title="Maximum Expiration Date/Post Release Supervision Date of Sentence">
-                <List
-                    data={person.max_expiration_dates}
-                    empty="None Reported"
-                    render={(me, i) => <li key={i}>{me.description || "—"}</li>}
-                />
+                <List data={person.max_expiration_dates} empty="None Reported" render={(me, i) => <li key={i}>{me.description || "—"}</li>} />
             </Section>
 
             <Section title="Scars / Marks / Tattoos">
@@ -321,40 +293,42 @@ export default function Results() {
                     render={(v, i) => <li key={i}>{v.year || "—"} {v.make_model || ""} — {v.color || "—"} ({v.state || "—"} • {v.plate_number || "—"})</li>}
                 />
             </Section>
-
-            <button className="btn" onClick={() => navigate("/")} style={{ marginTop: 16 }}>Return</button>
         </div>
     );
 }
 
-// Helper components
 function Section({ title, children }) {
-  return (
-    <div className="section">
-      <h4>{title}</h4>
-      {children}
-    </div>
-  );
+    return (
+        <div className="section">
+            <h4>{title}</h4>
+            {children}
+        </div>
+    );
 }
+
 function List({ data, render, empty }) {
     if (!data?.length) return <p className="muted">{empty}</p>;
     return <ul className="list">{data.map(render)}</ul>;
 }
+
 function lineAddr(a = {}) {
     const parts = [a.street, a.city, a.state, a.zip].filter(Boolean);
     const line = parts.join(", ");
     return a.county ? `${line} (${a.county})` : line || "—";
 }
+
 function formatPrimaryAddress(addrs = []) {
     if (!addrs.length) return "—";
     const primary = addrs.find(a => (a.type || "").toUpperCase() === "RES") || addrs[0];
     return lineAddr(primary);
 }
+
 function fmt(d) {
     if (!d) return "—";
     const t = typeof d === "string" ? d : String(d);
     return t.length >= 10 ? t.slice(0, 10) : t;
 }
+
 function bool(b) {
     return b === true ? "Yes" : b === false ? "No" : "—";
 }
@@ -370,12 +344,10 @@ function getPhotoSrc(person) {
 
   if (!raw) return blankPhoto;
 
-  // data:image/... is already ready for <img src="...">
   if (raw.startsWith("data:image")) {
     return raw;
   }
 
-  // http(s) URLs with backslashes → replace \ with /
   if (raw.startsWith("http")) {
     return raw.replace(/\\/g, "/");
   }
