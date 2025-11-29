@@ -153,9 +153,8 @@ export default function Results() {
         </div>
     );
 
-    const photoSrc = getPhotoSrc(people[0]);
+    //const photoSrc = getPhotoSrc(people[0]);
 
-    //const photoSrc = person.mugshot_front_url || person.mugshot_side_url || person.photo_url || blankPhoto;
 
     return (
         <div className="results-page">
@@ -185,7 +184,9 @@ export default function Results() {
             <h2>Matched Individuals ({people.length})</h2>
 
             {people.map((p, idx) => (
-                <PersonEntry key={p.person_id || idx} person={p} />
+                <div key={p.person_id || idx} className="person-card">
+                    <PersonEntry person={p} />
+                </div>
             ))}
 
             <button className="btn" onClick={() => navigate("/")} style={{ marginTop: 16 }}>Return</button>
