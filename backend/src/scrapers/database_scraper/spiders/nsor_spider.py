@@ -35,10 +35,6 @@ class NsorSpider(sc.Spider):
 
 
         self.zip_rows = inserter.get_zip_rows(zips)
-        print("ZIP ROWS")
-        print(self.zip_rows)
-        for row in self.zip_rows:
-            print(self.zip_rows[row].records_added)
     #   'SELECT COUNT(*)::INT AS count FROM person',
         if batch_size > 5:
             raise ValueError("Batch size must be less than 5")
@@ -78,6 +74,9 @@ class NsorSpider(sc.Spider):
                     )
                 else:
                     print("Error: Offender URL does not match specified prefixes")
+        diagnostics = DiagnosticsInserter() 
+        diagnostics.insert_zip_rows(self.zip_rows)
+        
 
 
     

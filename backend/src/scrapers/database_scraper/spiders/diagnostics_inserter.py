@@ -15,6 +15,17 @@ DB_CONFIG = {
     "port": int(os.getenv("DB_PORT"))
 }
 
+CRAWL_LOG_SCHEMA = (
+    "zip",
+    "last_crawled",
+    "next_scheduled",
+    "total_records",
+    "records_added",
+    "next_crawl",
+    "created",
+)
+
+
 class DiagnosticsInserter:
 
     def __init__(self):
@@ -58,4 +69,56 @@ class DiagnosticsInserter:
             if zip_code not in prev_rows:
                 prev_rows[zip_code] = CrawlRow(zip_code = zip_code, records_added = 0)
         return {zip_code: CrawlRow(zip_code = zip_code, last_crawled = prev_rows[zip_code].created, records_added = 0, created = datetime.now()) for zip_code in zips}
+
+    def build_query(self, row):
+        query = f"""
+        INSERT INTO crawl_log (
+            zip,
+            last_crawled,
+            next_scheduled,
+            total_records,
+            records_added,
+            next_crawl,
+            created
+        ) VALUES (
+            {row.zip},
+            '{row.last_crawled}',
+            '{row.next_scheduled}',
+            {row.total_records},
+            {row.records_added},
+            '{row.next_crawl}',
+            '{row.created}'
+        );
+        """
+        return query
+
+
+    def insert_zip_rows(self, rows):
+
+        for i in rows:
+            row = rows[i] 
+            query = """
+            INSERT INTO crawl_log (
+                zip,
+                last_crawled,
+                next_scheduled,
+                total_records,
+                records_added,
+                next_crawl,
+                created
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s);
+            """
+
+            values = (
+                row.zip,
+                row.last_crawled,
+                row.next_scheduled,
+                row.total_records,
+                row.records_added,
+                row.next_crawl,
+                row.created,
+            )
+
+            self.cursor.execute(query, values)
             
+    
