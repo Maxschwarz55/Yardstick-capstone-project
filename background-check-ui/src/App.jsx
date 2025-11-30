@@ -1,4 +1,6 @@
 import "./App.css";
+import { RiSearchLine } from "react-icons/ri";
+import { TbHeartRateMonitor, TbSearch } from "react-icons/tb";
 import React, { useState } from "react";
 import {
   BrowserRouter as Router,
@@ -9,10 +11,15 @@ import {
 import Results from "./Results";
 import Diagnostics from "./Diagnostics";
 import SelfieUploader from "./SelfieUploader";
+import { Button } from "./components/ui/button";
+import { Field, Input, Grid, GridItem, Container, Heading, Flex } from "@chakra-ui/react"
+import { Provider } from "./components/ui/provider";
+import { SingleDatepicker } from "chakra-dayzed-datepicker";
+import DatePicker from "react-datepicker"
 
 function DOBPicker({ value, onChange }) {
   return (
-    <input
+      <input
       type="date"
       value={value}
       onChange={(e) => onChange(e.target.value)}
@@ -22,14 +29,16 @@ function DOBPicker({ value, onChange }) {
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/results" element={<Results />} />
-        <Route path="/diagnostics" element={<Diagnostics />} />{" "}
-        {/* new route */}
-      </Routes>
-    </Router>
+    <Provider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/results" element={<Results />} />
+          <Route path="/diagnostics" element={<Diagnostics />} />{" "}
+          {/* new route */}
+        </Routes>
+      </Router>
+    </Provider>
   );
 }
 
@@ -70,78 +79,155 @@ function Home() {
   };
 
   return (
-    <div className="text-zinc-100 flex justify-evenly align-start flex-col bg-zinc-900 min-h-screen p-lg">
-      <h1 className="text-3xl">Background Check</h1>
+    <>
+      <Heading size="3xl" fontSize="3xl">
+        Gatekeeper
+      </Heading>
 
-      <div className="grid grid-cols-2 grid-rows- py-lg2 justify-evenly px-md h-[500px]">
-        <input
-          className="input-primary"
-          type="text"
-          placeholder="First Name"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
+      <Container className="px-4xl max-h-[50vw]">
+        <Heading size="2xl" fontSize="2xl" fontWeight="semibold">
+          Person Lookup
+        </Heading>
+        <Grid templateColumns="repeat(3, 1fr)" className="px-lg min-h-screen">
+          <GridItem colSpan={3}>
+            <Heading size="xl" fontSize="xl" fontWeight="medium">
+              Personal Info
+            </Heading>
+            <Flex>
+              <Field.Root required>
+                <Field.Label>
+                  First Name <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  variant="subtle"
+                  type="text"
+                  placeholder="Walter"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="w-[90%]"
+                />
+              </Field.Root>
+              <Field.Root>
+                <Field.Label>Middle Name</Field.Label>
+                <Input
+                  type="text"
+                  variant="subtle"
+                  placeholder="Hartwell"
+                  value={middleName}
+                  onChange={(e) => setMiddleName(e.target.value)}
+                  className="w-[90%]"
+                />
+              </Field.Root>
 
-        <input
-          type="text"
-          placeholder="Middle Name (optional)"
-          value={middleName}
-          onChange={(e) => setMiddleName(e.target.value)}
-        />
+              <Field.Root required>
+                <Field.Label>
+                  Last Name <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  type="text"
+                  placeholder="White"
+                  variant="subtle"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-[90%]"
+                />
+              </Field.Root>
+            </Flex>
+            <Field.Root>
+              <Field.Label>Date of birth</Field.Label>
+              <DOBPicker className="dob" value={dob} onChange={setDob} />
+            </Field.Root>
+          </GridItem>
 
-        <input
-          type="text"
-          placeholder="Last Name"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        />
+          <GridItem colSpan={3}>
+            <Heading fontSize="xl" size="xl" fontWeight="medium">
+              Location
+            </Heading>
+            <Field.Root required>
+              <Field.Label>
+                Address <Field.RequiredIndicator />
+              </Field.Label>
+              <Input
+                type="text"
+                placeholder="308 Negra Arroyo Lane"
+                variant="subtle"
+                value={street}
+                onChange={(e) => setStreet(e.target.value)}
+                className="w-[75%]"
+              />
+            </Field.Root>
 
-        <label className="dob">
-          Date of birth <DOBPicker value={dob} onChange={setDob} />
-        </label>
+            <Flex>
+              <Field.Root required>
+                <Field.Label>
+                  City <Field.RequiredIndicator />
+                </Field.Label>
 
-        {/* NEW — Address block */}
-        <input
-          type="text"
-          placeholder="Street Address"
-          value={street}
-          onChange={(e) => setStreet(e.target.value)}
-        />
+                <Input
+                  type="text"
+                  placeholder="Albuquerque"
+                  variant="subtle"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="w-[90%]"
+                />
+              </Field.Root>
 
-        <input
-          type="text"
-          placeholder="City"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-        />
+              <Field.Root required>
+                <Field.Label>
+                  State <Field.RequiredIndicator />
+                </Field.Label>
+                <Input
+                  type="text"
+                  placeholder="New Mexico"
+                  variant="subtle"
+                  value={stateAddr}
+                  onChange={(e) => setStateAddr(e.target.value)}
+                  className="w-[90%]"
+                />
+              </Field.Root>
+            </Flex>
 
-        <input
-          type="text"
-          placeholder="State"
-          value={stateAddr}
-          onChange={(e) => setStateAddr(e.target.value)}
-        />
+            <Field.Root required>
+              <Field.Label>
+                Zip <Field.RequiredIndicator />
+              </Field.Label>
+              <Input
+                type="text"
+                placeholder="87104"
+                variant="subtle"
+                value={zip}
+                onChange={(e) => setZip(e.target.value)}
+                className="w-[30%]"
+              />
+            </Field.Root>
+          </GridItem>
+          <GridItem colSpan={3}>
+            <h3>Upload a Selfie</h3>
+            <SelfieUploader onUploadComplete={setSelfieKey} />
+          </GridItem>
 
-        <input
-          type="text"
-          placeholder="Zip Code"
-          value={zip}
-          onChange={(e) => setZip(e.target.value)}
-        />
+          <GridItem colSpan={3}>
+            <Flex justify="space-between">
+              <Button
+                variant="subtle"
+                className="w-[30%]"
+                bg="gray.muted"
+                onClick={() => navigate("/diagnostics")}
+              >
+                <TbHeartRateMonitor />
+                Diagnostics
+              </Button>
 
-        <h3>Upload a Selfie</h3>
-        <SelfieUploader onUploadComplete={setSelfieKey} />
-      </div>
-
-      <button className="btn" onClick={handleClick}>
-        Run Search
-      </button>
-      <button
-        className="btn btn-secondary"
-        onClick={() => navigate("/diagnostics")}
-      >
-        Diagnostics
-      </button>
-    </div>
+              <Button className="w-[40%]" onClick={handleClick} bg="green.solid">
+                <TbSearch />
+                Run Search
+              </Button>
+            </Flex>
+          </GridItem>
+        </Grid>
+      </Container>
+    </>
   );
 }
+
