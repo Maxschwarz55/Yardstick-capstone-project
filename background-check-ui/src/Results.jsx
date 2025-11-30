@@ -15,7 +15,6 @@ export default function Results() {
     const [loading, setLoading] = useState(true);
     const [people, setPeople] = useState([]);
     const [error, setError] = useState("");
-    const [similarityResult, setSimilarityResult] = useState(null);
     const [summary, setSummary] = useState('');
     const [summaryLoading, setSummaryLoading] = useState(false);
     const [summaryError, setSummaryError] = useState('');
@@ -65,43 +64,65 @@ export default function Results() {
     }, [firstName, lastName, navigate, API]);
 
     const runSimilarityCheck = useCallback(async () => {
-        const person = people[0];
-        if (!person) {
-            console.log("No person found, skipping similarity check");
-            return;
-        }
+        if (people.length === 0) return;
 
         const inputPerson = {
             first_name: firstName || "",
             last_name: lastName || "",
             middle_name: middleName || "",
             dob: dob || null,
-            photo_s3_key: selfieKey || null
+            photo_s3_key: selfieKey || null,
         };
+        const scoredResults = [];
+        for (const dbPerson of people) {
+            try {
+                const res = await fetch(`${API}/similarity/check`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        input_person: inputPerson,
+                        db_person: {
+                            first_name: dbPerson.first_name,
+                            last_name: dbPerson.last_name,
+                            middle_name: dbPerson.middle_name,
+                            dob: dbPerson.dob,
+                            photo_s3_key: dbPerson.photo_s3_key || null,
+                        }
+                    })
+                });
+                const result = await res.json();
+                const similarity = result?.scoreBreakdown?.total ?? 0;
 
-        const dbPerson = {
-            first_name: person.first_name,
-            last_name: person.last_name,
-            middle_name: person.middle_name,
-            dob: person.dob,
-            photo_s3_key: person.photo_s3_key || null
-        };
+                //attach similarity score to the person object
+                const decision = result?.decision ?? "—";
+                const enrichedPerson = {
+                    ...dbPerson,
+                    similarityScore: similarity,
+                    similarityDecision: decision
+                };
 
-        console.log("Running similarity check with:", { inputPerson, dbPerson });
-
-        try {
-            const res = await fetch(`${API}/similarity/check`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ input_person: inputPerson, db_person: dbPerson })
-            });
-            const data = await res.json();
-            console.log("Similarity result data:", data);
-            setSimilarityResult(data);
-        } catch (err) {
-            console.error("Similarity check failed", err);
+                scoredResults.push({
+                    person: enrichedPerson,
+                    similarity,
+                    raw: result
+                });
+            } catch (err) {
+                console.error("Similarity check failed for:", dbPerson, err);
+                scoredResults.push({
+                    person: dbPerson,
+                    similarity: 0,
+                    similarityDecision: "-",
+                    raw: null
+                });
+            }
         }
-    }, [selfieKey, API, firstName, middleName, lastName, dob, people]);
+
+        //highest score first
+        scoredResults.sort((a, b) => b.similarity - a.similarity);
+        const sorted = scoredResults.map(x => x.person);
+        setPeople(sorted);
+    }, [people, firstName, lastName, middleName, dob, selfieKey, API]);
+
 
     useEffect(() => {
         console.log("Person record:", people);
@@ -153,7 +174,6 @@ export default function Results() {
         </div>
     );
 
-    //const photoSrc = getPhotoSrc(people[0]);
 
 
     return (
@@ -174,12 +194,6 @@ export default function Results() {
                 )}
             </div>
 
-            {similarityResult && (
-                <Section title="Similarity Check">
-                    <p>Similarity Score: <strong>{similarityResult?.scoreBreakdown.total ?? "—"} / 12 </strong></p>
-                    <p>Similarity Decision: <strong>{similarityResult?.decision ?? "—"}</strong></p>
-                </Section>
-            )}
 
             <h2>Matched Individuals ({people.length})</h2>
 
@@ -214,6 +228,17 @@ function PersonEntry({ person }) {
                     height="250"
                 />
             </div>
+            {person.similarityScore !== undefined && (
+                <div className="similarity-score">
+                    <strong>Similarity:</strong> {person.similarityScore} / 12
+                </div>
+            )}
+
+            {person.similarityDecision && (
+                <p>
+                    Similarity Decision: <strong>{person.similarityDecision}</strong>
+                </p>
+            )}
 
             <Section title="Description">
                 <p>Height: {person.height || "—"}, Weight: {person.weight ?? "—"} lbs, Hair: {person.hair || "—"}, Eyes: {person.eyes || "—"}</p>
@@ -333,28 +358,3 @@ function fmt(d) {
 function bool(b) {
     return b === true ? "Yes" : b === false ? "No" : "—";
 }
-
-/*
-function getPhotoSrc(person) {
-  if (!person) return blankPhoto;
-
-  const raw =
-    person.mugshot_front_url ||
-    person.mugshot_side_url ||
-    person.photo_url ||
-    null;
-
-  if (!raw) return blankPhoto;
-
-  if (raw.startsWith("data:image")) {
-    return raw;
-  }
-
-  if (raw.startsWith("http")) {
-    return raw.replace(/\\/g, "/");
-  }
-
-  return blankPhoto;
-}
-
-*/
