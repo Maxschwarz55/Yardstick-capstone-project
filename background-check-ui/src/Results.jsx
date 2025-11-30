@@ -34,9 +34,21 @@ export default function Results() {
                 setLoading(true);
                 setError("");
 
-                const url = `${API}/records/search/by-name?first=${encodeURIComponent(
+                let url;
+
+                if (middleName){
+                    url = `${API}/records/search/by-name?first=${encodeURIComponent(
+                        firstName
+                    )}&middle=${encodeURIComponent(
+                        middleName
+                    )}&last=${encodeURIComponent(lastName)}&limit=50&page=1`;
+                } else {
+
+                
+                url = `${API}/records/search/by-name?first=${encodeURIComponent(
                     firstName
                 )}&last=${encodeURIComponent(lastName)}&limit=50&page=1`;
+            }
 
                 const res = await fetch(url);
                 const ct = res.headers.get("content-type") || "";
@@ -51,7 +63,12 @@ export default function Results() {
 
                 const json = await res.json();
                 //const firstMatch = json?.data?.[0] ?? null;
-                const matches = json?.data ?? [];
+                let matches = json?.data ?? [];
+
+                if (middleName && middleName.trim() !== "") {
+                    const norm = (s) => (s || "").trim().toLowerCase();
+                    matches = matches.filter(p => norm(p.middle_name) === norm(middleName));
+                }
                 if (!cancelled) setPeople(matches);
 
             } catch (e) {
