@@ -36,7 +36,6 @@ class NsorSpider(sc.Spider):
         else:
             self.batch_size = batch_size
 
-
         self.headers = {
             "accept": "application/json, text/plain, */*",
             "accept-encoding": "gzip, deflate, br",
@@ -56,7 +55,6 @@ class NsorSpider(sc.Spider):
     def start_requests(self):
         offenders = self.query_zips()
 
-
         for offender in offenders:
             url = offender.get('offenderUri')
             if self.POR_STATE_PREFIX in url:
@@ -69,7 +67,6 @@ class NsorSpider(sc.Spider):
                 )
             else:
                 print("Error: Offender URL does not match specified prefixes")
-
 
     
     def query_zips(self):
@@ -283,6 +280,15 @@ if __name__ == '__main__':
           'PLAYWRIGHT_LAUNCH_OPTIONS': {
               'headless': False,
           },
+          'DOWNLOAD_TIMEOUT': 180, 
+          'RETRY_ENABLED': True,
+          'RETRY_TIMES': 3,  
+          'RETRY_HTTP_CODES': [500, 502, 503, 504, 408, 429],
+          'CONCURRENT_REQUESTS': 1,
+          'DOWNLOAD_DELAY': 2, 
+          'AUTOTHROTTLE_ENABLED': True,
+          'AUTOTHROTTLE_START_DELAY': 2,
+          'AUTOTHROTTLE_MAX_DELAY': 10,
       })
 
     process.crawl(NsorSpider, zips=['55407', '55408'])
