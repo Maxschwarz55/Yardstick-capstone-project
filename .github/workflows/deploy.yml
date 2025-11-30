@@ -64,6 +64,7 @@ jobs:
           overwrite: true  
           strip_components: 0
           debug: true
+          exclude: ".git,.gitignore,node_modules,.env,.env.local,**/.DS_Store"
           
       - name: Reload systemd and restart service
         uses: appleboy/ssh-action@master
