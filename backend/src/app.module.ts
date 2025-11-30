@@ -7,12 +7,12 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { JobModule } from './jobs/jobs.module';
 import { WebAppController } from './webapp/webapp.controller';
 import { RecordsModule } from './records/records.module';
-import { DiagnosticsModule } from './webapp/diagnostics/diagnostics.module';
-import { SimilarityCheckModule } from './webapp/matcher/similarity_check.module';
+import { DiagnosticsModule } from './diagnostics/diagnostics.module';
+import { SimilarityCheckModule } from './matcher/similarity_check.module';
 import config from './config';
 import { SummaryModule } from './summary/summary.module';
 import { join } from 'path';
-import { ConfigService } from 'aws-sdk';
+import { SelfieModule } from './matcher/selfie.module';
 
 @Module({
   imports: [
@@ -60,8 +60,17 @@ import { ConfigService } from 'aws-sdk';
     DiagnosticsModule,
     SummaryModule,
     SimilarityCheckModule,
+    SelfieModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'bundle', 'background-check-ui'),
+      exclude: [
+        '/summary/*',
+        '/records/*',
+        '/ai-summary/*',
+        '/selfie/*',
+        '/similarity/*',
+        '/diagnostics/*',
+      ],
     }),
   ],
   controllers: [WebAppController],

@@ -70,7 +70,7 @@ function Home() {
 
   return (
     <div className="App container">
-      <h1>Background Check</h1>
+      <h1 className='underline'>Background Check</h1>
 
       <div className="form">
 
@@ -129,7 +129,9 @@ function Home() {
         />
 
         <h3>Upload a Selfie</h3>
-        <SelfieUploader onUploadComplete={setSelfieKey} />
+        <SelfieUploader 
+          personId={firstName && lastName ? `${firstName}-${lastName}` : null}
+          onUploadComplete={setSelfieKey} />
 
       </div>
 
