@@ -70,7 +70,6 @@ import { SelfieModule } from './matcher/selfie.module';
         '/selfie/*',
         '/similarity/*',
         '/diagnostics/*',
-        '/results/*'
       ],
     }),
   ],
