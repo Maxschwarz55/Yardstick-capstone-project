@@ -18,6 +18,7 @@ export default function Results() {
     const [summary, setSummary] = useState('');
     const [summaryLoading, setSummaryLoading] = useState(false);
     const [summaryError, setSummaryError] = useState('');
+    const [similarityRan, setSimilarityRan] = useState(false);
     const middleName = state?.middleName;
 
     const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
@@ -143,8 +144,8 @@ export default function Results() {
 
     useEffect(() => {
         console.log("Person record:", people);
-        if (people.length > 0) {
-            runSimilarityCheck();
+        if (!similarityRan && people.length > 0) {
+            runSimilarityCheck().then(() => setSimilarityRan(true));
         }
     }, [people, runSimilarityCheck]);
 
