@@ -12,17 +12,26 @@ import Results from "./Results";
 import Diagnostics from "./Diagnostics";
 import SelfieUploader from "./SelfieUploader";
 import { Button } from "./components/ui/button";
-import { Field, Input, Grid, GridItem, Container, Heading, Flex } from "@chakra-ui/react"
+import {
+  Field,
+  Input,
+  Grid,
+  GridItem,
+  Container,
+  Heading,
+  Flex,
+  Theme
+} from "@chakra-ui/react";
 import { Provider } from "./components/ui/provider";
-import { SingleDatepicker } from "chakra-dayzed-datepicker";
-import DatePicker from "react-datepicker"
 
 function DOBPicker({ value, onChange }) {
   return (
-      <input
+    <Input
       type="date"
+      variant="subtle"
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      className="w-[40%]"
     />
   );
 }
@@ -54,9 +63,7 @@ function Home() {
   const [stateAddr, setStateAddr] = useState("");
   const [zip, setZip] = useState("");
   const [selfieKey, setSelfieKey] = useState(null);
-
   const navigate = useNavigate();
-
   const handleClick = () => {
     if (firstName.trim() === "" || lastName.trim() === "") {
       alert("Please enter both first and last names.");
@@ -85,12 +92,26 @@ function Home() {
       </Heading>
 
       <Container className="px-4xl max-h-[50vw]">
-        <Heading size="2xl" fontSize="2xl" fontWeight="semibold">
+        <Heading
+          size="2xl"
+          fontSize="2xl"
+          fontWeight="semibold"
+          className="mb-lg"
+        >
           Person Lookup
         </Heading>
-        <Grid templateColumns="repeat(3, 1fr)" className="px-lg min-h-screen">
-          <GridItem colSpan={3}>
-            <Heading size="xl" fontSize="xl" fontWeight="medium">
+        <Grid
+          gridAutoRows="min-content"
+          templateColumns="repeat(3, 1fr)"
+          className="px-lg min-h-screen gap-y-lg"
+        >
+          <GridItem colSpan={3} className="flex gap-sm2 flex-col">
+            <Heading
+              size="xl"
+              fontSize="xl"
+              fontWeight="medium"
+              className="mb-xs"
+            >
               Personal Info
             </Heading>
             <Flex>
@@ -139,11 +160,16 @@ function Home() {
             </Field.Root>
           </GridItem>
 
-          <GridItem colSpan={3}>
-            <Heading fontSize="xl" size="xl" fontWeight="medium">
+          <GridItem colSpan={3} className="flex gap-sm2 flex-col">
+            <Heading
+              fontSize="xl"
+              size="xl"
+              fontWeight="medium"
+              className="mb-xs"
+            >
               Location
             </Heading>
-            <Field.Root required>
+            <Field.Root>
               <Field.Label>
                 Address <Field.RequiredIndicator />
               </Field.Label>
@@ -158,7 +184,7 @@ function Home() {
             </Field.Root>
 
             <Flex>
-              <Field.Root required>
+              <Field.Root>
                 <Field.Label>
                   City <Field.RequiredIndicator />
                 </Field.Label>
@@ -173,7 +199,7 @@ function Home() {
                 />
               </Field.Root>
 
-              <Field.Root required>
+              <Field.Root>
                 <Field.Label>
                   State <Field.RequiredIndicator />
                 </Field.Label>
@@ -188,7 +214,7 @@ function Home() {
               </Field.Root>
             </Flex>
 
-            <Field.Root required>
+            <Field.Root>
               <Field.Label>
                 Zip <Field.RequiredIndicator />
               </Field.Label>
@@ -203,23 +229,41 @@ function Home() {
             </Field.Root>
           </GridItem>
           <GridItem colSpan={3}>
-            <h3>Upload a Selfie</h3>
+            <Heading
+              fontSize="xl"
+              size="xl"
+              fontWeight="medium"
+              className="mb-sm2"
+            >
+              Upload a Selfie
+            </Heading>
             <SelfieUploader onUploadComplete={setSelfieKey} />
           </GridItem>
 
           <GridItem colSpan={3}>
             <Flex justify="space-between">
               <Button
-                variant="subtle"
+                variant="outline"
                 className="w-[30%]"
-                bg="gray.muted"
                 onClick={() => navigate("/diagnostics")}
+                colorPalette="teal"
+                border="1.5px solid"
+                borderColor="colorPalette.border"
+                color="colorPalette.fg"
+
               >
                 <TbHeartRateMonitor />
                 Diagnostics
               </Button>
 
-              <Button className="w-[40%]" onClick={handleClick} bg="green.solid">
+              {/* <Button className="w-[40%]" onClick={handleClick} bg="green.solid"> */}
+              <Button
+                className="w-[40%]"
+                onClick={handleClick}
+                variant="subtle"
+                colorPalette="green"
+                bg="colorPalette.solid"
+              >
                 <TbSearch />
                 Run Search
               </Button>
@@ -230,4 +274,3 @@ function Home() {
     </>
   );
 }
-
