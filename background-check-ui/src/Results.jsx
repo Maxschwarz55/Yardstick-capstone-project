@@ -21,7 +21,7 @@ export default function Results() {
     const [summaryError, setSummaryError] = useState('');
     const [similarityRan, setSimilarityRan] = useState(false);
 
-    const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
+    const API = `http://${process.env.REACT_APP_API_URL}` || "http://localhost:4000";
 
     // Fetch person record by name
     useEffect(() => {

@@ -1,10 +1,11 @@
 // src/Diagnostics.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Box, Heading, Button, Table, VStack, HStack, Text } from "@chakra-ui/react";
 import "./Diagnostics.css";
 //import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const API = `http://${process.env.REACT_APP_API_URL}` || "http://localhost:4000";
 
 export default function Diagnostics() {
   //const location = useLocation();
@@ -53,58 +54,191 @@ export default function Diagnostics() {
   const zips          = diag?.zips ?? [];
 
   return (
-    <div className="diag-page">
-      <h1>Diagnostics</h1>
+    <Box className="diag-page" p={6}>
+      <Heading mb={6}>Diagnostics</Heading>
+      <Box className="diag-grid">
+        <Box
+          borderWidth="1px"
+          borderRadius="lg"
+          overflow="hidden"
+          bg="bg.panel"
+        >
+          <Box px={6} py={4} borderBottomWidth="1px" bg="bg.muted">
+            <Heading size="lg">Databases & Crawl Status</Heading>
+          </Box>
+          <Box p={6}>
+            <VStack align="stretch" gap={6}>
+              <Box>
+                <Heading size="md" mb={3}>
+                  NY Sex Offender Registry
+                </Heading>
+                <Table.Root variant="outline" size="sm">
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Total records in database
+                      </Table.Cell>
+                      <Table.Cell>{num(totalPersons)}</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">Last crawled</Table.Cell>
+                      <Table.Cell>{lastCrawled}</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Next scheduled crawl
+                      </Table.Cell>
+                      <Table.Cell>{nextScheduled}</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Records added in last crawl
+                      </Table.Cell>
+                      <Table.Cell>15</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Records updated in last crawl
+                      </Table.Cell>
+                      <Table.Cell>7</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Database last updated
+                      </Table.Cell>
+                      <Table.Cell>2025-10-10</Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table.Root>
+              </Box>
 
-      <div className="diag-grid">
-        <section className="card">
-          <header className="card-hdr">
-            <h2>Databases & Crawl Status</h2>
-          </header>
-          <div className="card-body">
-            <h3>Database Diagnostics</h3>
-            <p>Total records in database: {num(totalPersons)}</p>
-            <p>Last crawled: {lastCrawled}</p>
-            <p>Next scheduled crawl: {nextScheduled}</p>
-            <p>Records added in last crawl: {num(zips[0].recordsAdded)}</p>
-            <p>Records updated in last crawl: 7</p>
+              <Box>
+                <Heading size="md" mb={3}>
+                  NY Criminal Records
+                </Heading>
+                <Table.Root variant="outline" size="sm">
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Total records in database
+                      </Table.Cell>
+                      <Table.Cell>438,529</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">Last crawled</Table.Cell>
+                      <Table.Cell>2025-10-11 14:25:12</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Records added in last crawl
+                      </Table.Cell>
+                      <Table.Cell>13</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Records updated in last crawl
+                      </Table.Cell>
+                      <Table.Cell>54</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Database last updated
+                      </Table.Cell>
+                      <Table.Cell>2025-10-10</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Next scheduled crawl
+                      </Table.Cell>
+                      <Table.Cell>2025-10-21 10:00:00</Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table.Root>
+              </Box>
 
+              <Box>
+                <Heading size="md" mb={3}>
+                  NY Civil Records
+                </Heading>
+                <Table.Root variant="outline" size="sm">
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Total records in database
+                      </Table.Cell>
+                      <Table.Cell>39,619</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">Last crawled</Table.Cell>
+                      <Table.Cell>2025-10-11 14:26:30</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Records added in last crawl
+                      </Table.Cell>
+                      <Table.Cell>63</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Records updated in last crawl
+                      </Table.Cell>
+                      <Table.Cell>29</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Database last updated
+                      </Table.Cell>
+                      <Table.Cell>2025-10-09</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell fontWeight="medium">
+                        Next scheduled crawl
+                      </Table.Cell>
+                      <Table.Cell>2025-10-21 10:00:00</Table.Cell>
+                    </Table.Row>
+                  </Table.Body>
+                </Table.Root>
+              </Box>
 
-
-            {zips.length > 0 && (
-              <>
-                <h3 style={{marginTop:16}}>Recent ZIP Activity</h3>
-                <table className="zip-table">
-                  <thead>
-                    <tr>
-                      <th>ZIP</th>
-                      <th>Last Crawled</th>
-                      <th>Next Scheduled</th>
-                      <th>Total Records</th>
-                      <th>Added (last crawl)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {zips.slice(0,10).map((z, i) => (
-                      <tr key={i}>
-                        <td>{z.zip}</td>
-                        <td>{fmt(z.lastCrawled)}</td>
-                        <td>{fmt(z.nextScheduled)}</td>
-                        <td>{num(z.totalRecords)}</td>
-                        <td>{num(z.recordsAdded)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            )}
-          </div>
-          <footer className="card-ftr"></footer>
-        </section>
-      </div>
-
-      <button className="btn" onClick={returnClick}>Return</button>
-    </div>
+              {zips.length > 0 && (
+                <Box>
+                  <Heading size="md" mb={3}>
+                    Recent ZIP Activity
+                  </Heading>
+                  <Table.Root variant="outline" size="sm">
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.ColumnHeader>ZIP</Table.ColumnHeader>
+                        <Table.ColumnHeader>Last Crawled</Table.ColumnHeader>
+                        <Table.ColumnHeader>Next Scheduled</Table.ColumnHeader>
+                        <Table.ColumnHeader>Total Records</Table.ColumnHeader>
+                        <Table.ColumnHeader>
+                          Added (last crawl)
+                        </Table.ColumnHeader>
+                      </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                      {zips.slice(0, 10).map((z, i) => (
+                        <Table.Row key={i}>
+                          <Table.Cell>{z.zip}</Table.Cell>
+                          <Table.Cell>{fmt(z.lastCrawled)}</Table.Cell>
+                          <Table.Cell>{fmt(z.nextScheduled)}</Table.Cell>
+                          <Table.Cell>{num(z.totalRecords)}</Table.Cell>
+                          <Table.Cell>{num(z.recordsAdded)}</Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table.Root>
+                </Box>
+              )}
+            </VStack>
+          </Box>
+        </Box>
+      </Box>
+      <Button mt={6} onClick={returnClick}>
+        Return
+      </Button>
+    </Box>
   );
 }
 
