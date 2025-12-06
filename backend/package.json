@@ -21,6 +21,9 @@
   },
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.940.0",
+    "@chakra-ui/cli": "^3.30.0",
+    "@chakra-ui/react": "^3.30.0",
+    "@emotion/react": "^11.14.0",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.9",
     "@nestjs/platform-express": "^11.0.1",
