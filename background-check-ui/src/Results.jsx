@@ -9,6 +9,7 @@ export default function Results() {
     const navigate = useNavigate();
     const firstName = state?.firstName;
     const lastName = state?.lastName;
+    const middleName = state?.middleName;
     const dob = state?.dob;
     const selfieKey = state?.selfieKey;
 
@@ -19,7 +20,6 @@ export default function Results() {
     const [summaryLoading, setSummaryLoading] = useState(false);
     const [summaryError, setSummaryError] = useState('');
     const [similarityRan, setSimilarityRan] = useState(false);
-    const middleName = state?.middleName;
 
     const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
@@ -79,7 +79,7 @@ export default function Results() {
             }
         })();
         return () => { cancelled = true; };
-    }, [firstName, lastName, navigate, API]);
+    }, [firstName, lastName, middleName, navigate, API]);
 
     const runSimilarityCheck = useCallback(async () => {
         if (people.length === 0) return;
@@ -147,7 +147,7 @@ export default function Results() {
         if (!similarityRan && people.length > 0) {
             runSimilarityCheck().then(() => setSimilarityRan(true));
         }
-    }, [people, runSimilarityCheck]);
+    }, [people, runSimilarityCheck, similarityRan]);
 
 
     // When we have a person, fetch the AI summary
