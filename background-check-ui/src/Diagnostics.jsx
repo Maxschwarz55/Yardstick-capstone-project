@@ -1,7 +1,7 @@
 // src/Diagnostics.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Heading, Button, Table, VStack, HStack, Text } from "@chakra-ui/react";
+import { Box, Heading, Button, Table, VStack, } from "@chakra-ui/react";
 import "./Diagnostics.css";
 //import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
