@@ -25,6 +25,8 @@ jobs:
           npm install
 
       - name: Build Frontend
+        env:
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
         run: |
           cd background-check-ui
           npm run build
