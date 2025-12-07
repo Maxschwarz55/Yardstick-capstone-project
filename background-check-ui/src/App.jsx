@@ -1,5 +1,4 @@
 import "./App.css";
-import { RiSearchLine } from "react-icons/ri";
 import { TbHeartRateMonitor, TbSearch } from "react-icons/tb";
 import React, { useState } from "react";
 import {
@@ -12,15 +11,17 @@ import Results from "./Results";
 import Diagnostics from "./Diagnostics";
 import SelfieUploader from "./SelfieUploader";
 import { Button } from "./components/ui/button";
+import GradientText from "./components/ui/gradient-text";
 import {
   Field,
   Input,
-  Grid,
-  GridItem,
+  VStack,
+  HStack,
   Container,
   Heading,
-  Flex,
-  Theme
+  Box,
+  Card,
+  Text,
 } from "@chakra-ui/react";
 import { Provider } from "./components/ui/provider";
 
@@ -31,7 +32,6 @@ function DOBPicker({ value, onChange }) {
       variant="subtle"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-[40%]"
     />
   );
 }
@@ -43,8 +43,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/results" element={<Results />} />
-          <Route path="/diagnostics" element={<Diagnostics />} />{" "}
-          {/* new route */}
+          <Route path="/diagnostics" element={<Diagnostics />} />
         </Routes>
       </Router>
     </Provider>
@@ -56,14 +55,14 @@ function Home() {
   const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
   const [dob, setDob] = useState("");
-
-  // NEW — address fields
   const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
   const [stateAddr, setStateAddr] = useState("");
   const [zip, setZip] = useState("");
   const [selfieKey, setSelfieKey] = useState(null);
+  
   const navigate = useNavigate();
+  
   const handleClick = () => {
     if (firstName.trim() === "" || lastName.trim() === "") {
       alert("Please enter both first and last names.");
@@ -86,191 +85,192 @@ function Home() {
   };
 
   return (
-    <>
-      <Heading size="3xl" fontSize="3xl">
-        Gatekeeper
-      </Heading>
+    <Box minH="100vh" py={8}>
+      <Container maxW="900px">
+        {/* Header */}
+        <VStack gap={8} align="stretch">
+          <Box textAlign="center" py={4}>
+            <GradientText className="text-4xl font-bold">
+              Gatekeeper
+            </GradientText>
+            <Text mt={2} color="gray.500" fontSize="lg">
+              Comprehensive background verification
+            </Text>
+          </Box>
 
-      <Container className="px-4xl max-h-[50vw]">
-        <Heading
-          size="2xl"
-          fontSize="2xl"
-          fontWeight="semibold"
-          className="mb-lg"
-        >
-          Person Lookup
-        </Heading>
-        <Grid
-          gridAutoRows="min-content"
-          templateColumns="repeat(3, 1fr)"
-          className="px-lg min-h-screen gap-y-lg"
-        >
-          <GridItem colSpan={3} className="flex gap-sm2 flex-col">
-            <Heading
-              size="xl"
-              fontSize="xl"
-              fontWeight="medium"
-              className="mb-xs"
+          {/* Main Form */}
+          <VStack gap={6} align="stretch">
+            {/* Personal Information Section */}
+            <Card.Root
+              borderWidth="0.5px"
+              borderColor="colorPalette.border"
+              borderRadius="md"
+              colorPalette="gray"
             >
-              Personal Info
-            </Heading>
-            <Flex>
-              <Field.Root required>
-                <Field.Label>
-                  First Name <Field.RequiredIndicator />
-                </Field.Label>
-                <Input
-                  variant="subtle"
-                  type="text"
-                  placeholder="Walter"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  className="w-[90%]"
-                />
-              </Field.Root>
-              <Field.Root>
-                <Field.Label>Middle Name</Field.Label>
-                <Input
-                  type="text"
-                  variant="subtle"
-                  placeholder="Hartwell"
-                  value={middleName}
-                  onChange={(e) => setMiddleName(e.target.value)}
-                  className="w-[90%]"
-                />
-              </Field.Root>
+              <Card.Header>
+                <Heading size="lg" fontWeight="semibold">
+                  Personal Information
+                </Heading>
+              </Card.Header>
+              <Card.Body>
+                <VStack gap={5} align="stretch">
+                  <HStack gap={4}>
+                    <Field.Root required flex={1}>
+                      <Field.Label>First Name</Field.Label>
+                      <Input
+                        variant="subtle"
+                        type="text"
+                        placeholder="Walter"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </Field.Root>
 
-              <Field.Root required>
-                <Field.Label>
-                  Last Name <Field.RequiredIndicator />
-                </Field.Label>
-                <Input
-                  type="text"
-                  placeholder="White"
-                  variant="subtle"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="w-[90%]"
-                />
-              </Field.Root>
-            </Flex>
-            <Field.Root>
-              <Field.Label>Date of birth</Field.Label>
-              <DOBPicker className="dob" value={dob} onChange={setDob} />
-            </Field.Root>
-          </GridItem>
+                    <Field.Root flex={1}>
+                      <Field.Label>Middle Name</Field.Label>
+                      <Input
+                        type="text"
+                        variant="subtle"
+                        placeholder="Hartwell"
+                        value={middleName}
+                        onChange={(e) => setMiddleName(e.target.value)}
+                      />
+                    </Field.Root>
 
-          <GridItem colSpan={3} className="flex gap-sm2 flex-col">
-            <Heading
-              fontSize="xl"
-              size="xl"
-              fontWeight="medium"
-              className="mb-xs"
+                    <Field.Root required flex={1}>
+                      <Field.Label>Last Name</Field.Label>
+                      <Input
+                        type="text"
+                        placeholder="White"
+                        variant="subtle"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </Field.Root>
+                  </HStack>
+
+                  <Field.Root maxW="300px">
+                    <Field.Label>Date of Birth</Field.Label>
+                    <DOBPicker value={dob} onChange={setDob} />
+                  </Field.Root>
+                </VStack>
+              </Card.Body>
+            </Card.Root>
+
+            {/* Location Section */}
+            <Card.Root
+              borderWidth="0.5px"
+              borderColor="colorPalette.border"
+              borderRadius="md"
+              colorPalette="gray"
             >
-              Location
-            </Heading>
-            <Field.Root>
-              <Field.Label>
-                Address <Field.RequiredIndicator />
-              </Field.Label>
-              <Input
-                type="text"
-                placeholder="308 Negra Arroyo Lane"
-                variant="subtle"
-                value={street}
-                onChange={(e) => setStreet(e.target.value)}
-                className="w-[75%]"
-              />
-            </Field.Root>
+              <Card.Header>
+                <Heading size="lg" fontWeight="semibold">
+                  Location
+                </Heading>
+              </Card.Header>
+              <Card.Body>
+                <VStack gap={5} align="stretch">
+                  <Field.Root>
+                    <Field.Label>Street Address</Field.Label>
+                    <Input
+                      type="text"
+                      placeholder="308 Negra Arroyo Lane"
+                      variant="subtle"
+                      value={street}
+                      onChange={(e) => setStreet(e.target.value)}
+                    />
+                  </Field.Root>
 
-            <Flex>
-              <Field.Root>
-                <Field.Label>
-                  City <Field.RequiredIndicator />
-                </Field.Label>
+                  <HStack gap={4}>
+                    <Field.Root flex={2}>
+                      <Field.Label>City</Field.Label>
+                      <Input
+                        type="text"
+                        placeholder="Albuquerque"
+                        variant="subtle"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                      />
+                    </Field.Root>
 
-                <Input
-                  type="text"
-                  placeholder="Albuquerque"
-                  variant="subtle"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-[90%]"
-                />
-              </Field.Root>
+                    <Field.Root flex={1}>
+                      <Field.Label>State</Field.Label>
+                      <Input
+                        type="text"
+                        placeholder="NM"
+                        variant="subtle"
+                        value={stateAddr}
+                        onChange={(e) => setStateAddr(e.target.value)}
+                      />
+                    </Field.Root>
 
-              <Field.Root>
-                <Field.Label>
-                  State <Field.RequiredIndicator />
-                </Field.Label>
-                <Input
-                  type="text"
-                  placeholder="New Mexico"
-                  variant="subtle"
-                  value={stateAddr}
-                  onChange={(e) => setStateAddr(e.target.value)}
-                  className="w-[90%]"
-                />
-              </Field.Root>
-            </Flex>
+                    <Field.Root flex={1}>
+                      <Field.Label>ZIP Code</Field.Label>
+                      <Input
+                        type="text"
+                        placeholder="87104"
+                        variant="subtle"
+                        value={zip}
+                        onChange={(e) => setZip(e.target.value)}
+                      />
+                    </Field.Root>
+                  </HStack>
+                </VStack>
+              </Card.Body>
+            </Card.Root>
 
-            <Field.Root>
-              <Field.Label>
-                Zip <Field.RequiredIndicator />
-              </Field.Label>
-              <Input
-                type="text"
-                placeholder="87104"
-                variant="subtle"
-                value={zip}
-                onChange={(e) => setZip(e.target.value)}
-                className="w-[30%]"
-              />
-            </Field.Root>
-          </GridItem>
-          <GridItem colSpan={3}>
-            <Heading
-              fontSize="xl"
-              size="xl"
-              fontWeight="medium"
-              className="mb-sm2"
+            {/* Photo Verification Section */}
+            <Card.Root
+              borderWidth="0.5px"
+              borderColor="colorPalette.border"
+              borderRadius="md"
+              colorPalette="gray"
             >
-              Upload a Selfie
-            </Heading>
-            <SelfieUploader onUploadComplete={setSelfieKey} />
-          </GridItem>
+              <Card.Header>
+                <Heading size="lg" fontWeight="semibold">
+                  Photo Verification
+                </Heading>
+                <Text color="gray.500" fontSize="sm" mt={1}>
+                  Upload a photo for facial recognition matching (optional)
+                </Text>
+              </Card.Header>
+              <Card.Body>
+                <SelfieUploader onUploadComplete={setSelfieKey} />
+              </Card.Body>
+            </Card.Root>
 
-          <GridItem colSpan={3}>
-            <Flex justify="space-between">
+            {/* Action Buttons */}
+            <HStack gap={4} pt={4}>
               <Button
                 variant="outline"
-                className="w-[30%]"
+                flex={1}
                 onClick={() => navigate("/diagnostics")}
                 colorPalette="teal"
                 border="1.5px solid"
                 borderColor="colorPalette.border"
                 color="colorPalette.fg"
-
+                size="lg"
               >
-                <TbHeartRateMonitor />
+                <TbHeartRateMonitor className="size-5" />
                 Diagnostics
               </Button>
 
-              {/* <Button className="w-[40%]" onClick={handleClick} bg="green.solid"> */}
               <Button
-                className="w-[40%]"
+                flex={2}
                 onClick={handleClick}
                 variant="subtle"
                 colorPalette="green"
                 bg="colorPalette.solid"
+                size="lg"
               >
-                <TbSearch />
-                Run Search
+                <TbSearch className="size-5" />
+                Run Background Check
               </Button>
-            </Flex>
-          </GridItem>
-        </Grid>
+            </HStack>
+          </VStack>
+        </VStack>
       </Container>
-    </>
+    </Box>
   );
 }

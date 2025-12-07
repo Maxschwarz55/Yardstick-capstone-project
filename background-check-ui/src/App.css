@@ -1,5 +1,5 @@
 @theme {
-  --font-primary: theme('colors.zinc.500');
+  --font-primary: theme("colors.zinc.500");
 }
 
 :root {
