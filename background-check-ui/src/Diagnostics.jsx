@@ -5,8 +5,8 @@ import { Box, Heading, Button, Table, VStack, } from "@chakra-ui/react";
 import "./Diagnostics.css";
 //import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-const API = `http://${process.env.REACT_APP_API_URL}` || "http://localhost:4000";
 
+  const API = process.env.REACT_APP_API_URL? `http://${process.env.REACT_APP_API_URL}` : "http://localhost:4000";
 export default function Diagnostics() {
   //const location = useLocation();
   const navigate = useNavigate();

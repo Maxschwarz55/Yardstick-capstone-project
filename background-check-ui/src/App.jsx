@@ -116,7 +116,10 @@ function Home() {
                 <VStack gap={5} align="stretch">
                   <HStack gap={4}>
                     <Field.Root required flex={1}>
-                      <Field.Label>First Name</Field.Label>
+                      <Field.Label>
+                        First Name
+                        <Field.RequiredIndicator />
+                      </Field.Label>
                       <Input
                         variant="subtle"
                         type="text"
@@ -138,7 +141,10 @@ function Home() {
                     </Field.Root>
 
                     <Field.Root required flex={1}>
-                      <Field.Label>Last Name</Field.Label>
+                      <Field.Label>
+                        Last Name
+                        <Field.RequiredIndicator />
+                      </Field.Label>
                       <Input
                         type="text"
                         placeholder="White"

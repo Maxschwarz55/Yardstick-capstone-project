@@ -17,176 +17,174 @@ import blankPhoto from "./Blank-Profile-Picture.webp";
 import { getAiSummary } from "./api";
 
 export default function Results() {
-    const { state } = useLocation();
-    const navigate = useNavigate();
-    const firstName = state?.firstName;
-    const lastName = state?.lastName;
-    const middleName = state?.middleName;
-    const dob = state?.dob;
-    const selfieKey = state?.selfieKey;
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const firstName = state?.firstName;
+  const lastName = state?.lastName;
+  const middleName = state?.middleName;
+  const dob = state?.dob;
+  const selfieKey = state?.selfieKey;
 
-    const [loading, setLoading] = useState(true);
-    const [people, setPeople] = useState([]);
-    const [error, setError] = useState("");
-    const [summary, setSummary] = useState('');
-    const [summaryLoading, setSummaryLoading] = useState(false);
-    const [summaryError, setSummaryError] = useState('');
-    const [similarityRan, setSimilarityRan] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [people, setPeople] = useState([]);
+  const [error, setError] = useState("");
+  const [summary, setSummary] = useState("");
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState("");
+  const [similarityRan, setSimilarityRan] = useState(false);
 
-    const API = `http://${process.env.REACT_APP_API_URL}` || "http://localhost:4000";
 
-    // Fetch person record by name
-    useEffect(() => {
-        if (!firstName || !lastName) {
-            navigate("/");
-            return;
+  const API = process.env.REACT_APP_API_URL? `http://${process.env.REACT_APP_API_URL}` : "http://localhost:4000";
+  // Fetch person record by name
+  useEffect(() => {
+    if (!firstName || !lastName) {
+      navigate("/");
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        let url;
+
+        if (middleName) {
+          url = `${API}/records/search/by-name?first=${encodeURIComponent(
+            firstName
+          )}&middle=${encodeURIComponent(
+            middleName
+          )}&last=${encodeURIComponent(lastName)}&limit=50&page=1`;
+        } else {
+          url = `${API}/records/search/by-name?first=${encodeURIComponent(
+            firstName
+          )}&last=${encodeURIComponent(lastName)}&limit=50&page=1`;
         }
-        let cancelled = false;
-        (async () => {
-            try {
-                setLoading(true);
-                setError("");
 
-                let url;
+        const res = await fetch(url);
+        const ct = res.headers.get("content-type") || "";
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+        }
+        if (!ct.includes("application/json")) {
+          const text = await res.text().catch(() => "");
+          throw new Error(`Expected JSON, got: ${text.slice(0, 120)}…`);
+        }
 
-                if (middleName){
-                    url = `${API}/records/search/by-name?first=${encodeURIComponent(
-                        firstName
-                    )}&middle=${encodeURIComponent(
-                        middleName
-                    )}&last=${encodeURIComponent(lastName)}&limit=50&page=1`;
-                } else {
+        const json = await res.json();
+        let matches = json?.data ?? [];
 
-                
-                url = `${API}/records/search/by-name?first=${encodeURIComponent(
-                    firstName
-                )}&last=${encodeURIComponent(lastName)}&limit=50&page=1`;
-            }
+        if (middleName && middleName.trim() !== "") {
+          const norm = (s) => (s || "").trim().toLowerCase();
+          matches = matches.filter(
+            (p) => norm(p.middle_name) === norm(middleName)
+          );
+        }
+        if (!cancelled) setPeople(matches);
+      } catch (e) {
+        if (!cancelled) setError(e.message ?? "Failed to fetch");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [firstName, lastName, middleName, navigate, API]);
 
-                const res = await fetch(url);
-                const ct = res.headers.get("content-type") || "";
-                if (!res.ok) {
-                    const text = await res.text().catch(() => "");
-                    throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
-                }
-                if (!ct.includes("application/json")) {
-                    const text = await res.text().catch(() => "");
-                    throw new Error(`Expected JSON, got: ${text.slice(0, 120)}…`);
-                }
+  const runSimilarityCheck = useCallback(async () => {
+    if (people.length === 0) return;
 
-                const json = await res.json();
-                //const firstMatch = json?.data?.[0] ?? null;
-                let matches = json?.data ?? [];
+    const inputPerson = {
+      first_name: firstName || "",
+      last_name: lastName || "",
+      middle_name: middleName || "",
+      dob: dob || null,
+      photo_s3_key: selfieKey || null,
+    };
+    const scoredResults = [];
+    for (const dbPerson of people) {
+      try {
+        const res = await fetch(`${API}/similarity/check`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            input_person: inputPerson,
+            db_person: {
+              first_name: dbPerson.first_name,
+              last_name: dbPerson.last_name,
+              middle_name: dbPerson.middle_name,
+              dob: dbPerson.dob,
+              photo_s3_key: dbPerson.photo_s3_key || null,
+            },
+          }),
+        });
+        const result = await res.json();
+        const similarity = result?.scoreBreakdown?.total ?? 0;
 
-                if (middleName && middleName.trim() !== "") {
-                    const norm = (s) => (s || "").trim().toLowerCase();
-                    matches = matches.filter(p => norm(p.middle_name) === norm(middleName));
-                }
-                if (!cancelled) setPeople(matches);
-
-            } catch (e) {
-                if (!cancelled) setError(e.message ?? "Failed to fetch");
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
-        })();
-        return () => { cancelled = true; };
-    }, [firstName, lastName, middleName, navigate, API]);
-
-    const runSimilarityCheck = useCallback(async () => {
-        if (people.length === 0) return;
-
-        const inputPerson = {
-            first_name: firstName || "",
-            last_name: lastName || "",
-            middle_name: middleName || "",
-            dob: dob || null,
-            photo_s3_key: selfieKey || null,
+        const decision = result?.decision ?? "—";
+        const enrichedPerson = {
+          ...dbPerson,
+          similarityScore: similarity,
+          similarityDecision: decision,
         };
-        const scoredResults = [];
-        for (const dbPerson of people) {
-            try {
-                const res = await fetch(`${API}/similarity/check`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        input_person: inputPerson,
-                        db_person: {
-                            first_name: dbPerson.first_name,
-                            last_name: dbPerson.last_name,
-                            middle_name: dbPerson.middle_name,
-                            dob: dbPerson.dob,
-                            photo_s3_key: dbPerson.photo_s3_key || null,
-                        }
-                    })
-                });
-                const result = await res.json();
-                const similarity = result?.scoreBreakdown?.total ?? 0;
 
-                //attach similarity score to the person object
-                const decision = result?.decision ?? "—";
-                const enrichedPerson = {
-                    ...dbPerson,
-                    similarityScore: similarity,
-                    similarityDecision: decision
-                };
+        scoredResults.push({
+          person: enrichedPerson,
+          similarity,
+          raw: result,
+        });
+      } catch (err) {
+        console.error("Similarity check failed for:", dbPerson, err);
+        scoredResults.push({
+          person: dbPerson,
+          similarity: 0,
+          similarityDecision: "-",
+          raw: null,
+        });
+      }
+    }
 
-                scoredResults.push({
-                    person: enrichedPerson,
-                    similarity,
-                    raw: result
-                });
-            } catch (err) {
-                console.error("Similarity check failed for:", dbPerson, err);
-                scoredResults.push({
-                    person: dbPerson,
-                    similarity: 0,
-                    similarityDecision: "-",
-                    raw: null
-                });
-            }
-        }
+    // Highest score first
+    scoredResults.sort((a, b) => b.similarity - a.similarity);
+    const sorted = scoredResults.map((x) => x.person);
+    setPeople(sorted);
+  }, [people, firstName, lastName, middleName, dob, selfieKey, API]);
 
-        //highest score first
-        scoredResults.sort((a, b) => b.similarity - a.similarity);
-        const sorted = scoredResults.map(x => x.person);
-        setPeople(sorted);
-    }, [people, firstName, lastName, middleName, dob, selfieKey, API]);
+  useEffect(() => {
+    console.log("Person record:", people);
+    if (!similarityRan && people.length > 0) {
+      runSimilarityCheck().then(() => setSimilarityRan(true));
+    }
+  }, [people, runSimilarityCheck, similarityRan]);
 
+  // When we have a person, fetch the AI summary
+  useEffect(() => {
+    if (people.length === 0) return;
 
-    useEffect(() => {
-        console.log("Person record:", people);
-        if (!similarityRan && people.length > 0) {
-            runSimilarityCheck().then(() => setSimilarityRan(true));
-        }
-    }, [people, runSimilarityCheck, similarityRan]);
-
-
-    // When we have a person, fetch the AI summary
-    useEffect(() => {
-        if(people.length === 0) return;
-
-        let cancelled = false;
-        (async () => {
-            try {
-                setSummaryLoading(true);
-                setSummary('');
-                setSummaryError('');
-                // your record’s id field might be id or person_id — handle both
-                const pid = people[0].person_id;
-                if (!pid) return;
-                console.log("Sending person_id =", pid);
-                const ai = await getAiSummary(pid);
-                if (!cancelled) setSummary(ai.summary || "");
-            } catch (e) {
-                console.error("ai-summary failed:", e);
-                if (!cancelled) setSummaryError('AI summary failed');
-            } finally {
-                if (!cancelled) setSummaryLoading(false);
-            }
-        })();
-        return () => { cancelled = true; };
-    }, [people]);
+    let cancelled = false;
+    (async () => {
+      try {
+        setSummaryLoading(true);
+        setSummary("");
+        setSummaryError("");
+        const pid = people[0].person_id;
+        if (!pid) return;
+        console.log("Sending person_id =", pid);
+        const ai = await getAiSummary(pid);
+        if (!cancelled) setSummary(ai.summary || "");
+      } catch (e) {
+        console.error("ai-summary failed:", e);
+        if (!cancelled) setSummaryError("AI summary failed");
+      } finally {
+        if (!cancelled) setSummaryLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [people]);
 
   if (loading)
     return (
@@ -207,7 +205,7 @@ export default function Results() {
       </Box>
     );
 
-  if (!person)
+  if (people.length === 0)
     return (
       <Box p={8} textAlign="center">
         <Heading mb={4}>No results</Heading>
@@ -215,225 +213,46 @@ export default function Results() {
       </Box>
     );
 
-  const photoSrc = person.photo_url || "/adam_jones.png";
-
   return (
     <Box p={8} maxW="1200px" mx="auto">
-      <Heading mb={6}>
-        Background Check Results for {person.first_name ?? firstName}{" "}
-        {person.last_name ?? lastName}
-      </Heading>
-
-      <Flex gap={6} mb={6} direction={{ base: "column", md: "row" }}>
-        <Image
-          src={photoSrc}
-          onError={(e) => {
-            e.currentTarget.src = blankPhoto;
-          }}
-          alt="Profile"
-          width="200px"
-          height="250px"
-          objectFit="cover"
-          borderRadius="md"
-        />
-        <Card.Root flex="1" p={4}>
-          {summaryLoading ? (
-            <VStack align="stretch" gap={2}>
-              <Spinner size="sm" />
-              <SkeletonText noOfLines={3} gap={2} />
-            </VStack>
-          ) : summary ? (
-            <Text>{summary}</Text>
-          ) : summaryError ? (
-            <Text color="gray.500">{summaryError}</Text>
-          ) : (
-            <Text color="gray.500">AI summary not available</Text>
-          )}
-        </Card.Root>
-      </Flex>
-
-      {selfieKey && similarityResult && (
-        <Section title="Similarity Check">
-          <Text>
-            Similarity Score: <strong>{similarityResult?.score ?? "—"}</strong>
-          </Text>
-          <Text>Status: {similarityResult?.status ?? "—"}</Text>
-        </Section>
-      )}
-
-      <Section title="Description">
-        <Text>
-          Height: {person.height || "—"}, Weight: {person.weight ?? "—"} lbs,
-          Hair: {person.hair || "—"}, Eyes: {person.eyes || "—"}
-        </Text>
-        <Text>
-          Sex: {person.sex || "—"} | Race: {person.race || "—"} | Ethnicity:{" "}
-          {person.ethnicity || "—"} | DOB: {fmt(person.dob)}
-        </Text>
-        <Text>
-          Offender ID: {person.offender_id || "—"} | Risk Level:{" "}
-          {person.risk_level ?? "—"} | Designation: {person.designation || "—"}
-        </Text>
-        {person.photo_date && <Text>Photo Date: {fmt(person.photo_date)}</Text>}
-        {person.last_updated && (
-          <Text>Last Updated: {fmt(person.last_updated)}</Text>
+      <Heading mb={6}>Background Check Results</Heading>
+      {/* AI Summary Section */}
+      <Card.Root
+        mb={6}
+        p={4}
+        borderWidth="0.5px"
+        borderColor="colorPalette.border"
+        borderRadius="md"
+        colorPalette="gray"
+      >
+        {summaryLoading ? (
+          <VStack align="stretch" gap={2}>
+            <Spinner size="sm" />
+            <SkeletonText noOfLines={3} gap={2} />
+          </VStack>
+        ) : summary ? (
+          <Text>{summary}</Text>
+        ) : summaryError ? (
+          <Text color="gray.500">{summaryError}</Text>
+        ) : (
+          <Text color="gray.500">AI summary not available</Text>
         )}
-      </Section>
-
-      <Section title="Last Known Address">
-        <Text>{formatPrimaryAddress(person.addresses)}</Text>
-      </Section>
-
-      <Section title="All Addresses">
-        <CustomList
-          data={person.addresses}
-          empty="None Reported"
-          render={(a, i) => (
-            <List.Item key={i}>
-              <strong>{a.type ?? "ADDR"}</strong>: {lineAddr(a)}
-            </List.Item>
-          )}
-        />
-      </Section>
-
-      <Section title="Current Convictions">
-        <CustomList
-          data={person.convictions}
-          empty="No convictions"
-          render={(c, i) => (
-            <List.Item key={i} mb={3}>
-              <VStack align="stretch" gap={1}>
-                <Text>
-                  <strong>{c.title || "—"}</strong>{" "}
-                  {c.class ? `Class ${c.class}` : ""}{" "}
-                  {c.category ? `(${c.category})` : ""}
-                </Text>
-                {c.description && <Text>{c.description}</Text>}
-                <Text fontSize="sm" color="gray.600">
-                  PL {c.pl_section || "—"}
-                  {c.subsection ? `(${c.subsection})` : ""} | Counts:{" "}
-                  {c.counts ?? "—"} | Crime: {fmt(c.date_of_crime)} | Convicted:{" "}
-                  {fmt(c.date_convicted)} | Computer used:{" "}
-                  {bool(c.computer_used)} | Pornography involved:{" "}
-                  {bool(c.pornography_involved)}
-                </Text>
-                {c.victim_sex_age && (
-                  <Text fontSize="sm" color="gray.600">
-                    Victim: {c.victim_sex_age}
-                  </Text>
-                )}
-                {(c.arresting_agency ||
-                  c.relationship_to_victim ||
-                  c.weapon_used ||
-                  c.force_used) && (
-                  <Text fontSize="sm" color="gray.600">
-                    {c.arresting_agency
-                      ? `Arresting agency: ${c.arresting_agency}`
-                      : ""}
-                    {c.relationship_to_victim
-                      ? ` | Relationship: ${c.relationship_to_victim}`
-                      : ""}
-                    {c.weapon_used ? ` | Weapon: ${c.weapon_used}` : ""}
-                    {c.force_used ? ` | Force: ${c.force_used}` : ""}
-                  </Text>
-                )}
-                {(c.sentence_term || c.sentence_type) && (
-                  <Text fontSize="sm" color="gray.600">
-                    Sentence: {c.sentence_term || "—"}{" "}
-                    {c.sentence_type ? `(${c.sentence_type})` : ""}
-                  </Text>
-                )}
-              </VStack>
-            </List.Item>
-          )}
-        />
-      </Section>
-
-      <Section title="Previous Conviction(s) Requiring Registration">
-        <CustomList
-          data={person.previous_convictions}
-          empty="None Reported"
-          render={(pc, i) => <List.Item key={i}>{pc.title || "—"}</List.Item>}
-        />
-      </Section>
-
-      <Section title="Supervising Agency Information">
-        <CustomList
-          data={person.supervising_agencies}
-          empty="None Reported"
-          render={(sa, i) => (
-            <List.Item key={i}>{sa.agency_name || "—"}</List.Item>
-          )}
-        />
-      </Section>
-
-      <Section title="Special Conditions of Supervision">
-        <CustomList
-          data={person.special_conditions}
-          empty="None Reported"
-          render={(sc, i) => (
-            <List.Item key={i}>{sc.description || "—"}</List.Item>
-          )}
-        />
-      </Section>
-
-      <Section title="Maximum Expiration Date/Post Release Supervision Date of Sentence">
-        <CustomList
-          data={person.max_expiration_dates}
-          empty="None Reported"
-          render={(me, i) => (
-            <List.Item key={i}>{me.description || "—"}</List.Item>
-          )}
-        />
-      </Section>
-
-      <Section title="Scars / Marks / Tattoos">
-        <CustomList
-          data={person.scars_marks}
-          empty="None Reported"
-          render={(sm, i) => (
-            <List.Item key={i}>
-              {sm.description || "—"}
-              {sm.location ? ` — ${sm.location}` : ""}
-            </List.Item>
-          )}
-        />
-      </Section>
-
-      <Section title="Aliases / Additional Names">
-        <CustomList
-          data={person.aliases}
-          empty="None Reported"
-          render={(x, i) => (
-            <List.Item key={i}>
-              {[x.first_name, x.middle_name, x.last_name]
-                .filter(Boolean)
-                .join(" ")}
-            </List.Item>
-          )}
-        />
-      </Section>
-
-      <Section title="Vehicles">
-        <CustomList
-          data={person.vehicles}
-          empty="None Reported"
-          render={(v, i) => (
-            <List.Item key={i}>
-              {v.year || "—"} {v.make_model || ""} — {v.color || "—"} (
-              {v.state || "—"} • {v.plate_number || "—"})
-            </List.Item>
-          )}
-        />
-      </Section>
-
+      </Card.Root>
+      <Heading size="lg" mb={4}>
+        Matched Individuals ({people.length})
+      </Heading>
+      {/* Person Cards */}
+      <VStack gap={6} align="stretch">
+        {people.map((p, idx) => (
+          <PersonEntry key={p.person_id || idx} person={p} />
+        ))}
+      </VStack>
       <Button
         variant="subtle"
         colorPalette="orange"
         backgroundColor="colorPalette.subtle"
         color="colorPalette.fg"
         className="ring-1 ring-orange-500/50 px-md"
-
         onClick={() => navigate("/")}
         mt={6}
       >
@@ -443,22 +262,213 @@ export default function Results() {
   );
 }
 
-// Helper components
-function Section({ title, children }) {
+function PersonEntry({ person }) {
+  const photoSrc =
+    person.mugshot_front_url ||
+    person.mugshot_side_url ||
+    person.photo_url ||
+    blankPhoto;
+
   return (
     <Card.Root
-      mb={6}
-      p={4}
+      p={6}
       borderWidth="0.5px"
       borderColor="colorPalette.border"
       borderRadius="md"
       colorPalette="gray"
     >
+      <VStack align="stretch" gap={4}>
+        <Heading size="xl">
+          {person.first_name} {person.last_name}
+        </Heading>
+
+        <Flex gap={6} direction={{ base: "column", md: "row" }}>
+          <Image
+            src={photoSrc}
+            onError={(e) => {
+              e.currentTarget.src = blankPhoto;
+            }}
+            alt="Profile"
+            width="200px"
+            height="250px"
+            objectFit="cover"
+            borderRadius="md"
+          />
+
+          <VStack align="stretch" gap={2} flex={1}>
+            {person.similarityScore !== undefined && (
+              <Box>
+                <Text fontWeight="semibold">
+                  Similarity: {person.similarityScore} / 12
+                </Text>
+              </Box>
+            )}
+
+            {person.similarityDecision && (
+              <Text>
+                Similarity Decision:{" "}
+                <strong>{person.similarityDecision}</strong>
+              </Text>
+            )}
+          </VStack>
+        </Flex>
+
+        <Section title="Description">
+          <Text>
+            Height: {person.height || "—"}, Weight: {person.weight ?? "—"} lbs,
+            Hair: {person.hair || "—"}, Eyes: {person.eyes || "—"}
+          </Text>
+          <Text>
+            Sex: {person.sex || "—"} | Race: {person.race || "—"} | Ethnicity:{" "}
+            {person.ethnicity || "—"} | DOB: {fmt(person.dob)}
+          </Text>
+          <Text>
+            Offender ID: {person.offender_id || "—"} | Risk Level:{" "}
+            {person.risk_level ?? "—"} | Designation:{" "}
+            {person.designation || "—"}
+          </Text>
+          {person.photo_date && (
+            <Text>Photo Date: {fmt(person.photo_date)}</Text>
+          )}
+          {person.last_updated && (
+            <Text>Last Updated: {fmt(person.last_updated)}</Text>
+          )}
+        </Section>
+
+        <Section title="Last Known Address">
+          <Text>{formatPrimaryAddress(person.addresses)}</Text>
+        </Section>
+
+        <Section title="All Addresses">
+          <CustomList
+            data={person.addresses}
+            empty="None Reported"
+            render={(a, i) => (
+              <List.Item key={i}>
+                <strong>{a.type ?? "ADDR"}</strong>: {lineAddr(a)}
+              </List.Item>
+            )}
+          />
+        </Section>
+
+        <Section title="Current Convictions">
+          <CustomList
+            data={person.convictions}
+            empty="No convictions"
+            render={(c, i) => (
+              <List.Item key={i} mb={3}>
+                <VStack align="stretch" gap={1}>
+                  <Text>
+                    <strong>{c.title || "—"}</strong>{" "}
+                    {c.class ? `Class ${c.class}` : ""}{" "}
+                    {c.category ? `(${c.category})` : ""}
+                  </Text>
+                  {c.description && <Text>{c.description}</Text>}
+                  <Text fontSize="sm" color="gray.600">
+                    PL {c.pl_section || "—"}
+                    {c.subsection ? `(${c.subsection})` : ""} | Counts:{" "}
+                    {c.counts ?? "—"} | Crime: {fmt(c.date_of_crime)} |
+                    Convicted: {fmt(c.date_convicted)} | Computer used:{" "}
+                    {bool(c.computer_used)} | Pornography involved:{" "}
+                    {bool(c.pornography_involved)}
+                  </Text>
+                </VStack>
+              </List.Item>
+            )}
+          />
+        </Section>
+
+        <Section title="Previous Conviction(s) Requiring Registration">
+          <CustomList
+            data={person.previous_convictions}
+            empty="None Reported"
+            render={(pc, i) => <List.Item key={i}>{pc.title || "—"}</List.Item>}
+          />
+        </Section>
+
+        <Section title="Supervising Agency Information">
+          <CustomList
+            data={person.supervising_agencies}
+            empty="None Reported"
+            render={(sa, i) => (
+              <List.Item key={i}>{sa.agency_name || "—"}</List.Item>
+            )}
+          />
+        </Section>
+
+        <Section title="Special Conditions of Supervision">
+          <CustomList
+            data={person.special_conditions}
+            empty="None Reported"
+            render={(sc, i) => (
+              <List.Item key={i}>{sc.description || "—"}</List.Item>
+            )}
+          />
+        </Section>
+
+        <Section title="Maximum Expiration Date/Post Release Supervision Date of Sentence">
+          <CustomList
+            data={person.max_expiration_dates}
+            empty="None Reported"
+            render={(me, i) => (
+              <List.Item key={i}>{me.description || "—"}</List.Item>
+            )}
+          />
+        </Section>
+
+        <Section title="Scars / Marks / Tattoos">
+          <CustomList
+            data={person.scars_marks}
+            empty="None Reported"
+            render={(sm, i) => (
+              <List.Item key={i}>
+                {sm.description || "—"}
+                {sm.location ? ` — ${sm.location}` : ""}
+              </List.Item>
+            )}
+          />
+        </Section>
+
+        <Section title="Aliases / Additional Names">
+          <CustomList
+            data={person.aliases}
+            empty="None Reported"
+            render={(x, i) => (
+              <List.Item key={i}>
+                {[x.first_name, x.middle_name, x.last_name]
+                  .filter(Boolean)
+                  .join(" ")}
+              </List.Item>
+            )}
+          />
+        </Section>
+
+        <Section title="Vehicles">
+          <CustomList
+            data={person.vehicles}
+            empty="None Reported"
+            render={(v, i) => (
+              <List.Item key={i}>
+                {v.year || "—"} {v.make_model || ""} — {v.color || "—"} (
+                {v.state || "—"} • {v.plate_number || "—"})
+              </List.Item>
+            )}
+          />
+        </Section>
+      </VStack>
+    </Card.Root>
+  );
+}
+
+// Helper components
+function Section({ title, children }) {
+  return (
+    <Box>
       <Heading size="md" mb={3}>
         {title}
       </Heading>
       {children}
-    </Card.Root>
+    </Box>
   );
 }
 
