@@ -6,6 +6,8 @@ export default {
         'middle_name', p.middle_name,
         'last_name', p.last_name,
         'dob', p.dob,
+        'age', p.age,
+        'last_updated', p.last_updated,
         'sex', p.sex,
         'race', p.race,
         'ethnicity', p.ethnicity,
@@ -17,6 +19,17 @@ export default {
         'risk_level', p.risk_level,
         'designation', p.designation,
         'photo_date', p.photo_date,
+        'photo_url', p.photo_url,
+        'photo_type', p.photo_type,
+        'offender_url', p.offender_url,
+        'skin_tone', p.skin_tone,
+        'build', p.build,
+        'release_date', p.release_date,
+        'supervision_comments', p.supervision_comments,
+        'absconder', p.absconder,
+        'jurisdiction_id', p.jurisdiction_id,
+        'mugshot_front_url', p.mugshot_front_url,
+        'mugshot_side_url', p.mugshot_side_url,
 
         'addresses', COALESCE((
           SELECT json_agg(row_to_json(a) ORDER BY a.type)
@@ -101,6 +114,8 @@ export default {
         'middle_name', p.middle_name,
         'last_name', p.last_name,
         'dob', p.dob,
+        'age', p.age,
+        'last_updated', p.last_updated,
         'sex', p.sex,
         'race', p.race,
         'ethnicity', p.ethnicity,
@@ -112,6 +127,17 @@ export default {
         'risk_level', p.risk_level,
         'designation', p.designation,
         'photo_date', p.photo_date,
+        'photo_url', p.photo_url,
+        'photo_type', p.photo_type,
+        'offender_url', p.offender_url,
+        'skin_tone', p.skin_tone,
+        'build', p.build,
+        'release_date', p.release_date,
+        'supervision_comments', p.supervision_comments,
+        'absconder', p.absconder,
+        'jurisdiction_id', p.jurisdiction_id,
+        'mugshot_front_url', p.mugshot_front_url,
+        'mugshot_side_url', p.mugshot_side_url,
 
         'addresses', COALESCE((
           SELECT json_agg(row_to_json(a) ORDER BY a.type)

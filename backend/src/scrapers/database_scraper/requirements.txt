@@ -4,4 +4,8 @@ itemadapter==0.12.2
 psycopg2==2.9.11
 python-dotenv==1.2.1
 scrapy==2.13.4
+<<<<<<< HEAD
 scrapy_playwright
+=======
+scrapy-playwright
+>>>>>>> main

@@ -25,6 +25,8 @@ jobs:
           npm install
 
       - name: Build Frontend
+        env:
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
         run: |
           cd background-check-ui
           npm run build
@@ -44,7 +46,14 @@ jobs:
           python3 -m venv backend/venv
           backend/venv/bin/pip install -r backend/src/scrapers/database_scraper/requirements.txt
 
-          
+      - name: Fix directory permissions
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH }}
+          script: |
+            sudo chown -R ubuntu:ubuntu /mnt/backend/Yardstick-capstone-project
       
       - name: Copy files to EC2
         uses: appleboy/scp-action@master
@@ -57,6 +66,7 @@ jobs:
           overwrite: true  
           strip_components: 0
           debug: true
+          exclude: ".git,.gitignore,node_modules,.env,.env.local,**/.DS_Store"
           
       - name: Reload systemd and restart service
         uses: appleboy/ssh-action@master

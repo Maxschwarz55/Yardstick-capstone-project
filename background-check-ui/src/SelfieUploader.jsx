@@ -9,7 +9,7 @@ export default function SelfieUploader({ personId, onUploadComplete }) {
 
     setStatus("Requesting upload URL...");
 
-    const res = await fetch("/api/upload-selfie", {
+    const res = await fetch("/selfie/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ personId })

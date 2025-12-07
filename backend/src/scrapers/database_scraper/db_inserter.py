@@ -5,17 +5,43 @@ from dotenv import load_dotenv
 from scrapy.crawler import CrawlerProcess
 from scrapy import signals
 from scrapy.signalmanager import dispatcher
+from sshtunnel import SSHTunnelForwarder
 
-# Load .env from backend/.env (3 levels up from this file)
-load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '..', '.env'))
+#Load .env from backend/.env (3 levels up from this file)
+backend_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+load_dotenv(os.path.join(backend_dir, '.env'))
+
+ssh_key_path = os.getenv("SSH_KEY_PATH")
+if ssh_key_path and not os.path.isabs(ssh_key_path):
+    ssh_key_path = os.path.join(backend_dir, ssh_key_path)
+
+SSH_CONFIG = {
+    "ssh_host": os.getenv("SSH_HOST"),
+    "ssh_port": int(os.getenv("SSH_PORT", 22)),
+    "ssh_user": os.getenv("SSH_USER"),
+    "ssh_key_path": ssh_key_path
+}
 
 DB_CONFIG = {
     "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "database": os.getenv("DB_NAME"),
+    "password": os.getenv("DB_PWD"),
+    "database": os.getenv("DB_DB"),
     "host": os.getenv("DB_HOST"),
     "port": int(os.getenv("DB_PORT"))
 }
+
+tunnel = SSHTunnelForwarder(
+    (SSH_CONFIG["ssh_host"], SSH_CONFIG["ssh_port"]),
+    ssh_username=SSH_CONFIG["ssh_user"],
+    ssh_pkey=SSH_CONFIG["ssh_key_path"],
+    remote_bind_address=(os.getenv("DB_HOST", "localhost"), int(os.getenv("DB_PORT", 5432))),
+    local_bind_address=('localhost', 0)
+)
+
+tunnel.start()
+
+DB_CONFIG["host"] = "localhost"
+DB_CONFIG["port"] = tunnel.local_bind_port
 
 FIELD_MAPPINGS = {
     #Person fields - API format (nsopw-api.ojp.gov)
@@ -61,6 +87,8 @@ FIELD_MAPPINGS = {
     'Supervising Agent': ('supervising_agency', 'agency_name'),
     'Supervision Comments': ('person', 'supervision_comments'),
     'Release Date': ('person', 'release_date'),
+    'Mugshot Front': ('person', 'mugshot_front_url'),
+    'Mugshot Side': ('person', 'mugshot_side_url'),
 
     #Address fields - API format
     'type': ('address', 'type'),
@@ -99,9 +127,6 @@ FIELD_MAPPINGS = {
     'modelDescription': ('vehicle', 'model'),
     'vehicleYear': ('vehicle', 'year'),
 
-    #Mugshot fields
-    'Mugshot Front': ('mugshot', 'front_url'),
-    'Mugshot Side': ('mugshot', 'side_url')
 
 }
 
@@ -136,6 +161,7 @@ def run_spider(offender_data: dict):
         return spider_instance.result
     return None
 
+
 def insert_nsor_data(offender_data):
     conn = psycopg2.connect(**DB_CONFIG)
     cursor = conn.cursor()
@@ -157,6 +183,12 @@ def insert_nsor_data(offender_data):
                     table, field = FIELD_MAPPINGS[nested_key]
                     add_field(table, field, nested_value)
 
+        if 'mugshots' in offender_data and isinstance(offender_data['mugshots'], dict):
+            for nested_key, nested_value in offender_data['mugshots'].items():
+                if nested_key in FIELD_MAPPINGS:
+                    table, field = FIELD_MAPPINGS[nested_key]
+                    add_field(table, field, nested_value)
+
         for key, value in offender_data.items():
             if key in FIELD_MAPPINGS and not isinstance(value, (dict, list)):
                 table, field = FIELD_MAPPINGS[key]
@@ -166,21 +198,26 @@ def insert_nsor_data(offender_data):
         if person_data:
             # Check if person already exists based on first_name, last_name, and dob
             # This prevents duplicate entries for the same person
+            #TODO use person matching algo
             check_fields = []
             check_values = []
+            first_name_exists = False
+            last_name_exists = False
 
             if 'first_name' in person_data and person_data['first_name']:
                 check_fields.append("first_name = %s")
                 check_values.append(person_data['first_name'])
+                first_name_exists = True
             if 'last_name' in person_data and person_data['last_name']:
                 check_fields.append("last_name = %s")
                 check_values.append(person_data['last_name'])
+                last_name_exists = True
             if 'dob' in person_data and person_data['dob']:
                 check_fields.append("dob = %s")
                 check_values.append(person_data['dob'])
 
             # Only check for duplicates if we have at least first name, last name
-            if len(check_fields) >= 2:
+            if len(check_fields) >= 2 and first_name_exists and last_name_exists:
                 check_query = f"SELECT person_id FROM person WHERE {' AND '.join(check_fields)}"
                 cursor.execute(check_query, check_values)
                 existing_person = cursor.fetchone()
@@ -371,13 +408,6 @@ def insert_nsor_data(offender_data):
             query = f"INSERT INTO vehicle ({columns}) VALUES ({placeholders})"
             cursor.execute(query, list(vehicle_data.values()))
 
-        if 'mugshot' in tables_data:
-            mugshot_data = tables_data['mugshot']
-            mugshot_data['person_id'] = person_id
-            columns = ', '.join(mugshot_data.keys())
-            placeholders = ', '.join(['%s'] * len(mugshot_data))
-            query = f"INSERT INTO mugshot ({columns}) VALUES ({placeholders})"
-            cursor.execute(query, list(mugshot_data.values()))
 
         conn.commit()
         print(f"Data for person_id {person_id} inserted successfully!")

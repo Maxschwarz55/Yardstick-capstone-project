@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -17,128 +17,176 @@ import blankPhoto from "./Blank-Profile-Picture.webp";
 import { getAiSummary } from "./api";
 
 export default function Results() {
-  const { state } = useLocation();
-  const navigate = useNavigate();
-  const firstName = state?.firstName;
-  const lastName = state?.lastName;
-  const selfieKey = state?.selfieKey;
+    const { state } = useLocation();
+    const navigate = useNavigate();
+    const firstName = state?.firstName;
+    const lastName = state?.lastName;
+    const middleName = state?.middleName;
+    const dob = state?.dob;
+    const selfieKey = state?.selfieKey;
 
-  const [loading, setLoading] = useState(true);
-  const [person, setPerson] = useState(null);
-  const [error, setError] = useState("");
-  const [similarityResult, setSimilarityResult] = useState(null);
-  const [summary, setSummary] = useState("");
-  const [summaryLoading, setSummaryLoading] = useState(false);
-  const [summaryError, setSummaryError] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [people, setPeople] = useState([]);
+    const [error, setError] = useState("");
+    const [summary, setSummary] = useState('');
+    const [summaryLoading, setSummaryLoading] = useState(false);
+    const [summaryError, setSummaryError] = useState('');
+    const [similarityRan, setSimilarityRan] = useState(false);
 
-  const API = "http://localhost:4000";
+    const API = `http://${process.env.REACT_APP_API_URL}` || "http://localhost:4000";
 
-  // Fetch person record by name
-  useEffect(() => {
-    if (!firstName || !lastName) {
-      navigate("/");
-      return;
-    }
-    let cancelled = false;
-    (async () => {
-      try {
-        setLoading(true);
-        setError("");
-        setPerson(null);
-
-        const url = `${API}/records/search/by-name?first=${encodeURIComponent(
-          firstName
-        )}&last=${encodeURIComponent(lastName)}&limit=1&page=1`;
-
-        const res = await fetch(url);
-        const ct = res.headers.get("content-type") || "";
-        if (!res.ok) {
-          const text = await res.text().catch(() => "");
-          throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+    // Fetch person record by name
+    useEffect(() => {
+        if (!firstName || !lastName) {
+            navigate("/");
+            return;
         }
-        if (!ct.includes("application/json")) {
-          const text = await res.text().catch(() => "");
-          throw new Error(`Expected JSON, got: ${text.slice(0, 120)}…`);
+        let cancelled = false;
+        (async () => {
+            try {
+                setLoading(true);
+                setError("");
+
+                let url;
+
+                if (middleName){
+                    url = `${API}/records/search/by-name?first=${encodeURIComponent(
+                        firstName
+                    )}&middle=${encodeURIComponent(
+                        middleName
+                    )}&last=${encodeURIComponent(lastName)}&limit=50&page=1`;
+                } else {
+
+                
+                url = `${API}/records/search/by-name?first=${encodeURIComponent(
+                    firstName
+                )}&last=${encodeURIComponent(lastName)}&limit=50&page=1`;
+            }
+
+                const res = await fetch(url);
+                const ct = res.headers.get("content-type") || "";
+                if (!res.ok) {
+                    const text = await res.text().catch(() => "");
+                    throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+                }
+                if (!ct.includes("application/json")) {
+                    const text = await res.text().catch(() => "");
+                    throw new Error(`Expected JSON, got: ${text.slice(0, 120)}…`);
+                }
+
+                const json = await res.json();
+                //const firstMatch = json?.data?.[0] ?? null;
+                let matches = json?.data ?? [];
+
+                if (middleName && middleName.trim() !== "") {
+                    const norm = (s) => (s || "").trim().toLowerCase();
+                    matches = matches.filter(p => norm(p.middle_name) === norm(middleName));
+                }
+                if (!cancelled) setPeople(matches);
+
+            } catch (e) {
+                if (!cancelled) setError(e.message ?? "Failed to fetch");
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [firstName, lastName, middleName, navigate, API]);
+
+    const runSimilarityCheck = useCallback(async () => {
+        if (people.length === 0) return;
+
+        const inputPerson = {
+            first_name: firstName || "",
+            last_name: lastName || "",
+            middle_name: middleName || "",
+            dob: dob || null,
+            photo_s3_key: selfieKey || null,
+        };
+        const scoredResults = [];
+        for (const dbPerson of people) {
+            try {
+                const res = await fetch(`${API}/similarity/check`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        input_person: inputPerson,
+                        db_person: {
+                            first_name: dbPerson.first_name,
+                            last_name: dbPerson.last_name,
+                            middle_name: dbPerson.middle_name,
+                            dob: dbPerson.dob,
+                            photo_s3_key: dbPerson.photo_s3_key || null,
+                        }
+                    })
+                });
+                const result = await res.json();
+                const similarity = result?.scoreBreakdown?.total ?? 0;
+
+                //attach similarity score to the person object
+                const decision = result?.decision ?? "—";
+                const enrichedPerson = {
+                    ...dbPerson,
+                    similarityScore: similarity,
+                    similarityDecision: decision
+                };
+
+                scoredResults.push({
+                    person: enrichedPerson,
+                    similarity,
+                    raw: result
+                });
+            } catch (err) {
+                console.error("Similarity check failed for:", dbPerson, err);
+                scoredResults.push({
+                    person: dbPerson,
+                    similarity: 0,
+                    similarityDecision: "-",
+                    raw: null
+                });
+            }
         }
 
-        const json = await res.json();
-        const firstMatch = json?.data?.[0] ?? null;
-        if (!cancelled) setPerson(firstMatch);
-      } catch (e) {
-        if (!cancelled) setError(e.message ?? "Failed to fetch");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [firstName, lastName, navigate, API]);
+        //highest score first
+        scoredResults.sort((a, b) => b.similarity - a.similarity);
+        const sorted = scoredResults.map(x => x.person);
+        setPeople(sorted);
+    }, [people, firstName, lastName, middleName, dob, selfieKey, API]);
 
-  // run similarity when person loads & only if selfie uploaded
-  useEffect(() => {
-    async function runSimilarityCheck() {
-      if (!person) return;
-      if (!selfieKey) return;
 
-      const inputPerson = {
-        first_name: person.first_name || "",
-        last_name: person.last_name || "",
-        dob: person.dob || "",
-        photo_s3_key: selfieKey,
-      };
+    useEffect(() => {
+        console.log("Person record:", people);
+        if (!similarityRan && people.length > 0) {
+            runSimilarityCheck().then(() => setSimilarityRan(true));
+        }
+    }, [people, runSimilarityCheck, similarityRan]);
 
-      const dbPerson = {
-        first_name: person.first_name,
-        last_name: person.last_name,
-        dob: person.dob,
-        photo_s3_key: person.photo_url,
-      };
 
-      try {
-        const res = await fetch(`${API}/api/check_similarity`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            input_person: inputPerson,
-            db_person: dbPerson,
-          }),
-        });
-        const data = await res.json();
-        setSimilarityResult(data);
-      } catch (err) {
-        console.error("Similarity check failed", err);
-      }
-    }
-    if (person && selfieKey) {
-      runSimilarityCheck();
-    }
-  }, [person, selfieKey]);
+    // When we have a person, fetch the AI summary
+    useEffect(() => {
+        if(people.length === 0) return;
 
-  // When we have a person, fetch the AI summary
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (!person) return;
-      try {
-        setSummaryLoading(true);
-        setSummary("");
-        setSummaryError("");
-        const pid = person.id ?? person.person_id;
-        if (!pid) return;
-        const ai = await getAiSummary(pid);
-        if (!cancelled) setSummary(ai.summary || "");
-      } catch (e) {
-        console.error("ai-summary failed:", e);
-        if (!cancelled) setSummaryError("AI summary failed");
-      } finally {
-        if (!cancelled) setSummaryLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [person]);
+        let cancelled = false;
+        (async () => {
+            try {
+                setSummaryLoading(true);
+                setSummary('');
+                setSummaryError('');
+                // your record’s id field might be id or person_id — handle both
+                const pid = people[0].person_id;
+                if (!pid) return;
+                console.log("Sending person_id =", pid);
+                const ai = await getAiSummary(pid);
+                if (!cancelled) setSummary(ai.summary || "");
+            } catch (e) {
+                console.error("ai-summary failed:", e);
+                if (!cancelled) setSummaryError('AI summary failed');
+            } finally {
+                if (!cancelled) setSummaryLoading(false);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [people]);
 
   if (loading)
     return (

@@ -1,13 +1,14 @@
 import json
 from curl_cffi import requests
-import time
-import random
+from datetime import datetime
 import scrapy as sc
 from scrapy.http import HtmlResponse
 from scrapy.crawler import CrawlerProcess
+from crawl_row import CrawlRow
 import re
 import sys
 import os
+from diagnostics_inserter import DiagnosticsInserter
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from db_inserter import insert_nsor_data
@@ -30,12 +31,15 @@ class NsorSpider(sc.Spider):
                     raise ValueError(f"Zips must contain only digits: {zip_code}")
 
         self.zips = zips
+        inserter = DiagnosticsInserter()        
 
+
+        self.zip_rows = inserter.get_zip_rows(zips)
+    #   'SELECT COUNT(*)::INT AS count FROM person',
         if batch_size > 5:
             raise ValueError("Batch size must be less than 5")
         else:
             self.batch_size = batch_size
-
 
         self.headers = {
             "accept": "application/json, text/plain, */*",
@@ -56,20 +60,22 @@ class NsorSpider(sc.Spider):
     def start_requests(self):
         offenders = self.query_zips()
 
-
         for offender in offenders:
-            url = offender.get('offenderUri')
-            if self.POR_STATE_PREFIX in url:
-                self.scrape_api_response(url, offender)
-            elif self.COMS_DOC_PREFIX in url:
-                yield sc.Request(
-                  url,
-                  callback=self.parse_offender_page,
-                  meta={'api_data': offender}
-                )
-            else:
-                print("Error: Offender URL does not match specified prefixes")
-
+            for offender in offenders:
+                url = offender.get('offenderUri')
+                if self.POR_STATE_PREFIX in url:
+                    self.scrape_api_response(url, offender)
+                elif self.COMS_DOC_PREFIX in url:
+                    yield sc.Request(
+                    url,
+                    callback=self.parse_offender_page,
+                    meta={'api_data': offender}
+                    )
+                else:
+                    print("Error: Offender URL does not match specified prefixes")
+        diagnostics = DiagnosticsInserter() 
+        diagnostics.insert_zip_rows(self.zip_rows)
+        
 
     
     def query_zips(self):
@@ -115,11 +121,11 @@ class NsorSpider(sc.Spider):
             except Exception as e:
                 print(f"Error: Exception {e}")
                 return None
-            
+
+
         return all_offenders
     
     def scrape_api_response(self, url, offender_data):
-        
         match = re.search(r'offenderMapId=([A-F0-9-]+)', url, re.IGNORECASE)
         if not match:
             print(f"Error: Could not extract offenderMapId from {url}")
@@ -195,7 +201,13 @@ class NsorSpider(sc.Spider):
         except Exception as e:
             print(f"Error writing debug file: {e}")
 
-        insert_nsor_data(full_offender_data)
+        try:
+            #TODO update diagnostics data
+            insert_nsor_data(full_offender_data)
+            for location in full_offender_data["locations"]:
+                self.zip_rows[location]["zipCode"].records_added += 1
+        except Exception as e:
+            print(e)
 
     def clean_scraped_data(self, raw_data: dict) -> dict:
         cleaned = {}
@@ -268,7 +280,14 @@ class NsorSpider(sc.Spider):
         except Exception as e:
             print(f"Error writing debug file: {e}")
 
-        insert_nsor_data(full_offender_data)
+        try:
+            #TODO update diagnostics data
+            insert_nsor_data(full_offender_data)
+            for location in full_offender_data["locations"]:
+                self.zip_rows[location]["zipCode"].records_added += 1
+        except Exception as e:
+            print(e)
+
 
 
 if __name__ == '__main__':
@@ -283,6 +302,15 @@ if __name__ == '__main__':
           'PLAYWRIGHT_LAUNCH_OPTIONS': {
               'headless': False,
           },
+          'DOWNLOAD_TIMEOUT': 180, 
+          'RETRY_ENABLED': True,
+          'RETRY_TIMES': 3,  
+          'RETRY_HTTP_CODES': [500, 502, 503, 504, 408, 429],
+          'CONCURRENT_REQUESTS': 1,
+          'DOWNLOAD_DELAY': 2, 
+          'AUTOTHROTTLE_ENABLED': True,
+          'AUTOTHROTTLE_START_DELAY': 2,
+          'AUTOTHROTTLE_MAX_DELAY': 10,
       })
 
     process.crawl(NsorSpider, zips=['55407', '55408'])
