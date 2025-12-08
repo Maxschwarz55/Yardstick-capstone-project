@@ -23,18 +23,20 @@ def compute_score(input_person, record, face_similarity):
 
     # Name similarity (0-2 points)
     first_sim = fuzz.ratio(
-        utils.default_process(input_person["first_name"]),
-        utils.default_process(record["first_name"])
+        utils.default_process(input_person.get("first_name", "")),
+        utils.default_process(record.get("first_name", ""))
     ) / 100.0
     last_sim = fuzz.ratio(
-        utils.default_process(input_person["last_name"]),
-        utils.default_process(record["last_name"])
+        utils.default_process(input_person.get("last_name", "")),
+        utils.default_process(record.get("last_name", ""))
     ) / 100.0
     average_sim = (first_sim + last_sim) / 2
     score += 2 * average_sim  # average scaling
 
     # DOB (0-3 points)
-    if input_person["dob"] == record["dob"]:
+    input_dob = input_person.get("dob")
+    record_dob = record.get("dob")
+    if input_dob and record_dob and input_dob == record_dob:
         score += 3
 
     # Address similarity (0-3 points)
