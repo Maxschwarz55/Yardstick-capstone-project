@@ -1,0 +1,8 @@
+:root{
+  --bg: #0b1220;         /* page background */
+  --panel: #0f172a;      /* card / panels */
+  --text: #e5e7eb;       /* body text */
+  --muted: #9ca3af;      /* secondary text */
+  --brand: #61dafb;      /* accent (you already use) */
+  --border: #1f2937;     /* subtle borders */
+}
