@@ -18,14 +18,22 @@ from similarity_algorithm import get_face_similarity_s3, compute_score
 backend_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 load_dotenv(os.path.join(backend_dir, '.env'))
 
-# There is code commented out to create an SSH tunnel to the ec2.
-# Uncomment if you are are successfully on the ec2
+
+##################### IMPORTANT ################################
+# There is code commented out to create an SSH tunnel to the EC2.
+# Uncomment if you are are not connected to the EC2 as a means of testing
+# without backend integration. 
+# Ensure a .env file containing the database config is 3 directories up
+# from this file (In the backend directory). The .env file cannot be 
+# in the repository, but must be on your local machine. 
 
 
+# Uncomment if not on EC2
 # ssh_key_path = os.getenv("SSH_KEY_PATH")
 # if ssh_key_path and not os.path.isabs(ssh_key_path):
 #     ssh_key_path = os.path.join(backend_dir, ssh_key_path)
 
+# Uncomment if not on EC2
 # SSH_CONFIG = {
 #     "ssh_host": os.getenv("SSH_HOST"),
 #     "ssh_port": int(os.getenv("SSH_PORT", 22)),
@@ -42,19 +50,24 @@ DB_CONFIG = {
 }
 
 # Global variables for tunnel and connection
-#tunnel = None
+
+# Uncomment if not on EC2
+# tunnel = None
 conn = None
 cursor = None
 
 def init_db_connection():
-    #Initialize SSH tunnel and database connection
+    # Initialize SSH tunnel and database connection
     
+    # Uncomment if not on EC2
     #global tunnel
     global conn, cursor
 
     if conn is not None:
         return  
 
+    # Uncomment if not on EC2
+    
     # tunnel = SSHTunnelForwarder(
     #     (SSH_CONFIG["ssh_host"], SSH_CONFIG["ssh_port"]),
     #     ssh_username=SSH_CONFIG["ssh_user"],
@@ -63,9 +76,11 @@ def init_db_connection():
     #     local_bind_address=('localhost', 0)
     # )
 
+    # Uncomment if not on EC2
     # tunnel.start()
 
     db_config = DB_CONFIG.copy()
+    # Uncomment if not on EC2
     # db_config["host"] = "localhost"
     # db_config["port"] = tunnel.local_bind_port
 
@@ -75,6 +90,7 @@ def init_db_connection():
 def close_db_connection():
     #Close database connection and SSH tunnel
     
+    # Uncomment if not on EC2
     # global tunnel
     global conn, cursor
 
@@ -82,6 +98,7 @@ def close_db_connection():
         cursor.close()
     if conn:
         conn.close()
+    # Uncomment if not on EC2
     # if tunnel:
     #     tunnel.stop()
 
