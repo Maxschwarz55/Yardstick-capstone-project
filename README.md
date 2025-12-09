@@ -71,7 +71,7 @@ The entire system runs on AWS:
 ### **Backend — NestJS**
 - REST API for search, results processing, diagnostics, and record retrieval  
 - Image validation & similarity scoring using AWS services  
-- Scheduled scrapers using NestJS Cron jobs  
+- Scheduled scrapers using NestJS job scheduling   
 - Integration with Postgres via TypeORM  
 
 ### **Database — PostgreSQL**
