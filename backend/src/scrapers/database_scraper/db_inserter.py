@@ -18,6 +18,10 @@ from similarity_algorithm import get_face_similarity_s3, compute_score
 backend_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 load_dotenv(os.path.join(backend_dir, '.env'))
 
+# There is code commented out to create an SSH tunnel to the ec2.
+# Uncomment if you are are successfully on the ec2
+
+
 # ssh_key_path = os.getenv("SSH_KEY_PATH")
 # if ssh_key_path and not os.path.isabs(ssh_key_path):
 #     ssh_key_path = os.path.join(backend_dir, ssh_key_path)
@@ -38,12 +42,13 @@ DB_CONFIG = {
 }
 
 # Global variables for tunnel and connection
-# tunnel = None
+#tunnel = None
 conn = None
 cursor = None
 
 def init_db_connection():
-    """Initialize SSH tunnel and database connection"""
+    #Initialize SSH tunnel and database connection
+    
     #global tunnel
     global conn, cursor
 
@@ -68,8 +73,9 @@ def init_db_connection():
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
 def close_db_connection():
-    """Close database connection and SSH tunnel"""
-    #global tunnel
+    #Close database connection and SSH tunnel
+    
+    # global tunnel
     global conn, cursor
 
     if cursor:
@@ -167,13 +173,16 @@ FIELD_MAPPINGS = {
 }
 
 def check_dups(input_person:dict, ref_person:dict) -> tuple:
-    
+
     face_sim = 0
     input_photo = input_person.get("mugshot_front_url")
     ref_photo = ref_person.get("mugshot_front_url")
 
-    if input_photo and ref_photo:
-        face_sim = get_face_similarity_s3(input_photo, ref_photo)
+    # TODO: Face similarity only works with S3 keys, not URLs
+    # For now, skip face similarity since mugshots are stored as URLs
+    
+    # if input_photo and ref_photo:
+    #     face_sim = get_face_similarity_s3(bucket, input_photo, ref_photo)
 
     score = compute_score(input_person, ref_person, face_sim)
     # Return true of score is greater than 2. Unfortunately we need to be very
@@ -230,7 +239,7 @@ def flatten_dict(d:dict, parent_key='') -> dict:
     return dict(items)
 
 
-def insert_nsor_data(offender_data: dict):
+def insert_nsor_data(offender_data: dict) -> bool:
     
     init_db_connection()
 
@@ -353,8 +362,6 @@ def insert_nsor_data(offender_data: dict):
             for ref_person in potential_duplicates:
                 is_dup, score = check_dups(input_person, dict(ref_person))
                 print(f"Duplicate check: {first_name} {last_name} - Score: {score}")
-                print(f"  Input DOB: {input_person.get('dob')}, DB DOB: {ref_person.get('dob')}")
-                print(f"  Input mugshot: {input_person.get('mugshot_front_url')}, DB mugshot: {ref_person.get('mugshot_front_url')}")
                 if is_dup:
                     is_duplicate = True
                     person_id = ref_person['person_id']
@@ -403,6 +410,7 @@ def insert_nsor_data(offender_data: dict):
 
         conn.commit()
         print(f"Successfully {'inserted' if insert_flag else 'updated'} data for {first_name} {last_name} (person_id: {person_id})")
+        return insert_flag
 
     except Exception as e:
         if conn:

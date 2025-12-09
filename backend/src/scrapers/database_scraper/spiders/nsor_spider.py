@@ -4,13 +4,13 @@ from datetime import datetime
 import scrapy as sc
 from scrapy.http import HtmlResponse
 from scrapy.crawler import CrawlerProcess
-# from crawl_row import CrawlRow
+from crawl_row import CrawlRow
 import re
 import sys
 import os
 import time
 import traceback
-# from diagnostics_inserter import DiagnosticsInserter
+from diagnostics_inserter import DiagnosticsInserter
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from db_inserter import insert_nsor_data
@@ -34,11 +34,11 @@ class NsorSpider(sc.Spider):
                     raise ValueError(f"Zips must contain only digits: {zip_code}")
 
         self.zips = zips
-        # Diagnostics disabled - no crawl_log table
-        # inserter = DiagnosticsInserter()
-        # self.zip_rows = inserter.get_zip_rows(zips)
-        self.zip_rows = {}
-    #   'SELECT COUNT(*)::INT AS count FROM person',
+        
+        # Initialize diagnostics
+        inserter = DiagnosticsInserter()
+        self.zip_rows = inserter.get_zip_rows(zips)
+        
         if batch_size > 5:
             raise ValueError("Batch size must be less than 5")
         else:
@@ -78,10 +78,12 @@ class NsorSpider(sc.Spider):
                 )
             else:
                 print("Error: Offender URL does not match specified prefixes")
-        # Diagnostics disabled - no crawl_log table
-        # diagnostics = DiagnosticsInserter()
-        # diagnostics.insert_zip_rows(self.zip_rows)
-        
+
+    def closed(self, reason):
+        # Called when the spider closes - save diagnostics
+        print(f"Spider closed: {reason}")
+        diagnostics = DiagnosticsInserter()
+        diagnostics.insert_zip_rows(self.zip_rows)
 
     def query_zips(self) -> list:
         
@@ -206,10 +208,16 @@ class NsorSpider(sc.Spider):
             }
 
         try:
-            insert_nsor_data(full_offender_data)
-            # Diagnostics disabled - no zip_rows tracking
-            # for location in full_offender_data["locations"]:
-            #     self.zip_rows[location]["zipCode"].records_added += 1
+            was_inserted = insert_nsor_data(full_offender_data)
+            # Update diagnostics for each zip code in the offender's locations
+            for location in full_offender_data.get("locations", []):
+                zip_code = location.get("zipCode")
+                if zip_code and zip_code in self.zip_rows:
+                    # Always increment total_records for all processed records
+                    self.zip_rows[zip_code].total_records += 1
+                    # Only increment records_added for new insertions
+                    if was_inserted:
+                        self.zip_rows[zip_code].records_added += 1
         except Exception as e:
             print(f"Error in scrape_api_response: {e}")
             traceback.print_exc()
@@ -275,10 +283,16 @@ class NsorSpider(sc.Spider):
             }
 
         try:
-            insert_nsor_data(full_offender_data)
-            # Diagnostics disabled - no zip_rows tracking
-            # for location in full_offender_data["locations"]:
-            #     self.zip_rows[location]["zipCode"].records_added += 1
+            was_inserted = insert_nsor_data(full_offender_data)
+            # Update diagnostics for each zip code in the offender's locations
+            for location in full_offender_data.get("locations", []):
+                zip_code = location.get("zipCode")
+                if zip_code and zip_code in self.zip_rows:
+                    # Always increment total_records for all processed records
+                    self.zip_rows[zip_code].total_records += 1
+                    # Only increment records_added for new insertions
+                    if was_inserted:
+                        self.zip_rows[zip_code].records_added += 1
         except Exception as e:
             print(f"Error in scrape_api_response: {e}")
             traceback.print_exc()
@@ -310,4 +324,3 @@ if __name__ == '__main__':
     process.crawl(NsorSpider, zips=['55407', '55408'])
     process.start()
     
-
