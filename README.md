@@ -126,3 +126,7 @@ The production environment includes:
 ---
 
 ## Future Work
+
+  1. Integrate a more robust job scheduling framework (e.g. BullMQ)
+  2. Collect data from more data sources, scaling across multiple workers
+  3. Docker for deployment and Docker Swarm for load balancing
