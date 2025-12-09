@@ -71,7 +71,7 @@ The entire system runs on AWS:
 ### **Backend — NestJS**
 - REST API for search, results processing, diagnostics, and record retrieval  
 - Image validation & similarity scoring using AWS services  
-- Scheduled scrapers using NestJS Cron jobs  
+- Scheduled scrapers using NestJS job scheduling   
 - Integration with Postgres via TypeORM  
 
 ### **Database — PostgreSQL**
@@ -120,9 +120,13 @@ Users can submit:
 This project is deployed on **AWS EC2**.  
 
 The production environment includes:
-- React build served from
+- React build served from EC2 via NestJS
 - Postgres hosted on RDS  
 
 ---
 
 ## Future Work
+
+  1. Integrate a more robust job scheduling framework (e.g. BullMQ)
+  2. Collect data from more data sources, scaling across multiple workers
+  3. Docker for deployment and Docker Swarm for load balancing
