@@ -120,7 +120,7 @@ Users can submit:
 This project is deployed on **AWS EC2**.  
 
 The production environment includes:
-- React build served from
+- React build served from EC2 via NestJS
 - Postgres hosted on RDS  
 
 ---
