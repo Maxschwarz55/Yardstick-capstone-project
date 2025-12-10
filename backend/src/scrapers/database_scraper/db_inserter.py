@@ -29,17 +29,17 @@ load_dotenv(os.path.join(backend_dir, '.env'))
 
 
 # Uncomment if not on EC2
-ssh_key_path = os.getenv("SSH_KEY_PATH")
-if ssh_key_path and not os.path.isabs(ssh_key_path):
-    ssh_key_path = os.path.join(backend_dir, ssh_key_path)
+# ssh_key_path = os.getenv("SSH_KEY_PATH")
+# if ssh_key_path and not os.path.isabs(ssh_key_path):
+#     ssh_key_path = os.path.join(backend_dir, ssh_key_path)
 
 # Uncomment if not on EC2
-SSH_CONFIG = {
-    "ssh_host": os.getenv("SSH_HOST"),
-    "ssh_port": int(os.getenv("SSH_PORT", 22)),
-    "ssh_user": os.getenv("SSH_USER"),
-    "ssh_key_path": ssh_key_path
-}
+# SSH_CONFIG = {
+#     "ssh_host": os.getenv("SSH_HOST"),
+#     "ssh_port": int(os.getenv("SSH_PORT", 22)),
+#     "ssh_user": os.getenv("SSH_USER"),
+#     "ssh_key_path": ssh_key_path
+# }
 
 DB_CONFIG = {
     "user": os.getenv("DB_USER"),
@@ -52,7 +52,7 @@ DB_CONFIG = {
 # Global variables for tunnel and connection
 
 # Uncomment if not on EC2
-tunnel = None
+# tunnel = None
 conn = None
 cursor = None
 
@@ -60,7 +60,7 @@ def init_db_connection():
     # Initialize SSH tunnel and database connection
     
     # Uncomment if not on EC2
-    global tunnel
+    # global tunnel
     global conn, cursor
 
     if conn is not None:
@@ -68,21 +68,21 @@ def init_db_connection():
 
     # Uncomment if not on EC2
     
-    tunnel = SSHTunnelForwarder(
-        (SSH_CONFIG["ssh_host"], SSH_CONFIG["ssh_port"]),
-        ssh_username=SSH_CONFIG["ssh_user"],
-        ssh_pkey=SSH_CONFIG["ssh_key_path"],
-        remote_bind_address=(os.getenv("DB_HOST", "localhost"), int(os.getenv("DB_PORT", 5432))),
-        local_bind_address=('localhost', 0)
-    )
+    # tunnel = SSHTunnelForwarder(
+    #     (SSH_CONFIG["ssh_host"], SSH_CONFIG["ssh_port"]),
+    #     ssh_username=SSH_CONFIG["ssh_user"],
+    #     ssh_pkey=SSH_CONFIG["ssh_key_path"],
+    #     remote_bind_address=(os.getenv("DB_HOST", "localhost"), int(os.getenv("DB_PORT", 5432))),
+    #     local_bind_address=('localhost', 0)
+    # )
 
     # Uncomment if not on EC2
-    tunnel.start()
+    # tunnel.start()
 
     db_config = DB_CONFIG.copy()
     # Uncomment if not on EC2
-    db_config["host"] = "localhost"
-    db_config["port"] = tunnel.local_bind_port
+    # db_config["host"] = "localhost"
+    # db_config["port"] = tunnel.local_bind_port
 
     conn = psycopg2.connect(**db_config)
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -91,7 +91,7 @@ def close_db_connection():
     #Close database connection and SSH tunnel
     
     # Uncomment if not on EC2
-    global tunnel
+    # global tunnel
     global conn, cursor
 
     if cursor:
@@ -99,8 +99,8 @@ def close_db_connection():
     if conn:
         conn.close()
     # Uncomment if not on EC2
-    if tunnel:
-        tunnel.stop()
+    # if tunnel:
+    #     tunnel.stop()
 
 # Dictionary containing mappings from raw data fields to data fields in the schema
 FIELD_MAPPINGS = {
