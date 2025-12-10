@@ -94,7 +94,7 @@ The schema is designed to support aggregation from multiple external data source
 - Scrapers run with the Scrapy framework
 - Uses a mixture of API calls to the National Sex Offender Registry and webpage scraping
 - Cleans up raw data and directly inserts into the database
-- Configured in a way to to avoid CloudFlare block detection as effectively as possible
+- Configured with Playwright to to avoid CloudFlare block detection as effectively as possible
 - Uses the similarity algorithm to avoid duplicate database insertions
 
 ---

@@ -321,6 +321,11 @@ if __name__ == '__main__':
           'AUTOTHROTTLE_MAX_DELAY': 10,
       })
 
-    process.crawl(NsorSpider, zips=['55407', '55408'])
+    # Minneapolis zips
+    process.crawl(NsorSpider, zips=['55401', '55404', '55405', 
+                                    '55406', '55407', '55408',
+                                    '55411', '55412', '55413',
+                                    '55414', '55415', '55416', 
+                                    '55418', '55419'])
     process.start()
     
