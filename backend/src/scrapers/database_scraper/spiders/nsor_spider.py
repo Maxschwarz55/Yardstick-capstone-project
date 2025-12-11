@@ -8,6 +8,8 @@ from crawl_row import CrawlRow
 import re
 import sys
 import os
+import time
+import traceback
 from diagnostics_inserter import DiagnosticsInserter
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -23,6 +25,7 @@ class NsorSpider(sc.Spider):
 
     def __init__(self, zips: list, batch_size = 5, *args, **kwargs):
         super(NsorSpider, self).__init__(*args, **kwargs)
+        # Error check zip codes
         for zip_code in zips:
             if not isinstance(zip_code, str) or len(zip_code) != 5:
                 raise ValueError(f"Invalid zip code. Zips must be 5 digits: {zip_code}")
@@ -31,16 +34,17 @@ class NsorSpider(sc.Spider):
                     raise ValueError(f"Zips must contain only digits: {zip_code}")
 
         self.zips = zips
-        inserter = DiagnosticsInserter()        
-
-
+        
+        # Initialize diagnostics
+        inserter = DiagnosticsInserter()
         self.zip_rows = inserter.get_zip_rows(zips)
-    #   'SELECT COUNT(*)::INT AS count FROM person',
+        
         if batch_size > 5:
             raise ValueError("Batch size must be less than 5")
         else:
             self.batch_size = batch_size
 
+        # Scrapy headers. This may not be needed, but should help bot detection
         self.headers = {
             "accept": "application/json, text/plain, */*",
             "accept-encoding": "gzip, deflate, br",
@@ -61,25 +65,30 @@ class NsorSpider(sc.Spider):
         offenders = self.query_zips()
 
         for offender in offenders:
-            for offender in offenders:
-                url = offender.get('offenderUri')
-                if self.POR_STATE_PREFIX in url:
-                    self.scrape_api_response(url, offender)
-                elif self.COMS_DOC_PREFIX in url:
-                    yield sc.Request(
-                    url,
-                    callback=self.parse_offender_page,
-                    meta={'api_data': offender}
-                    )
-                else:
-                    print("Error: Offender URL does not match specified prefixes")
-        diagnostics = DiagnosticsInserter() 
-        diagnostics.insert_zip_rows(self.zip_rows)
-        
+            url = offender.get('offenderUri')
+            # Scrape API reponse if url is in por.state.mn format
+            if self.POR_STATE_PREFIX in url:
+                self.scrape_api_response(url, offender)
+            # Scrape webpage if url is in coms.doc.state.mn format
+            elif self.COMS_DOC_PREFIX in url:
+                yield sc.Request(
+                url,
+                callback=self.parse_offender_page,
+                meta={'api_data': offender}
+                )
+            else:
+                print("Error: Offender URL does not match specified prefixes")
 
-    
-    def query_zips(self):
+    def closed(self, reason):
+        # Called when the spider closes - save diagnostics
+        print(f"Spider closed: {reason}")
+        diagnostics = DiagnosticsInserter()
+        diagnostics.insert_zip_rows(self.zip_rows)
+
+    def query_zips(self) -> list:
+        
         all_offenders = []
+        # Query zipcodes in batches of 5 (The most NSOPW allows at once)
         batches = [self.zips[i:i+self.batch_size] for i in range(0, len(self.zips), self.batch_size)]
 
         for batch in batches:
@@ -92,6 +101,7 @@ class NsorSpider(sc.Spider):
                 "clientIp": ""
             }
 
+            # Make request to the NWSOP API. This returns the original, undetailed list of offenders
             api_response = requests.post(
                 self.SEARCH_ENDPOINT,
                 headers=self.headers,
@@ -125,7 +135,8 @@ class NsorSpider(sc.Spider):
 
         return all_offenders
     
-    def scrape_api_response(self, url, offender_data):
+    def scrape_api_response(self, url:str, offender_data:dict):
+
         match = re.search(r'offenderMapId=([A-F0-9-]+)', url, re.IGNORECASE)
         if not match:
             print(f"Error: Could not extract offenderMapId from {url}")
@@ -135,6 +146,10 @@ class NsorSpider(sc.Spider):
 
         api_url = f"https://por.state.mn.us/api/OffenderDetails?offenderMapId={offender_map_id}"
 
+        # Add delay to avoid triggering bot detection
+        time.sleep(2) 
+
+        # Second API request to get detailed offender data
         api_response = requests.get(
           api_url,
           impersonate="chrome120",
@@ -146,7 +161,11 @@ class NsorSpider(sc.Spider):
 
         try:
             if api_response.status_code == 200:
-                offender_data_detailed = api_response.json()
+                if api_response.text.strip():
+                    offender_data_detailed = api_response.json()
+                else:
+                    print(f"Error: Empty response from API for {url}")
+                    return None
 
             elif api_response.status_code == 429:
                 print("Error: Rate limit reached!")
@@ -161,7 +180,8 @@ class NsorSpider(sc.Spider):
                 print(f"api_response: {api_response.text[:200]}")
                 return None
         except Exception as e:
-            print(f"Error: Exception {e}")
+            print(f"Error: Exception {e} for URL {url}")
+            print(f"Response text: {api_response.text[:200]}")
             return None
         
 
@@ -187,29 +207,23 @@ class NsorSpider(sc.Spider):
                 **offender_data
             }
 
-        debug_data = {
-            'offender_data': offender_data,
-            'offender_data_detailed_flattened': flattened_detailed,
-            'full_offender_data': full_offender_data
-        }
-
-        debug_file = 'debug_por_state_scraper.json'
         try:
-            with open(debug_file, 'a') as f:
-                f.write(json.dumps(debug_data, indent=2))
-                f.write('\n' + '='*80 + '\n')
+            was_inserted = insert_nsor_data(full_offender_data)
+            # Update diagnostics for each zip code in the offender's locations
+            for location in full_offender_data.get("locations", []):
+                zip_code = location.get("zipCode")
+                if zip_code and zip_code in self.zip_rows:
+                    # Always increment total_records for all processed records
+                    self.zip_rows[zip_code].total_records += 1
+                    # Only increment records_added for new insertions
+                    if was_inserted:
+                        self.zip_rows[zip_code].records_added += 1
         except Exception as e:
-            print(f"Error writing debug file: {e}")
-
-        try:
-            #TODO update diagnostics data
-            insert_nsor_data(full_offender_data)
-            for location in full_offender_data["locations"]:
-                self.zip_rows[location]["zipCode"].records_added += 1
-        except Exception as e:
-            print(e)
+            print(f"Error in scrape_api_response: {e}")
+            traceback.print_exc()
 
     def clean_scraped_data(self, raw_data: dict) -> dict:
+        # Clean up raw data
         cleaned = {}
         for key, value in raw_data.items():
             clean_key = key.strip()
@@ -223,6 +237,7 @@ class NsorSpider(sc.Spider):
     def parse_offender_page(self, response):
 
         offender_data = response.meta['api_data']
+        # Match key and value pairs from webpage
         keys = response.xpath(
             "   //span[not(contains(concat(' ', normalize-space(@class), ' '), ' displayText '))]/text()"
             ).getall()
@@ -233,6 +248,7 @@ class NsorSpider(sc.Spider):
 
         offender_data_detailed = dict(zip(keys, values))
 
+        # Scrape mugshots
         mugshot_elements = response.css('.mugshot')
 
         if mugshot_elements:
@@ -246,7 +262,11 @@ class NsorSpider(sc.Spider):
                 if src[:10] == "data:image":
                     mugshot_data[alt] = src
                 else:
-                    mugshot_data[alt] = f"{self.COMS_DOC_PREFIX}/{src}" if src else None
+                    if src:
+                        mugshot_data[alt] = f"{self.COMS_DOC_PREFIX}/{src}"
+                    else: 
+                        mugshot_data[alt] = None
+            
 
             offender_data_detailed['mugshots'] = mugshot_data
 
@@ -262,35 +282,23 @@ class NsorSpider(sc.Spider):
                 **offender_data
             }
 
-        
-
-        debug_data = {
-            'offender_data': offender_data,
-            'offender_data_detailed_scraped': offender_data_detailed,
-            'full_offender_data': full_offender_data
-        }
-
-
-
-        debug_file = 'debug_coms_doc_scraper.json'
         try:
-            with open(debug_file, 'a') as f:
-                f.write(json.dumps(debug_data, indent=2))
-                f.write('\n' + '='*80 + '\n')
+            was_inserted = insert_nsor_data(full_offender_data)
+            # Update diagnostics for each zip code in the offender's locations
+            for location in full_offender_data.get("locations", []):
+                zip_code = location.get("zipCode")
+                if zip_code and zip_code in self.zip_rows:
+                    # Always increment total_records for all processed records
+                    self.zip_rows[zip_code].total_records += 1
+                    # Only increment records_added for new insertions
+                    if was_inserted:
+                        self.zip_rows[zip_code].records_added += 1
         except Exception as e:
-            print(f"Error writing debug file: {e}")
-
-        try:
-            #TODO update diagnostics data
-            insert_nsor_data(full_offender_data)
-            for location in full_offender_data["locations"]:
-                self.zip_rows[location]["zipCode"].records_added += 1
-        except Exception as e:
-            print(e)
-
-
+            print(f"Error in scrape_api_response: {e}")
+            traceback.print_exc()
 
 if __name__ == '__main__':
+    # Create scraper process with options that restrict bot detection (hopefully)
     process = CrawlerProcess({
           'LOG_LEVEL': 'INFO',
           'DOWNLOAD_HANDLERS': {
@@ -313,7 +321,11 @@ if __name__ == '__main__':
           'AUTOTHROTTLE_MAX_DELAY': 10,
       })
 
-    process.crawl(NsorSpider, zips=['55407', '55408'])
+    # Minneapolis zips
+    process.crawl(NsorSpider, zips=['55401', '55404', '55405', 
+                                    '55406', '55407', '55408',
+                                    '55411', '55412', '55413',
+                                    '55414', '55415', '55416', 
+                                    '55418', '55419'])
     process.start()
     
-

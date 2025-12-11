@@ -71,7 +71,7 @@ The entire system runs on AWS:
 ### **Backend — NestJS**
 - REST API for search, results processing, diagnostics, and record retrieval  
 - Image validation & similarity scoring using AWS services  
-- Scheduled scrapers using NestJS Cron jobs  
+- Scheduled scrapers using NestJS job scheduling   
 - Integration with Postgres via TypeORM  
 
 ### **Database — PostgreSQL**
@@ -91,7 +91,11 @@ The schema is designed to support aggregation from multiple external data source
 ---
 
 ## Scraper System
-*update this*
+- Scrapers run with the Scrapy framework
+- Uses a mixture of API calls to the National Sex Offender Registry and webpage scraping
+- Cleans up raw data and directly inserts into the database
+- Configured with Playwright to to avoid CloudFlare block detection as effectively as possible
+- Uses the similarity algorithm to avoid duplicate database insertions
 
 ---
 
@@ -120,9 +124,42 @@ Users can submit:
 This project is deployed on **AWS EC2**.  
 
 The production environment includes:
-- React build served from
+- React build served from EC2 via NestJS
 - Postgres hosted on RDS  
 
 ---
 
+## Set up
+LINK TO REPOSITORY: https://github.com/Maxschwarz55/Yardstick-capstone-project/
+1. Copy the repo above
+2. Make sure you have Node.js, npm and package dependencies in backend/package-lock.json and background-check-ui/package-lock.json installed on your machine
+3. In one terminal, change directory to backend (cd backend) and then run "npm run start:dev"
+4. Open another terminal, change directory to background- check-ui (cd background-check-ui) and then run "npm start"
+
+## What Works
+- Public record scraping and database ingestion
+
+- Scheduled scraper jobs with crawl logging
+
+- React-based search interface
+
+- Image upload
+
+- AWS Rekognition image similarity matching
+
+- Ranked results display
+
+- Diagnostics dashboard for system health
+
+- AWS deployment using EC2, RDS, and S3
+
+## What doesn't work
+- Requires a .env file with environment variables, which must be configured manually
+
+- Some dependencies must be installed manually rather than through a single automated command
+
 ## Future Work
+
+  1. Integrate a more robust job scheduling framework (e.g. BullMQ)
+  2. Collect data from more data sources, scaling across multiple workers
+  3. Docker for deployment and Docker Swarm for load balancing

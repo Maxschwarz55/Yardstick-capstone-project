@@ -1,19 +1,13 @@
 import psycopg2
 import os
+import sys
 from dotenv import load_dotenv
 from crawl_row import CrawlRow
 from datetime import datetime
 
-# Load .env from backend/.env (3 levels up from this file)
-load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', '.env'))
-
-DB_CONFIG = {
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PWD"),
-    "database": os.getenv("DB_DB"),
-    "host": os.getenv("DB_HOST"),
-    "port": int(os.getenv("DB_PORT"))
-}
+# Add parent directory to path to import db_inserter
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import db_inserter
 
 CRAWL_LOG_SCHEMA = (
     "zip",
@@ -29,9 +23,10 @@ CRAWL_LOG_SCHEMA = (
 class DiagnosticsInserter:
 
     def __init__(self):
-        conn = psycopg2.connect(**DB_CONFIG)
-        self.cursor = conn.cursor()
-        print(self.cursor)
+        # Initialize the SSH tunnel (if not on ec2) and database connection
+        db_inserter.init_db_connection()
+        # Get the cursor from the module after initialization
+        self.cursor = db_inserter.cursor
 
     def get_recent_logs(self):
         sql = """SELECT DISTINCT ON (zip)
@@ -50,15 +45,15 @@ class DiagnosticsInserter:
         result = {}
         for row in rows:
             crawl = CrawlRow(
-                zip_code=row[1],
-                last_crawled=row[2],
-                next_scheduled=row[3],
-                total_records=row[4],
-                records_added=row[5],
-                next_crawl=row[6],
-                created=row[7],
+                zip_code=row['zip'],
+                last_crawled=row['last_crawled'],
+                next_scheduled=row['next_scheduled'],
+                total_records=row['total_records'],
+                records_added=row['records_added'],
+                next_crawl=row['next_crawl'],
+                created=row['created'],
             )
-        result[row[1]] = crawl
+            result[row['zip']] = crawl
         return result
 
     #groups requested zips into a dict, fills in values based on past records
@@ -67,8 +62,8 @@ class DiagnosticsInserter:
         prev_rows = self.format_logs()
         for zip_code in zips:
             if zip_code not in prev_rows:
-                prev_rows[zip_code] = CrawlRow(zip_code = zip_code, records_added = 0)
-        return {zip_code: CrawlRow(zip_code = zip_code, last_crawled = prev_rows[zip_code].created, records_added = 0, created = datetime.now()) for zip_code in zips}
+                prev_rows[zip_code] = CrawlRow(zip_code = zip_code, total_records = 0, records_added = 0)
+        return {zip_code: CrawlRow(zip_code = zip_code, last_crawled = prev_rows[zip_code].created, total_records = 0, records_added = 0, created = datetime.now()) for zip_code in zips}
 
     def build_query(self, row):
         query = f"""
@@ -96,7 +91,7 @@ class DiagnosticsInserter:
     def insert_zip_rows(self, rows):
 
         for i in rows:
-            row = rows[i] 
+            row = rows[i]
             query = """
             INSERT INTO crawl_log (
                 zip,
@@ -110,7 +105,7 @@ class DiagnosticsInserter:
             """
 
             values = (
-                row.zip,
+                row.zip_code,
                 row.last_crawled,
                 row.next_scheduled,
                 row.total_records,
@@ -120,5 +115,9 @@ class DiagnosticsInserter:
             )
 
             self.cursor.execute(query, values)
-            
+
+        # Commit insertions. Remove if backend does the commit
+        db_inserter.conn.commit()
+        print(f"Inserted {len(rows)} crawl log entries")
+
     

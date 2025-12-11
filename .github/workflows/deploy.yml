@@ -30,6 +30,12 @@ jobs:
         run: |
           cd background-check-ui
           npm run build
+          
+      - name: Copy Frontend
+        run: |
+          rm -rf bundle
+          mkdir -p bundle/background-check-ui
+          cp -r background-check-ui/build/* bundle/background-check-ui/
 
       - name: Install Backend Deps
         run: |
