@@ -64,12 +64,11 @@ import { SelfieModule } from './matcher/selfie.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'bundle', 'background-check-ui'),
       exclude: [
-        '/summary/*',
-        '/records/*',
-        '/ai-summary/*',
-        '/selfie/*',
-        '/similarity/*',
-        '/diagnostics/*',
+        '/records/(.*)',
+        '/ai-summary/(.*)',
+        '/selfie/(.*)',
+        '/similarity/(.*)',
+        '/diagnostics/(.*)',
       ],
     }),
   ],
