@@ -5,8 +5,7 @@ import { ScraperService } from 'src/scrapers/scraper.service';
 @Injectable()
 export class JobService {
   constructor(private readonly scraperService: ScraperService) {}
-  // @Cron('0 0 0 * * *')
-  @Cron('* * * * * *')
+  @Cron('0 0 0 * * *')
   getNYData() {
     this.scraperService
       .runScraperTest()
