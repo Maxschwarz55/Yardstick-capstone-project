@@ -1,19 +1,19 @@
-from rapidfuzz import fuzz, utils
-import boto3
+# from rapidfuzz import fuzz, utils
+# import boto3
 
-rekognition = boto3.client("rekognition")
+# rekognition = boto3.client("rekognition")
 
-def get_face_similarity_s3(bucket, input_s3_key, db_s3_key):
-    try:
-        response = rekognition.compare_faces(
-            SourceImage={"S3Object": {"Bucket": bucket, "Name": input_s3_key}},
-            TargetImage={"S3Object": {"Bucket": bucket, "Name": db_s3_key}},
-            SimilarityThreshold=0
-        )
-        matches = response.get("FaceMatches", [])
-        return matches[0]["Similarity"] if matches else 0.0
-    except Exception:
-        return 0.0
+# def get_face_similarity_s3(bucket, input_s3_key, db_s3_key):
+#     try:
+#         response = rekognition.compare_faces(
+#             SourceImage={"S3Object": {"Bucket": bucket, "Name": input_s3_key}},
+#             TargetImage={"S3Object": {"Bucket": bucket, "Name": db_s3_key}},
+#             SimilarityThreshold=0
+#         )
+#         matches = response.get("FaceMatches", [])
+#         return matches[0]["Similarity"] if matches else 0.0
+#     except Exception:
+#         return 0.0
 
 def compute_score(input_person, record, face_similarity):
     score = 0
