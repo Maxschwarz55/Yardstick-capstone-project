@@ -131,6 +131,7 @@ The production environment includes:
 
 ## Set up
 LINK TO REPOSITORY: https://github.com/Maxschwarz55/Yardstick-capstone-project/
+
 To run locally:
   1. Clone the above repo 
   2. Make sure you have Node.js, npm and package dependencies in backend/package-lock.json and background-check-ui/package-lock.json installed on your machine
