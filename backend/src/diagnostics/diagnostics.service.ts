@@ -46,7 +46,7 @@ export class DiagnosticsService {
         `);
     const zips = zipDiagRes.map((row) => ({
       zip: row.zip,
-      lastCrawled: row.last_crawled,
+      lastCrawled: row.created,
       nextScheduled: row.next_scheduled ?? row.next_crawl,
       totalRecords: row.total_records,
       recordsAdded: row.records_added,
