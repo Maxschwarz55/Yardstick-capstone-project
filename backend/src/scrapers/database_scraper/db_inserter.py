@@ -12,7 +12,8 @@ backend_src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 
 if backend_src_dir not in sys.path:
     sys.path.insert(0, backend_src_dir)
 
-from similarity_algorithm import get_face_similarity_s3, compute_score
+# from similarity_algorithm import get_face_similarity_s3, compute_score
+from similarity_algorithm import compute_score
 
 # Load .env from backend/.env (3 levels up from this file)
 backend_dir = os.path.join(os.path.dirname(__file__), '..', '..', '..')
