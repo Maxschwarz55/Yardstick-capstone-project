@@ -131,10 +131,11 @@ The production environment includes:
 
 ## Set up
 LINK TO REPOSITORY: https://github.com/Maxschwarz55/Yardstick-capstone-project/
-1. Copy the repo above
-2. Make sure you have Node.js, npm and package dependencies in backend/package-lock.json and background-check-ui/package-lock.json installed on your machine
-3. In one terminal, change directory to backend (cd backend) and then run "npm run start:dev"
-4. Open another terminal, change directory to background- check-ui (cd background-check-ui) and then run "npm start"
+To run locally:
+  1. Clone the above repo 
+  2. Make sure you have Node.js, npm and package dependencies in backend/package-lock.json and background-check-ui/package-lock.json installed on your machine
+  3. In one terminal, change directory to backend (cd backend) and then run "npm run start:dev"
+  4. Open another terminal, change directory to background- check-ui (cd background-check-ui) and then run "npm start"
 
 ## What Works
 - Public record scraping and database ingestion
@@ -155,8 +156,6 @@ LINK TO REPOSITORY: https://github.com/Maxschwarz55/Yardstick-capstone-project/
 
 ## What doesn't work
 - Requires a .env file with environment variables, which must be configured manually
-
-- Some dependencies must be installed manually rather than through a single automated command
 
 ## Future Work
 
