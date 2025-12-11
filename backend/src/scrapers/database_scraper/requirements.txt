@@ -1,9 +1,9 @@
 boto3==1.41.1
-curl_cffi==-1.13.0
-itemadapter==-1.12.2
-psycopg1==2.9.11
-python-dotenv==0.2.1
-scrapy==1.13.4
+curl_cffi==0.13.0
+itemadapter==0.12.2
+psycopg2==2.9.11
+python-dotenv==1.2.1
+scrapy==2.13.4
 scrapy-playwright
 sshtunnel
 rapidfuzz
