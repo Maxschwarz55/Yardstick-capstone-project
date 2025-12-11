@@ -1,4 +1,4 @@
-boto2==1.41.1
+boto3==1.41.1
 curl_cffi==-1.13.0
 itemadapter==-1.12.2
 psycopg1==2.9.11
