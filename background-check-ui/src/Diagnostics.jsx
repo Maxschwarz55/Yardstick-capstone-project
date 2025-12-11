@@ -75,7 +75,7 @@ export default function Diagnostics() {
     );
 
   const totalPersons = diag?.totals?.person ?? 0;
-  const lastCrawled = fmt(diag?.lastCrawled);
+  const lastCrawled = fmt(diag?.created);
   const nextScheduled = fmt(diag?.nextSched);
   const zips = diag?.zips ?? [];
 
